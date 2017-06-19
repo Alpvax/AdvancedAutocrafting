@@ -1,0 +1,103 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+    }
+}
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+// Process all mod info
+if(!project.hasProperty("modid")) {
+    project.modid = project.projectDir.name.toLowerCase()
+    println "Build property \"modid\" missing. Using \"${project.modid}\" instead"
+}
+def errMsg = new StringBuilder();
+if(!project.hasProperty("mcVer")) {
+    errMsg.append("Build property \"mcVer\" must be defined\n")
+}
+if(!project.hasProperty("forgeVer")) {
+    errMsg.append("Build property \"forgeVer\" must be defined")
+}
+if(!project.hasProperty("mcpMappings")) {
+    errMsg.append("Build property \"mcpMappings\" must be defined")
+}
+if(errMsg.length() > 0) {
+    throw new GradleException(errMsg.toString())
+}
+if(!project.hasProperty("name")) {
+    project.name = project.projectDir.name
+    println "Build property \"name\" missing. Using \"${project.name}\" instead"
+}
+if(!project.hasProperty("version")) {
+    project.version = "1.0"
+    println "Build property \"version\" missing. Using \"${project.version}\" instead"
+}
+
+archivesBaseName = "${modid}-${mcVer}"
+group = "alpvax.${modid.toLowerCase()}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+
+minecraft {
+    version = "${project.mcVer}-${project.forgeVer}"
+    runDir = file('../run').exists() ? '../run' : 'run'
+	mappings = project.mcpMappings
+}
+
+dependencies {
+    // compile against the JEI API
+    //deobfCompile "mezz.jei:jei_${dep_jei_version}:api"
+    // at runtime, use the full JEI jar
+    //runtime "mezz.jei:jei_${dep_jei_version}"
+}
+
+repositories {
+    maven {
+        // location of the maven that hosts JEI files
+        url "http://dvs1.progwml6.com/files/maven"
+    }
+}
+
+processResources
+{
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+                
+        // replace version and mcversion
+        expand 'version':project.version, 'mcversion':project.mcVer
+    }
+        
+    // copy everything else, thats not the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+    
+    // Move access transformers to META-INF
+    rename '(.+_at.cfg)', 'META-INF/$1'
+}
+
+
+jar {
+    // replace mod name, version, mcversion and forgeVersion
+    filter(ReplaceTokens, tokens:['MODNAME': project.name, 'VERSION': project.version, 'MCVERSION': project.mcVer, 'FORGEDEPENDANCY': "Forge@[${project.forgeVer.substring(0, project.forgeVer.lastIndexOf("."))},)"])
+    manifest {
+        attributes 'FMLAT': "${project.modid.toLowerCase()}_at.cfg"
+        if(project.hasProperty("corePlugin")) {
+            attributes 'FMLCorePlugin': project.corePlugin
+        }
+    }
+}
