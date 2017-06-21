@@ -8,3 +8,6 @@ bin
 # gradle
 build
 .gradle
+
+# minecraft
+run
