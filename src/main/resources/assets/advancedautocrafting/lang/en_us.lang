@@ -1,0 +1,7 @@
+item.craftinglinker.name=Crafting Ingredient Linker
+
+tile.craftingmanager.name=Crafting Manager
+
+item.selectedmanager.none=Unlinked
+item.selectedmanager.samedim=Linked to %s
+item.selectedmanager.diffdim=Linked to %s in dimension %d
