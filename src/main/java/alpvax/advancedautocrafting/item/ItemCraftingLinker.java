@@ -57,7 +57,7 @@ public class ItemCraftingLinker extends Item
 	@Override
 	public boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.IBlockAccess world, BlockPos pos, EntityPlayer player)
 	{
-		return true;
+		return world.getTileEntity(pos) instanceof TileEntityCraftingManager;
 	}
 
 	@Override
