@@ -1,6 +1,8 @@
 package alpvax.advancedautocrafting.core;
 
 import alpvax.advancedautocrafting.block.BlockCraftingManager;
+import alpvax.advancedautocrafting.crafting.CraftingIngredientFactory;
+import alpvax.advancedautocrafting.crafting.CraftingOutputFactory;
 import alpvax.advancedautocrafting.item.ItemCraftingLinker;
 import alpvax.advancedautocrafting.tile.TileEntityCraftingManager;
 import net.minecraft.block.Block;
@@ -16,7 +18,9 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.RegistryBuilder;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @Mod(modid = AdvancedAutocrafting.MOD_ID, guiFactory = "alpvax.advancedautocrafting.core.AutocraftingGuiFactory")
 public class AdvancedAutocrafting
@@ -50,6 +54,13 @@ public class AdvancedAutocrafting
 	public static class EventHandler
 	{
 		@SubscribeEvent
+		public static void createRegistries(RegistryEvent.NewRegistry event)
+		{
+			new RegistryBuilder<CraftingIngredientFactory>().setType(CraftingIngredientFactory.class).setName(new ResourceLocation(MOD_ID, "ingredients")).setIDRange(0, 0xFFFF).create();
+			new RegistryBuilder<CraftingOutputFactory>().setType(CraftingOutputFactory.class).setName(new ResourceLocation(MOD_ID, "outputs")).setIDRange(0, 0xFFFF).create();
+		}
+
+		@SubscribeEvent
 		public static void registerBlocks(RegistryEvent.Register<Block> event)
 		{
 			event.getRegistry().register(Blocks.CRAFTING_MANAGER);
@@ -64,6 +75,7 @@ public class AdvancedAutocrafting
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	@EventBusSubscriber(Side.CLIENT)
 	public static class EventHandlerClient
 	{

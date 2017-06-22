@@ -3,16 +3,16 @@ package alpvax.advancedautocrafting.crafting;
 import javax.annotation.Nonnull;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
-@FunctionalInterface
-public interface CraftingIngredientFactory
+public abstract class CraftingIngredientFactory extends IForgeRegistryEntry.Impl<CraftingIngredientFactory>
 {
-	public default @Nonnull ICraftingIngredient fromNBT(@Nonnull CraftingPattern pattern, @Nonnull NBTTagCompound nbt)
+	public @Nonnull ICraftingIngredient fromNBT(@Nonnull CraftingPattern pattern, @Nonnull NBTTagCompound nbt)
 	{
 		ICraftingIngredient ingredient = create(pattern);
 		ingredient.deserializeNBT(nbt);
 		return ingredient;
 	}
 
-	public @Nonnull ICraftingIngredient create(@Nonnull CraftingPattern pattern);
+	public abstract @Nonnull ICraftingIngredient create(@Nonnull CraftingPattern pattern);
 }
