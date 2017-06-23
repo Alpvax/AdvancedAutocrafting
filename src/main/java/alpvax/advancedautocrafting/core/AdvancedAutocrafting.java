@@ -1,6 +1,9 @@
 package alpvax.advancedautocrafting.core;
 
+import org.apache.logging.log4j.Logger;
+
 import alpvax.advancedautocrafting.block.BlockCraftingManager;
+import alpvax.advancedautocrafting.core.proxy.CommonProxy;
 import alpvax.advancedautocrafting.crafting.CraftingIngredientFactory;
 import alpvax.advancedautocrafting.crafting.CraftingOutputFactory;
 import alpvax.advancedautocrafting.item.ItemCraftingLinker;
@@ -15,6 +18,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -27,17 +31,19 @@ public class AdvancedAutocrafting
 {
 	public static final String MOD_ID = "advancedautocrafting";
 
-	/*TODO:@SidedProxy(
+	@SidedProxy(
 			clientSide = "alpvax.advancedautocrafting.core.proxy.ClientProxy",
-			serverSide = "alpvax.advancedautocrafting.core.proxy.ServerProxy")
-	public static CommonProxy proxy;*/
+			serverSide = "alpvax.advancedautocrafting.core.proxy.CommonProxy")
+	public static CommonProxy proxy;
 
 	@Mod.Instance(MOD_ID)
 	public static AdvancedAutocrafting instance;
 
+	public static Logger logger;
+
 	public void preInit(FMLPreInitializationEvent event)
 	{
-
+		logger = event.getModLog();
 	}
 
 	public static class Blocks

@@ -2,6 +2,15 @@ item.craftinglinker.name=Crafting Ingredient Linker
 
 tile.craftingmanager.name=Crafting Manager
 
-item.selectedmanager.none=Unlinked
-item.selectedmanager.samedim=Linked to %s
-item.selectedmanager.diffdim=Linked to %s in dimension %d
+linker.selectedmanager.none=Unlinked
+linker.selectedmanager.samedim=Linked to (%d, %d, %d)
+linker.selectedmanager.diffdim=Linked to (%d, %d, %d) in dimension %d
+
+linker.managerselected=Linking to manager at (%d, %d, %d)
+linker.selectmanagerfirst=You need to link to a crafting manager before linking other blocks
+
+manager.link.added=Block %s (%d, %d, %d) linked to manager at (%d, %d, %d)
+manager.link.removed=Block %s (%d, %d, %d) unlinked from manager at (%d, %d, %d)
+manager.link.wrongworld=Cannot link block from dimension %d to a crafting manager in dimension %d
+
+manager.tooltip.blockslinked=Linked Blocks:

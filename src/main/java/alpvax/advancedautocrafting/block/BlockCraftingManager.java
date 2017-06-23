@@ -6,7 +6,6 @@ import com.google.common.collect.Lists;
 
 import alpvax.advancedautocrafting.core.AdvancedAutocrafting;
 import alpvax.advancedautocrafting.core.AutocraftingGuiHandler;
-import alpvax.advancedautocrafting.item.ItemCraftingLinker;
 import alpvax.advancedautocrafting.tile.TileEntityCraftingManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -18,6 +17,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -59,19 +59,15 @@ public class BlockCraftingManager extends Block
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        ItemStack itemstack = playerIn.getHeldItem(hand);
-
-        if (itemstack.getItem() == AdvancedAutocrafting.Items.CRAFTING_LINKER && playerIn.isSneaking())
-        {
-        	ItemCraftingLinker.setSelectedManager(itemstack, (TileEntityCraftingManager)worldIn.getTileEntity(pos));
-            return true;
-        }
         if (worldIn.isRemote)
         {
+			TileEntityCraftingManager tile = (TileEntityCraftingManager)worldIn.getTileEntity(pos);
+			AdvancedAutocrafting.proxy.sendPlayerChatMessage(new TextComponentString("CLIENT: " + tile.getLinkedBlocks().toString()), 29867296);//XXX
             return true;
         }
         else
         {
+			playerIn.sendMessage(new TextComponentString("SERVER: " + ((TileEntityCraftingManager)worldIn.getTileEntity(pos)).getLinkedBlocks().toString()));//XXX
 			AutocraftingGuiHandler.GUI.CRAFTING_MANAGER.open(playerIn, worldIn, pos);
             return true;
         }
