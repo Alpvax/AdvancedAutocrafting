@@ -7,6 +7,8 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import alpvax.advancedautocrafting.core.AdvancedAutocrafting;
+import alpvax.advancedautocrafting.core.CapabilityCraftingManager;
+import alpvax.advancedautocrafting.crafting.ICraftingRecipeManager;
 import alpvax.advancedautocrafting.item.ItemCraftingLinker;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
@@ -24,6 +26,8 @@ import net.minecraftforge.common.util.Constants.NBT;
 
 public class TileEntityCraftingManager extends TileEntity
 {
+	private ICraftingRecipeManager recipeManager; //TODO:Instantiate
+
 	private Set<BlockPos> linkedBlocks = new HashSet<>();
 
 	private static void sendSingleChatLine(World worldIn, ITextComponent chatmessage)
@@ -128,7 +132,7 @@ public class TileEntityCraftingManager extends TileEntity
 	@Nullable
 	public SPacketUpdateTileEntity getUpdatePacket()
 	{
-		return new SPacketUpdateTileEntity(this.pos, 6, this.getUpdateTag());
+		return new SPacketUpdateTileEntity(pos, 6, getUpdateTag());
 	}
 
 	@Override
@@ -140,5 +144,18 @@ public class TileEntityCraftingManager extends TileEntity
 	public Set<BlockPos> getLinkedBlocks()
 	{
 		return Collections.unmodifiableSet(linkedBlocks);
+	}
+
+	@Override
+	public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable net.minecraft.util.EnumFacing facing)
+	{
+		return capability == CapabilityCraftingManager.CAPABILITY || super.hasCapability(capability, facing);
+	}
+
+	@Override
+	@Nullable
+	public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.util.EnumFacing facing)
+	{
+		return capability == CapabilityCraftingManager.CAPABILITY ? CapabilityCraftingManager.CAPABILITY.cast(recipeManager) : super.getCapability(capability, facing);
 	}
 }
