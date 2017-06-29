@@ -114,15 +114,24 @@ public class TileEntityCraftingManager extends TileEntity
 		{
 			return true;
 		}
+		TileEntity tile = world.getTileEntity(pos);
 		if(linkedBlocks.contains(pos))
 		{
 			linkedBlocks.remove(pos);
 			sendSingleChatLine(worldIn, new TextComponentTranslation("manager.link.removed", worldIn.getBlockState(pos), getPos()));
+			if(tile instanceof TileEntityWorldInterface)
+			{
+				((TileEntityWorldInterface)tile).linkBlock(getPos());
+			}
 		}
 		else
 		{
 			linkedBlocks.add(pos);
 			sendSingleChatLine(worldIn, new TextComponentTranslation("manager.link.added", worldIn.getBlockState(pos), getPos()));
+			if(tile instanceof TileEntityWorldInterface)
+			{
+				((TileEntityWorldInterface)tile).linkBlock(null);
+			}
 		}
 		markDirty();
 		return true;
