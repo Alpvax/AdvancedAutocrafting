@@ -3,6 +3,7 @@ package alpvax.advancedautocrafting.core;
 import org.apache.logging.log4j.Logger;
 
 import alpvax.advancedautocrafting.block.BlockCraftingManager;
+import alpvax.advancedautocrafting.block.BlockWorldInterface;
 import alpvax.advancedautocrafting.core.proxy.CommonProxy;
 import alpvax.advancedautocrafting.crafting.CraftingIngredientFactory;
 import alpvax.advancedautocrafting.crafting.CraftingOutputFactory;
@@ -49,6 +50,7 @@ public class AdvancedAutocrafting
 	public static class Blocks
 	{
 		public static final Block CRAFTING_MANAGER = new BlockCraftingManager().setUnlocalizedName("craftingmanager").setRegistryName(MOD_ID, "craftingmanager");
+		public static final Block WORLD_INTERFACE = new BlockWorldInterface().setUnlocalizedName("worldinterface").setRegistryName(MOD_ID, "worldinterface");
 	}
 
 	public static class Items
@@ -89,6 +91,7 @@ public class AdvancedAutocrafting
 		public static void registerItems(ModelRegistryEvent event)
 		{
 			registerModel(Blocks.CRAFTING_MANAGER);
+			registerModel(Blocks.WORLD_INTERFACE);
 			registerModel(Items.CRAFTING_LINKER);
 		}
 
