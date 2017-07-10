@@ -3,7 +3,7 @@ package alpvax.advancedautocrafting.crafting;
 import javax.annotation.Nonnull;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public abstract class CraftingIngredientFactory extends IForgeRegistryEntry.Impl<CraftingIngredientFactory>
 {

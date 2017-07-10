@@ -1,21 +1,17 @@
 buildscript {
     repositories {
         jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
+        maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 import org.apache.tools.ant.filters.ReplaceTokens
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+
 
 // Process all mod info
 if(!project.hasProperty("modid")) {
@@ -47,6 +43,11 @@ if(!project.hasProperty("version")) {
 archivesBaseName = "${modid}-${mcVer}"
 group = "alpvax.${modid.toLowerCase()}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 
+sourceCompatibility = targetCompatibility = '1.8'
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+}
+
 minecraft {
     version = "${project.mcVer}-${project.forgeVer}"
     runDir = file('../run').exists() ? '../run' : 'run'
@@ -67,8 +68,7 @@ repositories {
     }
 }
 
-processResources
-{
+processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
@@ -81,7 +81,7 @@ processResources
         expand 'version':project.version, 'mcversion':project.mcVer
     }
         
-    // copy everything else, thats not the mcmod.info
+    // copy everything else except the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }

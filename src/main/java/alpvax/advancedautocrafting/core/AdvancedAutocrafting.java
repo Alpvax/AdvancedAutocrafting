@@ -22,9 +22,9 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.common.registry.RegistryBuilder;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.registries.RegistryBuilder;
 
 @Mod(modid = AdvancedAutocrafting.MOD_ID, guiFactory = "alpvax.advancedautocrafting.core.AutocraftingGuiFactory")
 public class AdvancedAutocrafting

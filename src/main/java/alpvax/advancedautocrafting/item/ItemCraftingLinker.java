@@ -11,6 +11,7 @@ import alpvax.advancedautocrafting.util.DimensionPos;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -116,7 +117,7 @@ public class ItemCraftingLinker extends Item
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
+	public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag tooltipflag)
 	{
 		if(!isBound(stack))
 		{
@@ -127,7 +128,7 @@ public class ItemCraftingLinker extends Item
 			DimensionPos dpos = getManagerPos(stack);
 			TileEntityCraftingManager tile = getSelectedManager(stack);
 			BlockPos tilepos = dpos.getPos();
-			boolean flag = dpos.isSameWorld(playerIn.world);
+			boolean flag = dpos.isSameWorld(worldIn);
 			StringBuilder s = new StringBuilder("linker.selectedmanager.");
 			if(tile == null)
 			{
@@ -144,7 +145,7 @@ public class ItemCraftingLinker extends Item
 					for(BlockPos pos : tile.getLinkedBlocks())
 					{
 						IBlockState state = world.getBlockState(pos).getActualState(world, pos);
-						tooltip.add(String.format("%s at (%d, %d, %d)", advanced ? state : state.getBlock().getLocalizedName(), pos.getX(), pos.getY(), pos.getZ(), tilepos.getX(), tilepos.getY(), tilepos.getZ()));
+						tooltip.add(String.format("%s at (%d, %d, %d)", tooltipflag.isAdvanced() ? state : state.getBlock().getLocalizedName(), pos.getX(), pos.getY(), pos.getZ(), tilepos.getX(), tilepos.getY(), tilepos.getZ()));
 					}
 				}
 			}
