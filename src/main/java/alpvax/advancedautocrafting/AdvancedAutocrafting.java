@@ -2,29 +2,22 @@ package alpvax.advancedautocrafting;
 
 import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.data.AALootTableProvider;
+import alpvax.advancedautocrafting.data.AARecipeProvider;
 import alpvax.advancedautocrafting.item.AAItems;
-import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -90,8 +83,8 @@ public class AdvancedAutocrafting {
       /*
       gen.addProvider(new TropicraftBlockTagsProvider(gen));
       gen.addProvider(new TropicraftItemTagsProvider(gen));
-      gen.addProvider(new TropicraftRecipeProvider(gen));
       */
+      gen.addProvider(new AARecipeProvider(gen));
       gen.addProvider(new AALootTableProvider(gen));
     }
   }
