@@ -1,6 +1,9 @@
 package alpvax.advancedautocrafting;
 
 import alpvax.advancedautocrafting.block.AABlocks;
+import alpvax.advancedautocrafting.client.data.AABlockstateProvider;
+import alpvax.advancedautocrafting.client.data.AAItemModelProvider;
+import alpvax.advancedautocrafting.client.data.AALangProvider;
 import alpvax.advancedautocrafting.data.AALootTableProvider;
 import alpvax.advancedautocrafting.data.AARecipeProvider;
 import alpvax.advancedautocrafting.item.AAItems;
@@ -72,12 +75,10 @@ public class AdvancedAutocrafting {
     DataGenerator gen = event.getGenerator();
 
     if (event.includeClient()) {
-      /*
-      TropicraftBlockstateProvider blockstates = new TropicraftBlockstateProvider(gen, event.getExistingFileHelper());
-      gen.addProvider(blockstates);
-      gen.addProvider(new TropicraftItemModelProvider(gen, blockstates.getExistingHelper()));
-      gen.addProvider(new TropicraftLangProvider(gen));
-      */
+      gen.addProvider(new AABlockstateProvider(gen, event.getExistingFileHelper()));
+      //TODO: Generate item models when supported by forge:
+      // gen.addProvider(new AAItemModelProvider(gen, event.getExistingFileHelper()));
+      gen.addProvider(new AALangProvider(gen));
     }
     if (event.includeServer()) {
       /*

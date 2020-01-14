@@ -74,7 +74,7 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'advancedautocrafting', '--all', '--output', file('src/generated/resources/')
+            args '--mod', 'advancedautocrafting', '--all', '--output', file('src/generated/resources/'), '--existing', sourceSets.main.resources.srcDirs[0]
 
             mods {
                 advancedautocrafting {
@@ -83,6 +83,10 @@ minecraft {
             }
         }
     }
+}
+
+sourceSets.main.resources {
+  srcDir 'src/generated/resources'
 }
 
 dependencies {

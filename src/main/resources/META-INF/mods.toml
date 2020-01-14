@@ -22,7 +22,7 @@ displayName="Advanced Autocrafting" #mandatory
 # A URL for the "homepage" for this mod, displayed in the mod UI
 #displayURL="http://example.com/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
-#logoFile="AALogo.png" #optional
+logoFile="AALogo.png" #optional
 # A text field displayed in the mod UI
 credits="Thanks to the Forge team for making such a great modding platform" #optional
 # A text field displayed in the mod UI
