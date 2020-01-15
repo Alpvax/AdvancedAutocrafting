@@ -1,4 +1,7 @@
 {
+  "advancedautocrafting:bound.position": "Bound position: %s",
   "block.advancedautocrafting.controller": "Autocrafting Controller",
+  "block.advancedautocrafting.remote_marker": "Autocrafting Remote Marker",
+  "item.advancedautocrafting.remote_pos": "Remote Position reference",
   "itemGroup.advancedautocrafting": "Advanced Autocrafting"
 }

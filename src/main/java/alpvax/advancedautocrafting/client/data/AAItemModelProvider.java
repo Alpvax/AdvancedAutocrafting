@@ -32,6 +32,7 @@ public class AAItemModelProvider extends ItemModelProvider {
 
     // BLOCKS
     blockItem(AABlocks.CONTROLLER);
+    blockItem(AABlocks.REMOTE_MARKER);
   }
 
 

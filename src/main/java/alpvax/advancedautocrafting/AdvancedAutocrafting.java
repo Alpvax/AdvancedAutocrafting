@@ -2,14 +2,15 @@ package alpvax.advancedautocrafting;
 
 import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.client.data.AABlockstateProvider;
-import alpvax.advancedautocrafting.client.data.AAItemModelProvider;
 import alpvax.advancedautocrafting.client.data.AALangProvider;
 import alpvax.advancedautocrafting.data.AALootTableProvider;
 import alpvax.advancedautocrafting.data.AARecipeProvider;
+import alpvax.advancedautocrafting.data.BlockPosLootFunction;
 import alpvax.advancedautocrafting.item.AAItems;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -43,6 +44,9 @@ public class AdvancedAutocrafting {
     // General mod setup
     modBus.addListener(this::setup);
     modBus.addListener(this::gatherData);
+
+    // Loot Table registering
+    LootFunctionManager.registerFunction(new BlockPosLootFunction.Serializer());
 
     DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
       // Client setup

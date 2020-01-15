@@ -1,18 +1,17 @@
 package alpvax.advancedautocrafting.data;
 
 import alpvax.advancedautocrafting.block.AABlocks;
+import alpvax.advancedautocrafting.item.AAItems;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.LootTableProvider;
 import net.minecraft.data.loot.BlockLootTables;
+import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.LootParameterSet;
-import net.minecraft.world.storage.loot.LootParameterSets;
-import net.minecraft.world.storage.loot.LootTable;
+import net.minecraft.world.storage.loot.*;
 import net.minecraft.world.storage.loot.LootTable.Builder;
-import net.minecraft.world.storage.loot.ValidationTracker;
 
 import java.util.List;
 import java.util.Map;
@@ -43,10 +42,20 @@ public class AALootTableProvider extends LootTableProvider {
     @Override
     protected void addTables() {
       dropsSelf(AABlocks.CONTROLLER);
+      registerLootTable(AABlocks.REMOTE_MARKER.get(),
+          (b) -> withPosition(b, AAItems.REMOTE_POS)/*LootPool.builder().addEntry(
+              ItemLootEntry.builder(AAItems.REMOTE_POS.get())
+                  .acceptFunction(BlockPosLootFunction.builder())
+          )*/
+      );
     }
 
     private void dropsSelf(Supplier<? extends Block> block) {
       registerDropSelfLootTable(block.get());
+    }
+
+    private LootTable.Builder withPosition(Block block, Supplier<? extends IItemProvider> item) {
+      return LootTable.builder().addLootPool(LootPool.builder().addEntry(ItemLootEntry.builder(item.get()).acceptFunction(BlockPosLootFunction.builder())));
     }
 
     @Override

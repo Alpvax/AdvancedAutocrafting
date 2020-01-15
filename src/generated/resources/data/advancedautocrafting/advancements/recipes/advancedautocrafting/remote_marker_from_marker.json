@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "advancedautocrafting:remote_marker_from_marker"
+    ]
+  },
+  "criteria": {
+    "has_pos_marker": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "advancedautocrafting:remote_pos"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "advancedautocrafting:remote_marker_from_marker"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_pos_marker",
+      "has_the_recipe"
+    ]
+  ]
+}

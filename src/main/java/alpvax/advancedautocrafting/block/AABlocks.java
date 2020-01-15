@@ -22,6 +22,9 @@ public class AABlocks {
   public static final RegistryObject<Block> CONTROLLER = register("controller", () -> new ControllerBlock(
       Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(6.0F, 30F)
   ));
+  public static final RegistryObject<Block> REMOTE_MARKER = register("remote_marker", () -> new RemotePositionMarkerBlock(
+      Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(6.0F, 30F)
+  ));
 
   private static <T extends Block> RegistryObject<T> register(String name, Supplier<? extends T> block) {
     return register(name, block, (b) -> () -> new BlockItem(b.get(), new Item.Properties().group(AdvancedAutocrafting.ITEM_GROUP)));
