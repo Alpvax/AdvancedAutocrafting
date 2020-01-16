@@ -26,6 +26,6 @@ public class RemotePositionItem extends Item {
    */
   @OnlyIn(Dist.CLIENT)
   public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-    tooltip.add((new TranslationTextComponent(AATranslationKeys.ITEM_POS_LORE, AAUtil.readPosFromNBT(stack.getOrCreateTag()))).applyTextStyle(TextFormatting.GRAY));
+    tooltip.add(AAUtil.getItemPositionText(stack).applyTextStyle(TextFormatting.GRAY));
   }
 }

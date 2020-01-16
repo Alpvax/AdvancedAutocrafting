@@ -1,19 +1,47 @@
 package alpvax.advancedautocrafting;
 
+import alpvax.advancedautocrafting.client.data.lang.AATranslationKeys;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.common.util.Constants;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class AAUtil {
-  public static void writePosToNBT(CompoundNBT nbt, BlockPos pos) {
+  public static final String POSITION_NBT_KEY = AdvancedAutocrafting.MODID + ":position";
+
+  public static void writePosToNBT(@Nonnull CompoundNBT nbt, @Nonnull BlockPos pos) {
     CompoundNBT tag = new CompoundNBT();
     tag.putInt("x", pos.getX());
     tag.putInt("y", pos.getY());
     tag.putInt("z", pos.getZ());
-    nbt.put(AdvancedAutocrafting.MODID + ":position", tag);
+    nbt.put(POSITION_NBT_KEY, tag);
   }
 
-  public static BlockPos readPosFromNBT(CompoundNBT nbt) {
-    CompoundNBT tag = nbt.getCompound(AdvancedAutocrafting.MODID + ":position");
-    return new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
+  @Nullable
+  public static BlockPos readPosFromNBT(@Nonnull CompoundNBT nbt) {
+    if(nbt.contains(POSITION_NBT_KEY,Constants.NBT.TAG_COMPOUND)) {
+      CompoundNBT tag = nbt.getCompound(POSITION_NBT_KEY);
+      return new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
+    }
+    return null;
+  }
+
+  public static boolean hasPosition(@Nonnull ItemStack stack) {
+    return stack.getChildTag(POSITION_NBT_KEY) != null;
+  }
+
+  @Nullable
+  public static BlockPos readPosFromItemStack(@Nonnull ItemStack stack) {
+    CompoundNBT tag = stack.getChildTag(POSITION_NBT_KEY);
+    return tag != null ? new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")) : null;
+  }
+
+  public static TranslationTextComponent getItemPositionText(@Nonnull ItemStack stack) {
+    BlockPos pos = readPosFromItemStack(stack);
+    return new TranslationTextComponent(AATranslationKeys.ITEM_POS_LORE, pos != null ? pos : "None");
   }
 }

@@ -2,20 +2,10 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "advancedautocrafting:remote_marker"
+      "advancedautocrafting:remote_master"
     ]
   },
   "criteria": {
-    "has_iron_bars": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "item": "minecraft:iron_bars"
-          }
-        ]
-      }
-    },
     "has_pearl": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
@@ -39,13 +29,12 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "advancedautocrafting:remote_marker"
+        "recipe": "advancedautocrafting:remote_master"
       }
     }
   },
   "requirements": [
     [
-      "has_iron_bars",
       "has_pearl",
       "has_iron_block",
       "has_the_recipe"

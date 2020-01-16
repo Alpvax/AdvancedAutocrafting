@@ -42,6 +42,7 @@ public class AALootTableProvider extends LootTableProvider {
     @Override
     protected void addTables() {
       dropsSelf(AABlocks.CONTROLLER);
+      dropsSelf(AABlocks.REMOTE_MASTER);
       registerLootTable(AABlocks.REMOTE_MARKER.get(),
           (b) -> withPosition(b, AAItems.REMOTE_POS)/*LootPool.builder().addEntry(
               ItemLootEntry.builder(AAItems.REMOTE_POS.get())

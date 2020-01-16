@@ -27,9 +27,11 @@ public class AALangProvider extends LanguageProvider {
 
     add(AATranslationKeys.ITEM_POS_LORE, "Bound position: %s");
 
-    add(AAItems.REMOTE_POS.get(), "Remote Position reference");
+    add(AAItems.REMOTE_POS.get(), "Remote Position Reference");
 
-    AABlocks.BLOCKS.getEntries().forEach(this::addBlock);
+    addBlock(AABlocks.CONTROLLER);
+    addBlock(AABlocks.REMOTE_MARKER, "Remote Position Marker");
+    addBlock(AABlocks.REMOTE_MASTER, "Remote Network Container");
   }
 
   private void add(ItemGroup group, String name) {

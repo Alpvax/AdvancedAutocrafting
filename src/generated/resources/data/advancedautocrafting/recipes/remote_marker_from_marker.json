@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "group": "advancedautocrafting:remote_marker",
   "ingredients": [
     {
       "item": "advancedautocrafting:remote_pos"

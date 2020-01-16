@@ -8,8 +8,7 @@ import net.minecraftforge.client.model.generators.ExistingFileHelper;
 
 import java.util.function.Supplier;
 
-import static alpvax.advancedautocrafting.block.AABlocks.CONTROLLER;
-import static alpvax.advancedautocrafting.block.AABlocks.REMOTE_MARKER;
+import static alpvax.advancedautocrafting.block.AABlocks.*;
 
 public class AABlockstateProvider extends BlockStateProvider {
 
@@ -21,6 +20,7 @@ public class AABlockstateProvider extends BlockStateProvider {
   protected void registerStatesAndModels() {
     simpleBlock(CONTROLLER);
     simpleBlock(REMOTE_MARKER);
+    simpleBlock(REMOTE_MASTER);
   }
 
   private void simpleBlock(Supplier<Block> sup) {

@@ -1,23 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
-  "group": "advancedautocrafting:remote_marker",
   "pattern": [
-    "IPI",
-    "PBP",
-    "IPI"
+    "PGP",
+    "GBG",
+    "PGP"
   ],
   "key": {
-    "I": {
-      "item": "minecraft:iron_bars"
-    },
     "P": {
       "tag": "forge:ender_pearls"
+    },
+    "G": {
+      "tag": "forge:ingots/gold"
     },
     "B": {
       "tag": "forge:storage_blocks/iron"
     }
   },
   "result": {
-    "item": "advancedautocrafting:remote_marker"
+    "item": "advancedautocrafting:remote_master"
   }
 }
