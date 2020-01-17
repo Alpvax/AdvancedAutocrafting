@@ -1,6 +1,5 @@
 package alpvax.advancedautocrafting.item;
 
-import alpvax.advancedautocrafting.AdvancedAutocrafting;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;

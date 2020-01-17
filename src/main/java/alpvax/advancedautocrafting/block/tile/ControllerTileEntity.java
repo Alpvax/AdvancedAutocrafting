@@ -1,7 +1,6 @@
 package alpvax.advancedautocrafting.block.tile;
 
 import alpvax.advancedautocrafting.block.AABlocks;
-import alpvax.advancedautocrafting.container.RemoteMasterContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
