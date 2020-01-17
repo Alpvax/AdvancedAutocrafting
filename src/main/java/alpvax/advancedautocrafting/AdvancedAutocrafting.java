@@ -3,10 +3,13 @@ package alpvax.advancedautocrafting;
 import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.client.data.AABlockstateProvider;
 import alpvax.advancedautocrafting.client.data.AALangProvider;
+import alpvax.advancedautocrafting.client.gui.RemoteMasterScreen;
+import alpvax.advancedautocrafting.container.AAContainerTypes;
 import alpvax.advancedautocrafting.data.AALootTableProvider;
 import alpvax.advancedautocrafting.data.AARecipeProvider;
 import alpvax.advancedautocrafting.data.BlockPosLootFunction;
 import alpvax.advancedautocrafting.item.AAItems;
+import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -59,16 +62,17 @@ public class AdvancedAutocrafting {
     AABlocks.BLOCKS.register(modBus);
     AABlocks.TileTypes.TILES.register(modBus);
     AAItems.ITEMS.register(modBus);
+    AAContainerTypes.CONTAINER_TYPES.register(modBus);
   }
 
   private void setup(final FMLCommonSetupEvent event) {
     //PacketManager.init();
   }
 
-
   @OnlyIn(Dist.CLIENT)
   private void setupClient(final FMLClientSetupEvent event) {
     //ClientRegistry.bindTileEntitySpecialRenderer(DrinkMixerTileEntity.class, new DrinkMixerRenderer());
+    ScreenManager.registerFactory(AAContainerTypes.REMOTE_MASTER.get(), RemoteMasterScreen::new);
   }
 
   private void onServerStarting(final FMLServerStartingEvent event) {

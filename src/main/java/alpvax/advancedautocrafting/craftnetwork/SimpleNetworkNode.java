@@ -4,8 +4,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 
-import javax.annotation.Nonnull;
-
 public class SimpleNetworkNode implements INetworkNode {
   private final BlockPos pos;
 

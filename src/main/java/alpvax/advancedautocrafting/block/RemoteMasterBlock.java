@@ -6,20 +6,17 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.AbstractFurnaceTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
@@ -52,38 +49,35 @@ public class RemoteMasterBlock extends Block {
   }
 
   @Override
-  public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-    if (p_225533_2_.isRemote) {
+  public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
+    if (worldIn.isRemote) {
       return ActionResultType.SUCCESS;
     } else {
-      this.interactWith(p_225533_2_, p_225533_3_, p_225533_4_);
+      final TileEntity tileEntity = worldIn.getTileEntity(pos);
+      if (tileEntity instanceof RemoteMasterTileEntity && this.interactWith(worldIn, pos, player, hand))
+        NetworkHooks.openGui((ServerPlayerEntity)player, (RemoteMasterTileEntity)tileEntity, pos);
       return ActionResultType.SUCCESS;
     }
   }
 
-  //TODO: Make this do something useful
-  private void interactWith(World worldIn, BlockPos pos, PlayerEntity player) {
-    TileEntity t = worldIn.getTileEntity(pos);
-    if(t instanceof RemoteMasterTileEntity) {
-      RemoteMasterTileEntity tile = (RemoteMasterTileEntity)t;
-      ItemStack stack = player.getHeldItemMainhand();
-      Hand hand = Hand.MAIN_HAND;
-      if(stack.isEmpty()) {
-        stack = player.getHeldItemOffhand();
-        hand = Hand.OFF_HAND;
+  //TODO: Make this do something useful?
+  private boolean interactWith(World worldIn, BlockPos pos, PlayerEntity player, Hand hand) {
+    RemoteMasterTileEntity tile = (RemoteMasterTileEntity)worldIn.getTileEntity(pos);
+    ItemStack stack = player.getHeldItem(hand);
+    if(!stack.isEmpty()) {
+      if(stack.getItem() instanceof BlockItem) {
+        BlockState state = ((BlockItem) stack.getItem()).getBlock().getDefaultState();
+        tile.getRemotePositions().stream().forEach((p) -> worldIn.setBlockState(p, state));
+        return false;
+      } else if(AAUtil.hasPosition(stack)) {
+        tile.addItem(stack.copy());
+        stack.setCount(0);
+        return false;
       }
-      if(!stack.isEmpty()) {
-        if(stack.getItem() instanceof BlockItem) {
-          BlockState state = ((BlockItem) stack.getItem()).getBlock().getDefaultState();
-          tile.getRemotePositions().stream().forEach((p) -> worldIn.setBlockState(p, state));
-        } else if(AAUtil.hasPosition(stack)) {
-          tile.addItem(stack.copy());
-          stack.setCount(0);
-          return;
-        }
-      } else {
-        tile.getRemotePositions().stream().forEach((p) -> worldIn.setBlockState(p, Blocks.AIR.getDefaultState()));
-      }
+      return true;
+    } else {
+      tile.getRemotePositions().stream().forEach((p) -> worldIn.setBlockState(p, Blocks.AIR.getDefaultState()));
+      return false;
     }
   }
 }
