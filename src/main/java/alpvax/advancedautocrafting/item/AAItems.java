@@ -12,6 +12,6 @@ public class AAItems {
   public static final DeferredRegister<Item> ITEMS = new DeferredRegister<>(ForgeRegistries.ITEMS, MODID);
 
   public static final RegistryObject<Item> REMOTE_POS = ITEMS.register("remote_pos", () -> new RemotePositionItem(
-      new Item.Properties().group(AdvancedAutocrafting.ITEM_GROUP)
+      new Item.Properties()
   ));
 }
