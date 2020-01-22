@@ -27,6 +27,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class RemoteMasterTileEntity extends TileEntity implements INamedContainerProvider {
@@ -82,7 +83,7 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
   }
 
   public NonNullList<BlockPos> getRemotePositions() {
-    return getItems().stream().map((stack) -> AAUtil.readPosFromItemStack(stack)).filter(Predicates.notNull()).collect(Collectors.toCollection(NonNullList::create));
+    return getItems().stream().map((stack) -> AAUtil.readPosFromItemStack(stack)).filter(Objects::nonNull).collect(Collectors.toCollection(NonNullList::create));
   }
 
   public void dropItems(World worldIn, BlockPos pos, BlockState newState) {

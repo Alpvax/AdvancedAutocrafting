@@ -42,7 +42,7 @@ public class ControllerBlock extends Block {
   }*/
 
   @Override
-  public ActionResultType func_225533_a_(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
+  public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
     if (worldIn.isRemote) {
       return ActionResultType.SUCCESS;
     } else {
