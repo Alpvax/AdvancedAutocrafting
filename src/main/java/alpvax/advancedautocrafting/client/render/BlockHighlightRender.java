@@ -1,24 +1,16 @@
 package alpvax.advancedautocrafting.client.render;
 
-import alpvax.advancedautocrafting.block.tile.ControllerTileEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
-
-import java.util.List;
 
 /**
  * Credit to DireWolf20/MiningGadgets for the original class (BlockOverlayRender)
@@ -51,10 +43,9 @@ public class BlockHighlightRender {
     coords.forEach(e -> {
       if(e != null) {
         RenderSystem.pushMatrix();
-        RenderSystem.translatef(e.getX() - 0.005F, e.getY() - 0.005F, e.getZ() - 0.005F);
+        RenderSystem.translatef(e.getX() - 0.005F, e.getY() - 0.005F, e.getZ() + 1.005F);
         RenderSystem.scalef(1.01f, 1.01f, 1.01f);
-        RenderSystem.rotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-        BlockHighlightRender.render(e, tessellator, buffer, 0, 255, 0);
+        BlockHighlightRender.render(e, tessellator, buffer, 69, 120, 18, 160);
         RenderSystem.popMatrix();
       }
     });
@@ -65,11 +56,10 @@ public class BlockHighlightRender {
     RenderSystem.popMatrix();
   }
 
-  public static void render(BlockPos pos, Tessellator tessellator, BufferBuilder buffer, int red, int green, int blue) {
+  public static void render(BlockPos pos, Tessellator tessellator, BufferBuilder buffer, int red, int green, int blue, int alpha) {
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 
     double maxX = pos.getX() + 1, maxY = pos.getY() + 1, maxZ = pos.getZ() + 1;
-    int alpha = 32;
 
     double startX = 0, startY = 0, startZ = -1, endX = 1, endY = 1, endZ = 0;
 
