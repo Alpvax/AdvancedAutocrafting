@@ -17,7 +17,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
 
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.List;
 
 public class RemotePositionItem extends Item {

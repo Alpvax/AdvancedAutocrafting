@@ -5,7 +5,6 @@ import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.container.RemoteMasterContainer;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
-import com.google.common.base.Predicates;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;

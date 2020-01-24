@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -148,6 +147,10 @@ public class BlockHighlightRender {
 
     public boolean contains(BlockPos pos) {
       return cache.containsKey(pos);
+    }
+
+    public void clear() {
+      cache.clear();
     }
   }
 
