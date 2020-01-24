@@ -24,18 +24,21 @@ import java.util.Map;
  */
 public class BlockHighlightRender {
   private static final Direction[] DIRECTIONS = Direction.values();
-  private static final ContigiousRegionManager manager = new ContigiousRegionManager();
+  public static final ContigiousRegionManager manager = new ContigiousRegionManager();
 
   private static class HighlightData {
     private final int red;
     private final int green;
     private final int blue;
     private final int alpha;
-    private boolean[] dirs = new boolean[6];
-    //** [[x_min, x_max], [y_min, y_max], [z_min, z_max]] */
-    private double[] xVert = {0, 1.01};
-    private double[] yVert = {0, 1.01};
-    private double[] zVert = {0, 1.01};
+    /** Which directions to render faces in */
+    private final boolean[] dirs = new boolean[6];
+    /** [x_min, x_max] */
+    private double[] xVert = {-0.5, 0.5};
+    /** [y_min, y_max] */
+    private double[] yVert = {-0.5, 0.5};
+    /** [z_min, z_max] */
+    private double[] zVert = {-0.5, 0.5};
     protected HighlightData(int red, int green, int blue, int alpha) {
       this.red = red;
       this.blue = blue;
@@ -43,19 +46,21 @@ public class BlockHighlightRender {
       this.alpha = alpha;
     }
     protected HighlightData setDirection(Direction d, boolean show) {
-      dirs[d.getIndex()] = show;
-      int index = d.getAxisDirection() == Direction.AxisDirection.POSITIVE ? 1 : 0;
-      double amount = (index == 0) == show ? -0.005 : 0.005;
-      switch (d.getAxis()) {
-        case X:
-          xVert[index] += amount;
-          break;
-        case Y:
-          yVert[index] += amount;
-          break;
-        case Z:
-          zVert[index] += amount;
-          break;
+      if(dirs[d.getIndex()] != show) { //Only adjust if direction is different
+        dirs[d.getIndex()] = show;
+        int index = d.getAxisDirection() == Direction.AxisDirection.POSITIVE ? 1 : 0;
+        double amount = (index == 0) == show ? -0.005 : 0.005;
+        switch (d.getAxis()) {
+          case X:
+            xVert[index] += amount;
+            break;
+          case Y:
+            yVert[index] += amount;
+            break;
+          case Z:
+            zVert[index] += amount;
+            break;
+        }
       }
       return this;
     }
@@ -66,22 +71,12 @@ public class BlockHighlightRender {
         buffer.pos(xVert[1], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
         buffer.pos(xVert[1], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
         buffer.pos(xVert[0], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
-      } else { //TODO: Debugging. remove
-        buffer.pos(xVert[0], yVert[0], zVert[0]).color(0, 0, 255, alpha).endVertex();
-        buffer.pos(xVert[1], yVert[0], zVert[0]).color(0, 0, 255, alpha).endVertex();
-        buffer.pos(xVert[1], yVert[0], zVert[1]).color(0, 0, 255, alpha).endVertex();
-        buffer.pos(xVert[0], yVert[0], zVert[1]).color(0, 0, 255, alpha).endVertex();
       }
       if(dirs[Direction.UP.getIndex()]) {
         buffer.pos(xVert[0], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
         buffer.pos(xVert[0], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
         buffer.pos(xVert[1], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
         buffer.pos(xVert[1], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
-      } else { //TODO: Debugging. remove
-        buffer.pos(xVert[0], yVert[1], zVert[0]).color(255, 0, 0, alpha).endVertex();
-        buffer.pos(xVert[0], yVert[1], zVert[1]).color(255, 0, 0, alpha).endVertex();
-        buffer.pos(xVert[1], yVert[1], zVert[1]).color(255, 0, 0, alpha).endVertex();
-        buffer.pos(xVert[1], yVert[1], zVert[0]).color(255, 0, 0, alpha).endVertex();
       }
       if (dirs[Direction.NORTH.getIndex()]) {
         buffer.pos(xVert[0], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
@@ -109,12 +104,12 @@ public class BlockHighlightRender {
       }
     }
   }
-  private static class ContigiousRegionManager {
+  public static class ContigiousRegionManager {
     private Map<BlockPos, HighlightData> cache = Maps.newHashMap();
-    protected void add(BlockPos pos, int red, int green, int blue, int alpha) {
+    public void add(BlockPos pos, int red, int green, int blue, int alpha) {
       add(pos, new HighlightData(red, green, blue, alpha));
     }
-    protected HighlightData add(BlockPos pos, HighlightData data) {
+    private HighlightData add(BlockPos pos, HighlightData data) {
       cache.put(pos, data);
       for(Direction d : DIRECTIONS) {
         BlockPos aPos = pos.offset(d);
@@ -126,7 +121,7 @@ public class BlockHighlightRender {
       }
       return data;
     }
-    protected boolean remove(BlockPos pos) {
+    public boolean remove(BlockPos pos) {
       if(cache.remove(pos) != null) {
         for(Direction d : DIRECTIONS) {
           BlockPos aPos = pos.offset(d);
@@ -150,13 +145,13 @@ public class BlockHighlightRender {
       }
       return data;
     }
+
+    public boolean contains(BlockPos pos) {
+      return cache.containsKey(pos);
+    }
   }
 
-  private int alphaToInt(float alpha) {
-    return MathHelper.clamp(Math.round(alpha * 256), 0, 256);
-  }
-
-  public static void render(Iterable<BlockPos> coords, MatrixStack matrixStack) {
+  public static void render(MatrixStack matrixStack) {
     ActiveRenderInfo renderInfo = Minecraft.getInstance().gameRenderer.getActiveRenderInfo();
 
     RenderSystem.pushMatrix();
@@ -167,23 +162,18 @@ public class BlockHighlightRender {
     RenderSystem.enableBlend();
     RenderSystem.disableTexture();
 
-    //RenderSystem.translated(-playerPos.getX(), -playerPos.getY(), -playerPos.getZ());
     RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
-    //TODO: Remove positions correctly to make cache actually work
-    manager.cache.clear();
-    coords.forEach(e -> {
-      if(e != null) {
-        HighlightData data = manager.getOrCreate(e, 69, 120, 18, 160);
+    manager.cache.forEach((pos, data) -> {
+      if(pos != null) {
         RenderSystem.pushMatrix();
-        RenderSystem.translatef(e.getX() - 0.005F, e.getY() - 0.005F, e.getZ() - 0.005F);
+        //RenderSystem.translatef(e.getX() - 0.005F, e.getY() - 0.005F, e.getZ() - 0.005F);
+        RenderSystem.translatef(pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F);
         data.addVertexData(buffer);
         tessellator.draw();
-        //RenderSystem.scalef(1.01f, 1.01f, 1.01f);
-        //BlockHighlightRender.render(e, tessellator, buffer, 69, 120, 18, 160);
         RenderSystem.popMatrix();
       }
     });

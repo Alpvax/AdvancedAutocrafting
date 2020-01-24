@@ -23,11 +23,12 @@ import java.util.stream.Stream;
 public class ClientEvents {
   @SubscribeEvent
   static void renderWorldLastEvent(RenderWorldLastEvent evt) {
-    PlayerEntity player = Minecraft.getInstance().player;
+    /*PlayerEntity player = Minecraft.getInstance().player;
     Stream<BlockPos> pos = Arrays.stream(Hand.values()).map(player::getHeldItem).map(AAUtil::readPosFromItemStack);
     Set<BlockPos> set =  pos
         //.filter(Objects::nonNull)
         .collect(Collectors.toSet());
-    BlockHighlightRender.render(set, evt.getMatrixStack());
+    BlockHighlightRender.render(set, evt.getMatrixStack());*/
+    BlockHighlightRender.render(evt.getMatrixStack());
   }
 }
