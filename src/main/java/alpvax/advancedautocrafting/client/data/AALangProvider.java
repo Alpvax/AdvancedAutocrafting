@@ -32,6 +32,7 @@ public class AALangProvider extends LanguageProvider {
     addBlock(AABlocks.CONTROLLER);
     addBlock(AABlocks.REMOTE_MARKER, "Remote Position Marker");
     addBlock(AABlocks.REMOTE_MASTER, "Remote Network Container");
+    addBlock(AABlocks.WIRE, "Wire");
   }
 
   private void add(ItemGroup group, String name) {

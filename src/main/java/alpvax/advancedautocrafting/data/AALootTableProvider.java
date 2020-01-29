@@ -49,6 +49,7 @@ public class AALootTableProvider extends LootTableProvider {
                   .acceptFunction(BlockPosLootFunction.builder())
           )*/
       );
+      dropsSelf(AABlocks.WIRE);
     }
 
     private void dropsSelf(Supplier<? extends Block> block) {

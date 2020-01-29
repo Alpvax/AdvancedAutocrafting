@@ -27,10 +27,13 @@ public class AABlocks {
       Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(6.0F, 30F)
   ));
   public static final RegistryObject<Block> REMOTE_MARKER = register("remote_marker", () -> new RemotePositionMarkerBlock(
-      Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(6.0F, 30F)
+      Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(1.0F, 30F)
   ));
   public static final RegistryObject<Block> REMOTE_MASTER = register("remote_master", () -> new RemoteMasterBlock(
       Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(6.0F, 30F)
+  ));
+  public static final RegistryObject<Block> WIRE = register("wire", () -> new WireBlock(
+      Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(2.0F, 30F)
   ));
 
   private static <T extends Block> RegistryObject<T> register(String name, Supplier<? extends T> block) {

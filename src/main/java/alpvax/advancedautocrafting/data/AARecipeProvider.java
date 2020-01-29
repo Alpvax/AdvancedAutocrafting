@@ -22,6 +22,7 @@ public class AARecipeProvider extends RecipeProvider {
   protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
     ICriterionInstance hasIronBlock = hasItem(Tags.Items.STORAGE_BLOCKS_IRON);
     ICriterionInstance hasPearl = hasItem(Tags.Items.ENDER_PEARLS);
+    ICriterionInstance hasIronBars = hasItem(Items.IRON_BARS);
     ShapedRecipeBuilder.shapedRecipe(CONTROLLER.get())
         .patternLine("IGI").patternLine("GBG").patternLine("IGI")
         .key('I', Tags.Items.INGOTS_IRON)
@@ -35,7 +36,7 @@ public class AARecipeProvider extends RecipeProvider {
         .key('I', Items.IRON_BARS)
         .key('P', Tags.Items.ENDER_PEARLS)
         .key('B', Tags.Items.STORAGE_BLOCKS_IRON)
-        .addCriterion("has_iron_bars", hasItem(Items.IRON_BARS))
+        .addCriterion("has_iron_bars", hasIronBars)
         .addCriterion("has_pearl", hasPearl)
         .addCriterion("has_iron_block", hasIronBlock)
         .setGroup(REMOTE_MARKER.getId().toString())
@@ -51,6 +52,13 @@ public class AARecipeProvider extends RecipeProvider {
         .key('G', Tags.Items.INGOTS_GOLD)
         .key('B', Tags.Items.STORAGE_BLOCKS_IRON)
         .addCriterion("has_pearl", hasPearl)
+        .addCriterion("has_iron_block", hasIronBlock)
+        .build(consumer);
+    ShapedRecipeBuilder.shapedRecipe(WIRE.get(), 16)
+        .patternLine(" I ").patternLine("IBI").patternLine(" I ")
+        .key('I', Items.IRON_BARS)
+        .key('B', Tags.Items.STORAGE_BLOCKS_IRON)
+        .addCriterion("has_iron_bars", hasIronBars)
         .addCriterion("has_iron_block", hasIronBlock)
         .build(consumer);
   }

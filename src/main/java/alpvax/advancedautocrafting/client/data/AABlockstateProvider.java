@@ -21,6 +21,7 @@ public class AABlockstateProvider extends BlockStateProvider {
     simpleBlock(CONTROLLER);
     simpleBlock(REMOTE_MARKER);
     simpleBlock(REMOTE_MASTER);
+    simpleBlock(WIRE); //TODO: make non-simple
   }
 
   private void simpleBlock(Supplier<Block> sup) {
