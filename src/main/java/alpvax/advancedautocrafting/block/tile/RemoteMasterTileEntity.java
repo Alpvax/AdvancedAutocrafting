@@ -3,6 +3,7 @@ package alpvax.advancedautocrafting.block.tile;
 import alpvax.advancedautocrafting.AAUtil;
 import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.container.RemoteMasterContainer;
+import alpvax.advancedautocrafting.craftnetwork.Capabilities;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
 import net.minecraft.block.BlockState;
@@ -20,6 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -48,7 +50,7 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
     }
   };
   private LazyOptional<IItemHandler> items = LazyOptional.of(() -> inventory);
-  private LazyOptional<INetworkNode> network = LazyOptional.of(this::makeNetworkNode);
+  private LazyOptional<INetworkNode> networkCapability = LazyOptional.of(this::makeNetworkNode);
 
   public RemoteMasterTileEntity() {
     super(AABlocks.TileTypes.REMOTE_MASTER.get());
@@ -140,5 +142,11 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
   @Override
   public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player) {
     return new RemoteMasterContainer(id, playerInventory, this);
+  }
+
+  @Nonnull
+  @Override
+  public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+    return cap == Capabilities.NODE_CAPABILITY ? networkCapability.cast() : super.getCapability(cap, side);
   }
 }

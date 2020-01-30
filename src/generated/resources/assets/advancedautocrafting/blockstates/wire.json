@@ -7,7 +7,7 @@
     },
     {
       "when": {
-        "down": "connection|interface"
+        "down": "interface|connection"
       },
       "apply": {
         "model": "advancedautocrafting:block/wire_connection",
@@ -27,7 +27,7 @@
     },
     {
       "when": {
-        "up": "connection|interface"
+        "up": "interface|connection"
       },
       "apply": {
         "model": "advancedautocrafting:block/wire_connection",
@@ -47,7 +47,7 @@
     },
     {
       "when": {
-        "north": "connection|interface"
+        "north": "interface|connection"
       },
       "apply": {
         "model": "advancedautocrafting:block/wire_connection",
@@ -65,7 +65,7 @@
     },
     {
       "when": {
-        "south": "connection|interface"
+        "south": "interface|connection"
       },
       "apply": {
         "model": "advancedautocrafting:block/wire_connection",
@@ -85,7 +85,7 @@
     },
     {
       "when": {
-        "west": "connection|interface"
+        "west": "interface|connection"
       },
       "apply": {
         "model": "advancedautocrafting:block/wire_connection",
@@ -105,7 +105,7 @@
     },
     {
       "when": {
-        "east": "connection|interface"
+        "east": "interface|connection"
       },
       "apply": {
         "model": "advancedautocrafting:block/wire_connection",

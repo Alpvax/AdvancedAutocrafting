@@ -1,6 +1,7 @@
 {
   "textures": {
-    "texture": "advancedautocrafting:block/wire"
+    "texture": "advancedautocrafting:block/wire",
+    "particle": "#texture"
   },
   "elements": [
     {

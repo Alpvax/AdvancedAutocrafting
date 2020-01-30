@@ -39,13 +39,7 @@ public class AABlockstateProvider extends BlockStateProvider {
   protected void wireBlock(Block block, String coreModel, String wireModel, String ifaceModel) {
     wireBlock(
       block,
-      /*models().getExistingFile(new ResourceLocation(AdvancedAutocrafting.MODID, coreModel)),
-      models().getExistingFile(new ResourceLocation(AdvancedAutocrafting.MODID, wireModel)),
-      models().getExistingFile(new ResourceLocation(AdvancedAutocrafting.MODID, ifaceModel))*/
-      /*models().getBuilder(coreModel).texture("texture", blockTexture(block)),
-      models().getBuilder(wireModel).texture("texture", blockTexture(block)),
-      models().getBuilder(ifaceModel).texture("texture", blockTexture(block))*/
-      models().getBuilder(coreModel).texture("texture", blockTexture(block)).element()
+      models().getBuilder(coreModel).texture("texture", blockTexture(block)).texture("particle", "#texture").element()
         .from(8 - WireBlock.Shape.CORE_RADIUS, 8 - WireBlock.Shape.CORE_RADIUS, 8 - WireBlock.Shape.CORE_RADIUS)
         .to(8 + WireBlock.Shape.CORE_RADIUS, 8 + WireBlock.Shape.CORE_RADIUS, 8 + WireBlock.Shape.CORE_RADIUS)
         .allFaces((d, f) -> f.uvs(0, 0, 16, 16).texture("#texture"))
@@ -58,7 +52,7 @@ public class AABlockstateProvider extends BlockStateProvider {
 
   private ModelBuilder.ElementBuilder edgeAxialPart(String name, float radius, float length, Direction... ignoredFaces) {
     Set<Direction> dirs = Set.of(ignoredFaces);
-    ModelBuilder.ElementBuilder builder = models().getBuilder(name).element()
+    ModelBuilder.ElementBuilder builder = models().getBuilder(name).texture("particle", "#texture").element()
       .from(8 - radius, 8 - radius, 0)
       .to(8 + radius, 8 + radius, length);
     for(Direction d : ALL_DIRECTIONS) {

@@ -22,6 +22,7 @@ import net.minecraft.world.World;
 
 import java.util.*;
 
+
 public class WireBlock extends Block {
   private static final Direction[] ALL_DIRECTIONS = Direction.values();
   public static enum ConnectionState implements IStringSerializable {
@@ -73,8 +74,6 @@ public class WireBlock extends Block {
     }
     setDefaultState(state);
     setupShapes(Shape.CORE_RADIUS, Shape.WIRE_RADIUS, Shape.INTERFACE_RADIUS, Shape.INTERFACE_WIDTH);
-    //setupShapes(0.25, 0.125, 0.375, 0.0625);
-    //WIRE_BLOCKS.add(this);
   }
 
   private BlockState withConnectionState(BlockState bState, Direction dir, ConnectionState cState) {
@@ -198,14 +197,6 @@ public class WireBlock extends Block {
     BlockState state = getDefaultState();
     for(Direction d : ALL_DIRECTIONS) {
       BlockPos pos = thisPos.offset(d);
-      /*TileEntity tile = world.getTileEntity(pos);
-      Block block = world.getBlockState(pos).getBlock();
-      if(WIRE_BLOCKS.contains(block)) {
-        state = state.with(DIR_TO_PROPERTY_MAP.get(d), ConnectionState.CONNECTION);
-      }
-      if(tile != null && tile.getCapability(Capabilities.NODE_CAPABILITY).isPresent()) {
-        state = state.with(DIR_TO_PROPERTY_MAP.get(d), ConnectionState.INTERFACE);
-      }*/
       state = state.with(getConnectionProp(d), makeConnection(state, world, thisPos, d, pos));
     }
     return state;

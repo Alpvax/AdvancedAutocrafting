@@ -2,6 +2,7 @@ package alpvax.advancedautocrafting.craftnetwork;
 
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -24,6 +25,6 @@ public class Capabilities {
       {
 
       }
-    }, null);
+    }, () -> new SimpleNetworkNode(BlockPos.ZERO));
   }
 }
