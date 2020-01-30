@@ -18,6 +18,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.World;
 
 import java.util.*;
 
@@ -40,15 +41,10 @@ public class WireBlock extends Block {
     public String getName() {
       return name;
     }
-  }
-  public static class ConnectionProperty extends EnumProperty<ConnectionState> {
 
-    protected ConnectionProperty(String name) {
-      this(name, Arrays.asList(ConnectionState.VALUES));
-    }
-
-    public <T> ConnectionProperty(String name, Collection<ConnectionState> allowedValues) {
-      super(name, ConnectionState.class, allowedValues);
+    @Override
+    public String toString() {
+      return getName();
     }
   }
 
@@ -58,7 +54,12 @@ public class WireBlock extends Block {
     }
   });
 
-  public static final Set<Block> WIRE_BLOCKS = new HashSet();
+  public static class Shape {
+    public static final float CORE_RADIUS = 3;
+    public static final float WIRE_RADIUS = 2;
+    public static final float INTERFACE_RADIUS = 6;
+    public static final float INTERFACE_WIDTH = 1;
+  }
 
   protected VoxelShape coreShape;
   protected Map<Direction, VoxelShape> wireShapes;
@@ -71,8 +72,9 @@ public class WireBlock extends Block {
       state = withConnectionState(state, d, ConnectionState.NONE);
     }
     setDefaultState(state);
-    setupShapes(0.25, 0.125, 0.375, 0.0625);
-    WIRE_BLOCKS.add(this);
+    setupShapes(Shape.CORE_RADIUS, Shape.WIRE_RADIUS, Shape.INTERFACE_RADIUS, Shape.INTERFACE_WIDTH);
+    //setupShapes(0.25, 0.125, 0.375, 0.0625);
+    //WIRE_BLOCKS.add(this);
   }
 
   private BlockState withConnectionState(BlockState bState, Direction dir, ConnectionState cState) {
@@ -101,6 +103,9 @@ public class WireBlock extends Block {
     return this.makeConnections(context.getWorld(), context.getPos());
   }
 
+  protected void setupShapes(float coreRadius, float wireRadius, float interfaceRadius, float interfaceWidth) {
+    setupShapes(((double) coreRadius) / 16D, ((double) wireRadius) / 16D, ((double) interfaceRadius) / 16D, ((double) interfaceWidth) / 16D);
+  }
   protected void setupShapes(double coreRadius, double wireRadius, double interfaceRadius, double interfaceWidth) {
     double coreMin = 0.5 - coreRadius;
     double coreMax = 0.5 + coreRadius;
@@ -185,16 +190,54 @@ public class WireBlock extends Block {
     return VoxelShapes.or(coreShape, shapes.toArray(new VoxelShape[0]));
   }
 
+  public static EnumProperty<ConnectionState> getConnectionProp(Direction d) {
+    return DIR_TO_PROPERTY_MAP.get(d);
+  }
+
   public BlockState makeConnections(IBlockReader world, BlockPos thisPos) {
     BlockState state = getDefaultState();
     for(Direction d : ALL_DIRECTIONS) {
       BlockPos pos = thisPos.offset(d);
-      TileEntity tile = world.getTileEntity(pos);
+      /*TileEntity tile = world.getTileEntity(pos);
       Block block = world.getBlockState(pos).getBlock();
-      if(WIRE_BLOCKS.contains(block) || (tile != null && tile.getCapability(Capabilities.NODE_CAPABILITY).isPresent())) {
-        state.with(DIR_TO_PROPERTY_MAP.get(d), true);
+      if(WIRE_BLOCKS.contains(block)) {
+        state = state.with(DIR_TO_PROPERTY_MAP.get(d), ConnectionState.CONNECTION);
       }
+      if(tile != null && tile.getCapability(Capabilities.NODE_CAPABILITY).isPresent()) {
+        state = state.with(DIR_TO_PROPERTY_MAP.get(d), ConnectionState.INTERFACE);
+      }*/
+      state = state.with(getConnectionProp(d), makeConnection(state, world, thisPos, d, pos));
     }
     return state;
+  }
+
+  public ConnectionState makeConnection(BlockState state, IBlockReader world, BlockPos thisPos, Direction dir, BlockPos neighborPos) {
+    if(state.get(getConnectionProp(dir)) == ConnectionState.DISABLED) {
+      return ConnectionState.DISABLED;
+    }
+    BlockState neighbor = world.getBlockState(neighborPos);
+    EnumProperty<ConnectionState> prop = getConnectionProp(dir.getOpposite());
+    if(neighbor.has(prop)) {
+      if(neighbor.get(prop) == ConnectionState.DISABLED) {
+        return ConnectionState.NONE;
+      }
+      return ConnectionState.CONNECTION;
+    }
+    /*if(WIRE_BLOCKS.contains(neighbor.getBlock())) { //TODO: Convert to block tag
+      return ConnectionState.CONNECTION;
+    }*/
+    TileEntity tile = world.getTileEntity(neighborPos);
+    if(tile != null && tile.getCapability(Capabilities.NODE_CAPABILITY).isPresent()) {
+      return ConnectionState.INTERFACE;
+    }
+    return ConnectionState.NONE;
+  }
+
+  @Override
+  public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+    BlockPos dPos = fromPos.subtract(pos);
+    Direction d = Direction.byLong(dPos.getX(), dPos.getY(), dPos.getZ());
+    worldIn.setBlockState(pos, state.with(getConnectionProp(d), makeConnection(state, worldIn, pos, d, fromPos)), 2);
+    super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
   }
 }

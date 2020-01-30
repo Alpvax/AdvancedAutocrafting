@@ -1,7 +1,127 @@
 {
-  "variants": {
-    "": {
-      "model": "advancedautocrafting:block/wire"
+  "multipart": [
+    {
+      "apply": {
+        "model": "advancedautocrafting:block/wire_core"
+      }
+    },
+    {
+      "when": {
+        "down": "connection|interface"
+      },
+      "apply": {
+        "model": "advancedautocrafting:block/wire_connection",
+        "x": 90,
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "down": "interface"
+      },
+      "apply": {
+        "model": "advancedautocrafting:block/wire_interface",
+        "x": 90,
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "up": "connection|interface"
+      },
+      "apply": {
+        "model": "advancedautocrafting:block/wire_connection",
+        "x": 270,
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "up": "interface"
+      },
+      "apply": {
+        "model": "advancedautocrafting:block/wire_interface",
+        "x": 270,
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "north": "connection|interface"
+      },
+      "apply": {
+        "model": "advancedautocrafting:block/wire_connection",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "north": "interface"
+      },
+      "apply": {
+        "model": "advancedautocrafting:block/wire_interface",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "south": "connection|interface"
+      },
+      "apply": {
+        "model": "advancedautocrafting:block/wire_connection",
+        "y": 180,
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "south": "interface"
+      },
+      "apply": {
+        "model": "advancedautocrafting:block/wire_interface",
+        "y": 180,
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "west": "connection|interface"
+      },
+      "apply": {
+        "model": "advancedautocrafting:block/wire_connection",
+        "y": 270,
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "west": "interface"
+      },
+      "apply": {
+        "model": "advancedautocrafting:block/wire_interface",
+        "y": 270,
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "east": "connection|interface"
+      },
+      "apply": {
+        "model": "advancedautocrafting:block/wire_connection",
+        "y": 90,
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "east": "interface"
+      },
+      "apply": {
+        "model": "advancedautocrafting:block/wire_interface",
+        "y": 90,
+        "uvlock": true
+      }
     }
-  }
+  ]
 }
