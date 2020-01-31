@@ -18,10 +18,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ControllerTileEntity extends TileEntity  implements INamedContainerProvider {
-  private INetworkNode network = new SimpleNetworkNode(this.pos);
+  private INetworkNode network;
   private LazyOptional<INetworkNode> networkCapability = LazyOptional.of(() -> network);
   public ControllerTileEntity() {
     super(AABlocks.TileTypes.CONTROLLER.get());
+    network = new SimpleNetworkNode(this.pos, this.world);
   }
 
   @Override

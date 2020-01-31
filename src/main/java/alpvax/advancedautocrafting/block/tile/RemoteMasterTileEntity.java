@@ -57,17 +57,13 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
   }
 
   private INetworkNode makeNetworkNode() {
-    return new INetworkNode() {
+    return new SimpleNetworkNode(this.pos, this.world) {
+      @Nonnull
       @Override
       public NonNullList<INetworkNode> getChildNodes(Direction inbound) {
         return RemoteMasterTileEntity.this.getItems().stream().map((stack) ->
-            new SimpleNetworkNode(AAUtil.readPosFromItemStack(stack))).collect(Collectors.toCollection(NonNullList::create)
+            new SimpleNetworkNode(AAUtil.readPosFromItemStack(stack), getWorld())).collect(Collectors.toCollection(NonNullList::create)
         );
-      }
-
-      @Override
-      public BlockPos getPos() {
-        return RemoteMasterTileEntity.this.pos;
       }
     };
   }
