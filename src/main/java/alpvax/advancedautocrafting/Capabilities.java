@@ -2,6 +2,7 @@ package alpvax.advancedautocrafting;
 
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
+import alpvax.advancedautocrafting.item.IMultitool;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -12,6 +13,9 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 public class Capabilities {
   @CapabilityInject(INetworkNode.class)
   public static Capability<INetworkNode> NODE_CAPABILITY = null;
+
+  @CapabilityInject(IMultitool.class)
+  public static Capability<IMultitool> MULTITOOL_CAPABILITY = null;
 
   public static void register() {
     CapabilityManager.INSTANCE.register(INetworkNode.class, new Capability.IStorage<INetworkNode>()

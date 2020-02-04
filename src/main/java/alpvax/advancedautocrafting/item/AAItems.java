@@ -13,4 +13,7 @@ public class AAItems {
   public static final RegistryObject<Item> REMOTE_POS = ITEMS.register("remote_pos", () -> new RemotePositionItem(
       new Item.Properties()
   ));
+  public static final RegistryObject<Item> MULTITOOL = ITEMS.register("multitool", () -> new MultitoolItem(
+      new Item.Properties()
+  ));
 }
