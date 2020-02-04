@@ -1,6 +1,6 @@
 package alpvax.advancedautocrafting.block;
 
-import alpvax.advancedautocrafting.craftnetwork.Capabilities;
+import alpvax.advancedautocrafting.Capabilities;
 import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -20,7 +20,11 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 
 public class WireBlock extends Block {
@@ -49,7 +53,7 @@ public class WireBlock extends Block {
     }
   }
 
-  public static final Map<Direction, EnumProperty> DIR_TO_PROPERTY_MAP = Util.make(Maps.newEnumMap(Direction.class), (map) -> {
+  public static final Map<Direction, EnumProperty<ConnectionState>> DIR_TO_PROPERTY_MAP = Util.make(Maps.newEnumMap(Direction.class), (map) -> {
     for(Direction d : ALL_DIRECTIONS) {
       map.put(d, EnumProperty.create(d.getName(), ConnectionState.class));
     }
@@ -197,7 +201,7 @@ public class WireBlock extends Block {
     BlockState state = getDefaultState();
     for(Direction d : ALL_DIRECTIONS) {
       BlockPos pos = thisPos.offset(d);
-      state = state.with(getConnectionProp(d), makeConnection(state, world, thisPos, d, pos));
+      state = withConnectionState(state, d, makeConnection(state, world, thisPos, d, pos));
     }
     return state;
   }
@@ -228,7 +232,7 @@ public class WireBlock extends Block {
   public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
     BlockPos dPos = fromPos.subtract(pos);
     Direction d = Direction.byLong(dPos.getX(), dPos.getY(), dPos.getZ());
-    worldIn.setBlockState(pos, state.with(getConnectionProp(d), makeConnection(state, worldIn, pos, d, fromPos)), 2);
+    worldIn.setBlockState(pos, withConnectionState(state, d, makeConnection(state, worldIn, pos, d, fromPos)), 2);
     super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
   }
 }

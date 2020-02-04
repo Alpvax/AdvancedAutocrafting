@@ -5,7 +5,6 @@ import alpvax.advancedautocrafting.client.data.AABlockstateProvider;
 import alpvax.advancedautocrafting.client.data.AALangProvider;
 import alpvax.advancedautocrafting.client.gui.RemoteMasterScreen;
 import alpvax.advancedautocrafting.container.AAContainerTypes;
-import alpvax.advancedautocrafting.craftnetwork.Capabilities;
 import alpvax.advancedautocrafting.data.AALootTableProvider;
 import alpvax.advancedautocrafting.data.AARecipeProvider;
 import alpvax.advancedautocrafting.data.BlockPosLootFunction;

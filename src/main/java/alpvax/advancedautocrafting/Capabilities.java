@@ -1,5 +1,7 @@
-package alpvax.advancedautocrafting.craftnetwork;
+package alpvax.advancedautocrafting;
 
+import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
+import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;

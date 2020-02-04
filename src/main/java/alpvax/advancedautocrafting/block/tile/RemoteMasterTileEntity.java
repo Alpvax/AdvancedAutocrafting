@@ -1,9 +1,9 @@
 package alpvax.advancedautocrafting.block.tile;
 
 import alpvax.advancedautocrafting.AAUtil;
+import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.container.RemoteMasterContainer;
-import alpvax.advancedautocrafting.craftnetwork.Capabilities;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
 import net.minecraft.block.BlockState;
