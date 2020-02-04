@@ -1,0 +1,43 @@
+{
+  "textures": {
+    "particle": "#texture",
+    "texture": "advancedautocrafting:block/wire"
+  },
+  "elements": [
+    {
+      "from": [
+        5.5,
+        5.5,
+        3.5
+      ],
+      "to": [
+        10.5,
+        10.5,
+        5
+      ],
+      "faces": {
+        "down": {
+          "texture": "#texture"
+        },
+        "up": {
+          "texture": "#texture"
+        },
+        "north": {
+          "texture": "#texture",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#texture"
+        },
+        "east": {
+          "texture": "#texture"
+        }
+      }
+    }
+  ]
+}

@@ -64,11 +64,14 @@ public class WireBlock extends Block {
     public static final float WIRE_RADIUS = 2;
     public static final float INTERFACE_RADIUS = 6;
     public static final float INTERFACE_WIDTH = 1;
+    public static final float DISABLED_RADIUS = 2.5F;
+    public static final float DISABLED_WIDTH = 1.5F;
   }
 
   protected VoxelShape coreShape;
   protected Map<Direction, VoxelShape> wireShapes;
   protected Map<Direction, VoxelShape> interfaceShapes;
+  protected Map<Direction, VoxelShape> disabledShapes;
 
   public WireBlock(Properties properties) {
     super(properties);
@@ -77,7 +80,7 @@ public class WireBlock extends Block {
       state = withConnectionState(state, d, ConnectionState.NONE);
     }
     setDefaultState(state);
-    setupShapes(Shape.CORE_RADIUS, Shape.WIRE_RADIUS, Shape.INTERFACE_RADIUS, Shape.INTERFACE_WIDTH);
+    setupShapes(Shape.CORE_RADIUS, Shape.WIRE_RADIUS, Shape.INTERFACE_RADIUS, Shape.INTERFACE_WIDTH, Shape.DISABLED_RADIUS, Shape.DISABLED_WIDTH);
   }
 
   private BlockState withConnectionState(BlockState bState, Direction dir, ConnectionState cState) {
@@ -106,15 +109,16 @@ public class WireBlock extends Block {
     return this.makeConnections(context.getWorld(), context.getPos());
   }
 
-  protected void setupShapes(float coreRadius, float wireRadius, float interfaceRadius, float interfaceWidth) {
-    setupShapes(((double) coreRadius) / 16D, ((double) wireRadius) / 16D, ((double) interfaceRadius) / 16D, ((double) interfaceWidth) / 16D);
+  protected void setupShapes(float coreRadius, float wireRadius, float interfaceRadius, float interfaceWidth, float disabledRadius, float disabledWidth) {
+    setupShapes(((double) coreRadius) / 16D, ((double) wireRadius) / 16D, ((double) interfaceRadius) / 16D, ((double) interfaceWidth) / 16D, ((double) disabledRadius) / 16D, ((double) disabledWidth) / 16D);
   }
-  protected void setupShapes(double coreRadius, double wireRadius, double interfaceRadius, double interfaceWidth) {
+  protected void setupShapes(double coreRadius, double wireRadius, double interfaceRadius, double interfaceWidth, double disabledRadius, double disabledWidth) {
     double coreMin = 0.5 - coreRadius;
     double coreMax = 0.5 + coreRadius;
     coreShape = VoxelShapes.create(coreMin, coreMin, coreMin, coreMax, coreMax, coreMax);
     wireShapes = new HashMap<>();
     interfaceShapes = new HashMap<>();
+    disabledShapes = new HashMap<>();
 
     for(Direction d : ALL_DIRECTIONS) {
       Vec3i vec = d.getDirectionVec();
@@ -123,56 +127,76 @@ public class WireBlock extends Block {
       int z = vec.getZ();
       double wminx, wmaxx, wminy, wmaxy, wminz, wmaxz; // Wire
       double iminx, imaxx, iminy, imaxy, iminz, imaxz; // Interface
+      double dminx, dmaxx, dminy, dmaxy, dminz, dmaxz; // Disabled plug
       if(x == 0) {
         wminx = 0.5 - wireRadius;
         wmaxx = 0.5 + wireRadius;
         iminx = 0.5 - interfaceRadius;
         imaxx = 0.5 + interfaceRadius;
+        dminx = 0.5 - disabledRadius;
+        dmaxx = 0.5 + disabledRadius;
       } else if(x < 0) {
         wminx = 0;
         wmaxx = coreMin;
         iminx = 0;
         imaxx = interfaceWidth;
+        dminx = coreMin - disabledWidth;
+        dmaxx = coreMin;
       } else {
         wminx = coreMax;
         wmaxx = 1;
         iminx = 1 - interfaceWidth;
         imaxx = 1;
+        dminx = coreMax;
+        dmaxx = coreMax + disabledWidth;
       }
       if(y == 0) {
         wminy = 0.5 - wireRadius;
         wmaxy = 0.5 + wireRadius;
         iminy = 0.5 - interfaceRadius;
         imaxy = 0.5 + interfaceRadius;
+        dminy = 0.5 - disabledRadius;
+        dmaxy = 0.5 + disabledRadius;
       } else if(y < 0) {
         wminy = 0;
         wmaxy = coreMin;
         iminy = 0;
         imaxy = interfaceWidth;
+        dminy = coreMin - disabledWidth;
+        dmaxy = coreMin;
       } else {
         wminy = coreMax;
         wmaxy = 1;
         iminy = 1 - interfaceWidth;
         imaxy = 1;
+        dminy = coreMax;
+        dmaxy = coreMax + disabledWidth;
       }
       if(z == 0) {
         wminz = 0.5 - wireRadius;
         wmaxz = 0.5 + wireRadius;
         iminz = 0.5 - interfaceRadius;
         imaxz = 0.5 + interfaceRadius;
+        dminz = 0.5 - disabledRadius;
+        dmaxz = 0.5 + disabledRadius;
       } else if(z < 0) {
         wminz = 0;
         wmaxz = coreMin;
         iminz = 0;
         imaxz = interfaceWidth;
+        dminz = coreMin - disabledWidth;
+        dmaxz = coreMin;
       } else {
         wminz = coreMax;
         wmaxz = 1;
         iminz = 1 - interfaceWidth;
         imaxz = 1;
+        dminz = coreMax;
+        dmaxz = coreMax + disabledWidth;
       }
       wireShapes.put(d, VoxelShapes.create(wminx, wminy, wminz, wmaxx, wmaxy, wmaxz));
       interfaceShapes.put(d, VoxelShapes.create(iminx, iminy, iminz, imaxx, imaxy, imaxz));
+      disabledShapes.put(d, VoxelShapes.create(dminx, dminy, dminz, dmaxx, dmaxy, dmaxz));
     }
   }
 
@@ -187,6 +211,9 @@ public class WireBlock extends Block {
           // Do not break, need to add wire too
         case CONNECTION:
           shapes.add(wireShapes.get(d));
+          break;
+        case DISABLED:
+          shapes.add(disabledShapes.get(d));
           break;
       }
     }
