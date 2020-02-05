@@ -1,10 +1,9 @@
 package alpvax.advancedautocrafting.block;
 
-import alpvax.advancedautocrafting.AdvancedAutocrafting;
 import alpvax.advancedautocrafting.Capabilities;
+import alpvax.advancedautocrafting.block.axial.AxialBlock;
+import alpvax.advancedautocrafting.block.axial.AxialBlockShape;
 import alpvax.advancedautocrafting.block.axial.AxialPart;
-import alpvax.advancedautocrafting.util.AxialBlock;
-import alpvax.advancedautocrafting.util.AxialBlockShape;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItemUseContext;
@@ -12,7 +11,6 @@ import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -22,8 +20,8 @@ import static alpvax.advancedautocrafting.block.WireBlock.Shape;
 
 public class WireBlock2 extends AxialBlock<ConnectionState> {
   public static final AxialBlockShape<ConnectionState> WIRE_SHAPE = AxialBlockShape.<ConnectionState>builder()
-      .withCore(Shape.CORE_RADIUS / 16, new ResourceLocation(AdvancedAutocrafting.MODID, "block/wire"))
-      .withPart(new AxialPart<ConnectionState>(
+      .withCore(Shape.CORE_RADIUS / 16)//, new ResourceLocation(AdvancedAutocrafting.MODID, "block/wire"))
+      .withPart(new AxialPart<>(
           "wire",
           Shape.WIRE_RADIUS / 16F,
           0F,
@@ -31,7 +29,7 @@ public class WireBlock2 extends AxialBlock<ConnectionState> {
           ConnectionState.CONNECTION, ConnectionState.INTERFACE
       )
           .face(Direction.SOUTH, null))
-      .withPart(new AxialPart<ConnectionState>(
+      .withPart(new AxialPart<>(
           "interface",
           Shape.INTERFACE_RADIUS / 16F,
           0F,
@@ -39,32 +37,27 @@ public class WireBlock2 extends AxialBlock<ConnectionState> {
           ConnectionState.INTERFACE
       )
           .face(Direction.SOUTH, f -> f.uvs(0, 0, 16, 16), true))
-      .withPart(new AxialPart<ConnectionState>(
+      .withPart(new AxialPart<>(
           "disabled",
           Shape.DISABLED_RADIUS / 16F,
-          0.5F - Shape.DISABLED_WIDTH / 16F,
-          0.5F,
+          0.5F - Shape.DISABLED_WIDTH / 16F - Shape.CORE_RADIUS / 16,
+          0.5F - Shape.CORE_RADIUS / 16,
           ConnectionState.DISABLED
       )
           .face(Direction.NORTH, f -> f.uvs(0, 0, 16, 16), true)
           .face(Direction.SOUTH, null)
       );
 
-  public WireBlock2(Properties properties) {
+  public WireBlock2(Block.Properties properties) {
     super(properties,
         WIRE_SHAPE,
         d -> EnumProperty.create(d.getName(), WireBlock.ConnectionState.class)
     );
   }
 
-
   @Override
   public BlockState getStateForPlacement(BlockItemUseContext context) {
     return this.makeConnections(context.getWorld(), context.getPos());
-  }
-
-  public IProperty<ConnectionState> getConnectionProp(Direction d) {
-    return directionToPropertyMap.get(d);
   }
 
   private BlockState withConnectionState(BlockState bState, Direction dir, ConnectionState cState) {

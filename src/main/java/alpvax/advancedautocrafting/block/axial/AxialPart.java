@@ -84,10 +84,11 @@ public class AxialPart<T extends Comparable<T>> {
    */
   @OnlyIn(Dist.CLIENT)
   public BlockModelBuilder.ElementBuilder makeModelElement(BlockModelBuilder modelBuilder) {
+    float r = radius * 16;
     BlockModelBuilder.ElementBuilder builder = modelBuilder
         .texture("particle", "#texture").element()
-        .from(8 - radius, 8 - radius, start)
-        .to(8 + radius, 8 + radius, end);
+        .from(8 - r, 8 - r, start * 16)
+        .to(8 + r, 8 + r, end * 16);
     modelFaceModifiers.forEach((d, mapper) -> mapper.accept(builder.face(d)));
     if(start == 0) {
       builder.face(Direction.NORTH).cullface(Direction.NORTH);

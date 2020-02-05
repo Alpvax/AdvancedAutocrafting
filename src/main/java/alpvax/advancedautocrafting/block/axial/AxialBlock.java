@@ -24,24 +24,49 @@ import java.util.function.Function;
 public abstract class AxialBlock<T extends Comparable<T>> extends Block {
   public static final Direction[] ALL_DIRECTIONS = Direction.values();
 
-  protected final Map<Direction, IProperty<T>> directionToPropertyMap;
+  private static class CurrentBlockPropBuilder {
+    private Map<Direction, IProperty<?>> propMap;
+    private <T extends Comparable<T>> void make(Function<Direction, IProperty<T>> provider) {
+      propMap = Util.make(Maps.newEnumMap(Direction.class), (map) -> {
+        for (Direction d : ALL_DIRECTIONS) {
+          IProperty<T> prop = provider.apply(d);
+          if (prop != null) {
+            map.put(d, prop);
+          }
+        }
+      });
+    }
+    @SuppressWarnings("unchecked")
+    private <T extends Comparable<T>> Map<Direction, IProperty<T>> get() {
+      Map<Direction, IProperty<T>> map = Maps.newEnumMap(Direction.class);
+      propMap.forEach((d, p) -> map.put(d, (IProperty<T>) p));
+      propMap = null;
+      return map;
+    }
+  }
+  private static CurrentBlockPropBuilder currentPropBuilder = new CurrentBlockPropBuilder();
+  private static <T extends Comparable<T>> Properties createBlockStateMap(Function<Direction, IProperty<T>> directionPropertyProvider, Properties properties) {
+    currentPropBuilder.make(directionPropertyProvider);
+    return properties;
+  }
+
+  private Map<Direction, IProperty<T>> directionToPropertyMap;
   protected final AxialBlockShape<T> shape;
 
   public AxialBlock(Properties properties, AxialBlockShape<T> shape, Function<Direction, IProperty<T>> directionPropertyProvider) {
-    super(properties);
+    super(createBlockStateMap(directionPropertyProvider, properties));
     this.shape = shape;
-    directionToPropertyMap = Util.make(Maps.newEnumMap(Direction.class), (map) -> {
-      for(Direction d : ALL_DIRECTIONS) {
-        IProperty<T> prop = directionPropertyProvider.apply(d);
-        if(prop != null) {
-          map.put(d, prop);
-        }
-      }
-    });
+  }
+
+  public IProperty<T> getConnectionProp(Direction d) {
+    return directionToPropertyMap.get(d);
   }
 
   @Override
   protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    if(directionToPropertyMap == null) {
+      directionToPropertyMap = currentPropBuilder.get();
+    }
     for(IProperty<T> prop : directionToPropertyMap.values()) {
       builder.add(prop);
     }
@@ -71,7 +96,8 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
   public void buildBlockState(MultiPartBlockStateBuilder builder,
                               BlockModelBuilder coreModelBuilder,
                               BiConsumer<Direction, BlockModelBuilder.ElementBuilder.FaceBuilder> coreFaceMapper,
-                              Function<AxialPart<T>, BlockModelBuilder> modelBuilderFactory) {
+                              Function<AxialPart<T>, BlockModelBuilder> modelBuilderFactory
+  ) {
     builder.part().modelFile(shape.buildCorePart(coreModelBuilder, coreFaceMapper)).addModel();
     directionToPropertyMap.forEach((dir, value) -> {
       int yrot = dir.getAxis().isHorizontal() ? (((int) dir.getHorizontalAngle()) + 180) % 360 : 0;

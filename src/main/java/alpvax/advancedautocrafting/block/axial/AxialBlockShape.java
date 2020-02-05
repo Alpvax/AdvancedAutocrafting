@@ -1,7 +1,6 @@
 package alpvax.advancedautocrafting.block.axial;
 
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraftforge.api.distmarker.Dist;
@@ -21,7 +20,7 @@ public class AxialBlockShape<T extends Comparable<T>> {
   /** the core shape */
   protected VoxelShape coreShape = VoxelShapes.empty();
   /** the texture to use for the core */
-  protected ResourceLocation coreTexture;
+  //protected ResourceLocation coreTexture;
 
   protected Map<String, AxialPart<T>> parts = new HashMap<>();
 
@@ -42,8 +41,8 @@ public class AxialBlockShape<T extends Comparable<T>> {
       BlockModelBuilder modelBuilder,
       BiConsumer<Direction, BlockModelBuilder.ElementBuilder.FaceBuilder> faceMapper
   ) {
-    float min = 0.5F - coreRadius;
-    float max = 0.5F + coreRadius;
+    float min = 0.5F - coreRadius * 16;
+    float max = 0.5F + coreRadius * 16;
     return modelBuilder
         .texture("particle", "#texture").element()
         .from(min, min, min)
@@ -60,18 +59,15 @@ public class AxialBlockShape<T extends Comparable<T>> {
   }
 
   public static class Builder<T extends Comparable<T>> extends AxialBlockShape<T> {
-    public Builder<T> withCore(float radius, ResourceLocation texture) {
+    public Builder<T> withCore(float radius) {//, ResourceLocation texture) {
       coreRadius = radius;
-      coreTexture = texture;
+      //coreTexture = texture;
       double min = 0.5 - radius;
       double max = 0.5 + radius;
       coreShape = VoxelShapes.create(min, min, min, max, max, max);
       return this;
     }
 
-    public Builder<T> withPart(String name, float radius, float start, float end, T... allowedValues) {
-      return withPart(new AxialPart<T>(name, radius, start, end, allowedValues));
-    }
     public Builder<T> withPart(AxialPart<T> part) {
       parts.put(part.name, part);
       return this;

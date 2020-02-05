@@ -32,7 +32,7 @@ public class AABlocks {
   public static final RegistryObject<Block> REMOTE_MASTER = register("remote_master", () -> new RemoteMasterBlock(
       Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(6.0F, 30F)
   ));
-  public static final RegistryObject<Block> WIRE = register("wire", () -> new WireBlock(
+  public static final RegistryObject<Block> WIRE = register("wire", () -> new WireBlock2(
       Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(2.0F, 30F)
   ));
 
