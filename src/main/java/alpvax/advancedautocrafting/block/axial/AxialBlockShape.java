@@ -6,6 +6,7 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
+import net.minecraftforge.client.model.generators.BlockModelProvider;
 import net.minecraftforge.client.model.generators.ModelFile;
 
 import java.util.ArrayList;
@@ -13,16 +14,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class AxialBlockShape<T extends Comparable<T>> {
+  private AxialBlockShape(String modelName) {
+    this.modelName = modelName;
+  }
+  protected final String modelName;
   /** if > 0, will produce a cube of that radius as the core */
   protected float coreRadius = -1;
   /** the core shape */
   protected VoxelShape coreShape = VoxelShapes.empty();
-  /** the texture to use for the core */
-  //protected ResourceLocation coreTexture;
 
   protected Map<String, AxialPart<T>> parts = new HashMap<>();
+
+  @OnlyIn(Dist.CLIENT)
+  private Map<String, ModelFile> models;
 
   public VoxelShape getCombinedShape(Map<Direction, T> propertyValues) {
     List<VoxelShape> shapes = new ArrayList<>();
@@ -41,8 +48,8 @@ public class AxialBlockShape<T extends Comparable<T>> {
       BlockModelBuilder modelBuilder,
       BiConsumer<Direction, BlockModelBuilder.ElementBuilder.FaceBuilder> faceMapper
   ) {
-    float min = 0.5F - coreRadius * 16;
-    float max = 0.5F + coreRadius * 16;
+    float min = (0.5F - coreRadius) * 16;
+    float max = (0.5F + coreRadius) * 16;
     return modelBuilder
         .texture("particle", "#texture").element()
         .from(min, min, min)
@@ -54,12 +61,35 @@ public class AxialBlockShape<T extends Comparable<T>> {
         .end();
   }
 
-  public static <T extends Comparable<T>> Builder<T> builder() {
-    return new Builder<T>();
+  @OnlyIn(Dist.CLIENT)
+  public Map<String, ModelFile> buildBlockModelParts(String path, BlockModelProvider modelProvider) {
+    if(models == null) {
+      models = new HashMap<>();
+      String p = path + modelName;
+      models.put("core", buildCorePart(modelProvider.getBuilder(p + "_core"), (d, f) -> f.uvs(0, 0, 16, 16)));
+      parts.forEach((name, part) -> {
+        models.put(name, part.makeModelElement(modelProvider.getBuilder(p + "_" + name)).end());
+      });
+    }
+    return models;
+  }
+
+  public void forEach(Consumer<AxialPart<T>> consumer) {
+    parts.values().forEach(consumer);
+  }
+
+  public static <T extends Comparable<T>> Builder<T> builder(String modelName, Class<T> valueClass) {
+    return new Builder<T>(modelName, valueClass);
   }
 
   public static class Builder<T extends Comparable<T>> extends AxialBlockShape<T> {
-    public Builder<T> withCore(float radius) {//, ResourceLocation texture) {
+    private final Class<T> valueClass;
+    public Builder(String modelPath, Class<T> valueClass) {
+      super(modelPath);
+      this.valueClass = valueClass;
+    }
+
+    public Builder<T> withCore(float radius) {
       coreRadius = radius;
       //coreTexture = texture;
       double min = 0.5 - radius;
@@ -70,6 +100,7 @@ public class AxialBlockShape<T extends Comparable<T>> {
 
     public Builder<T> withPart(AxialPart<T> part) {
       parts.put(part.name, part);
+      part.valueClass = valueClass;
       return this;
     }
 

@@ -1,5 +1,7 @@
 package alpvax.advancedautocrafting.block.axial;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import net.minecraft.util.Direction;
@@ -11,6 +13,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -23,6 +26,7 @@ public class AxialPart<T extends Comparable<T>> {
   public final float start;
   public final float end;
   public final Collection<T> allowedValues;
+  Class<T> valueClass;
   @OnlyIn(Dist.CLIENT)
   private final Map<Direction, Consumer<BlockModelBuilder.ElementBuilder.FaceBuilder>> modelFaceModifiers = Util.make(
       Maps.newEnumMap(Direction.class),
@@ -36,6 +40,8 @@ public class AxialPart<T extends Comparable<T>> {
   private final Map<Direction, VoxelShape> shapes = Maps.newEnumMap(Direction.class);
 
   public AxialPart(String name, float radius, float start, float end, T... allowedValues) {
+    Preconditions.checkArgument(!Strings.isNullOrEmpty(name), "Part name cannot be null (or \"\")");
+    Preconditions.checkArgument(name != "core", "Part name cannot be \"core\")");
     this.name = name;
     this.radius = radius;
     this.start = start;
@@ -44,7 +50,7 @@ public class AxialPart<T extends Comparable<T>> {
     makeShapes();
   }
 
-  @OnlyIn(Dist.CLIENT)
+  @OnlyIn(Dist.CLIENT) //TODO: Allow calling on server (No-op)
   public AxialPart<T> face(Direction d, @Nullable Consumer<BlockModelBuilder.ElementBuilder.FaceBuilder> faceBuilder) {
     return face(d, faceBuilder, false);
   }
@@ -65,7 +71,7 @@ public class AxialPart<T extends Comparable<T>> {
   }
 
   public T[] getAllowedValues() {
-    return (T[]) allowedValues.toArray();
+    return allowedValues.toArray((T[])Array.newInstance(valueClass, 0));
   }
 
   private void makeShapes() {

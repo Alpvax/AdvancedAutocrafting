@@ -58,6 +58,10 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
     this.shape = shape;
   }
 
+  public void forEachDirection(BiConsumer<Direction, IProperty<T>> consumer) {
+    directionToPropertyMap.forEach(consumer);
+  }
+
   public IProperty<T> getConnectionProp(Direction d) {
     return directionToPropertyMap.get(d);
   }
@@ -72,6 +76,10 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
     }
   }
 
+  public AxialBlockShape<T> getBlockShape() {
+    return shape;
+  }
+
   @Override
   public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
     Map<Direction, T> values = Maps.newEnumMap(Direction.class);
@@ -83,7 +91,7 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
 
   @OnlyIn(Dist.CLIENT)
   public void buildBlockStateDefaults(Function<Block, MultiPartBlockStateBuilder> getBuilder, BlockModelProvider models) {
-    String path = "blocks/" + getRegistryName().getPath() + "_";
+    String path = "block/part/" + getRegistryName().getPath() + "_";
     buildBlockState(
         getBuilder.apply(this),
         models.getBuilder(path + "core"),
