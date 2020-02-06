@@ -27,7 +27,7 @@ public class AxialPart<T extends Comparable<T>> {
   public final float end;
   public final Collection<T> allowedValues;
   Class<T> valueClass;
-  @OnlyIn(Dist.CLIENT)
+
   private final Map<Direction, Consumer<BlockModelBuilder.ElementBuilder.FaceBuilder>> modelFaceModifiers = Util.make(
       Maps.newEnumMap(Direction.class),
       m -> {
@@ -50,11 +50,9 @@ public class AxialPart<T extends Comparable<T>> {
     makeShapes();
   }
 
-  @OnlyIn(Dist.CLIENT) //TODO: Allow calling on server (No-op)
   public AxialPart<T> face(Direction d, @Nullable Consumer<BlockModelBuilder.ElementBuilder.FaceBuilder> faceBuilder) {
     return face(d, faceBuilder, false);
   }
-  @OnlyIn(Dist.CLIENT)
   public AxialPart<T> face(Direction d, Consumer<BlockModelBuilder.ElementBuilder.FaceBuilder> faceBuilder, boolean additional) {
     if(faceBuilder == null) {
       modelFaceModifiers.remove(d);
