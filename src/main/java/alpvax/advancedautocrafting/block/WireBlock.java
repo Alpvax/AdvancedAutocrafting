@@ -11,19 +11,44 @@ import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
-import static alpvax.advancedautocrafting.block.WireBlock_old.ConnectionState;
-import static alpvax.advancedautocrafting.block.WireBlock_old.Shape;
+import java.util.Locale;
 
-public class WireBlock extends AxialBlock<ConnectionState> {
+public class WireBlock extends AxialBlock<WireBlock.ConnectionState> {
+  public enum ConnectionState implements IStringSerializable {
+    NONE,
+    CONNECTION,
+    INTERFACE,
+    DISABLED;
+
+    private static final ConnectionState[] VALUES = values();
+    private final String name;
+
+    ConnectionState() {
+      name = name().toLowerCase(Locale.ENGLISH);
+    }
+
+    @Override
+    public String getName() {
+      return name;
+    }
+
+    @Override
+    public String toString() {
+      return getName();
+    }
+  }
+
+  private static final float CORE_RADIUS = 3/16F;
   public static final AxialBlockShape<ConnectionState> WIRE_SHAPE = AxialBlockShape.builder("base_wire", ConnectionState.class)
-      .withCore(Shape.CORE_RADIUS / 16)
+      .withCore(CORE_RADIUS)
       .withPart(new AxialPart<>(
           "arm",
-          Shape.WIRE_RADIUS / 16F,
+          2/16F,
           0F,
           0.5F,
           ConnectionState.CONNECTION, ConnectionState.INTERFACE
@@ -31,17 +56,17 @@ public class WireBlock extends AxialBlock<ConnectionState> {
           .face(Direction.SOUTH, null))
       .withPart(new AxialPart<>(
           "interface",
-          Shape.INTERFACE_RADIUS / 16F,
+          6/16F,
           0F,
-          Shape.INTERFACE_WIDTH / 16F,
+          1/16F,
           ConnectionState.INTERFACE
       )
           .face(Direction.SOUTH, f -> f.uvs(0, 0, 16, 16), true))
       .withPart(new AxialPart<>(
           "disabled",
-          Shape.DISABLED_RADIUS / 16F,
-          0.5F - Shape.DISABLED_WIDTH / 16F - Shape.CORE_RADIUS / 16,
-          0.5F - Shape.CORE_RADIUS / 16,
+          2.5F / 16F,
+          0.5F - 1/16F - CORE_RADIUS,
+          0.5F - CORE_RADIUS,
           ConnectionState.DISABLED
       )
           .face(Direction.NORTH, f -> f.uvs(0, 0, 16, 16), true)
@@ -51,7 +76,7 @@ public class WireBlock extends AxialBlock<ConnectionState> {
   public WireBlock(Block.Properties properties) {
     super(properties,
         WIRE_SHAPE,
-        d -> EnumProperty.create(d.getName(), WireBlock_old.ConnectionState.class)
+        d -> EnumProperty.create(d.getName(), ConnectionState.class)
     );
   }
 
