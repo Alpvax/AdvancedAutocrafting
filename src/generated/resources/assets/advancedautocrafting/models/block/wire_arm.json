@@ -1,5 +1,5 @@
 {
-  "parent": "advancedautocrafting:block/part/base_wire_disabled",
+  "parent": "advancedautocrafting:block/part/base_wire_arm",
   "textures": {
     "texture": "advancedautocrafting:block/wire"
   }
