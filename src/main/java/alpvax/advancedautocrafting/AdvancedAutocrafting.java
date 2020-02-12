@@ -11,8 +11,6 @@ import alpvax.advancedautocrafting.data.BlockPosLootFunction;
 import alpvax.advancedautocrafting.item.AAItems;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
 import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -34,13 +32,6 @@ public class AdvancedAutocrafting {
   public static final String MODID = "advancedautocrafting";
 
   private static final Logger LOGGER = LogManager.getLogger();
-
-  public static final ItemGroup ITEM_GROUP = (new ItemGroup(MODID) {
-    @OnlyIn(Dist.CLIENT)
-    public ItemStack createIcon() {
-      return new ItemStack(AABlocks.CONTROLLER.get());
-    }
-  });
 
   public AdvancedAutocrafting() {
     IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();

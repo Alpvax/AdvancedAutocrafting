@@ -37,7 +37,7 @@ public class AABlocks {
   ));
 
   private static <T extends Block> RegistryObject<T> register(String name, Supplier<? extends T> block) {
-    return register(name, block, (b) -> () -> new BlockItem(b.get(), new Item.Properties().group(AdvancedAutocrafting.ITEM_GROUP)));
+    return register(name, block, (b) -> () -> new BlockItem(b.get(), new Item.Properties().group(AAItems.ITEM_GROUP)));
   }
 
   private static <T extends Block> RegistryObject<T> register(String name, Supplier<? extends T> block, Function<RegistryObject<T>, Supplier<? extends Item>> itemCreator) {

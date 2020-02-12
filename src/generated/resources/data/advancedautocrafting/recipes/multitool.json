@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IR ",
+    "RIR",
+    " RI"
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "R": {
+      "tag": "forge:dyes/red"
+    }
+  },
+  "result": {
+    "item": "advancedautocrafting:multitool"
+  }
+}

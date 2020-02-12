@@ -1,25 +1,30 @@
 package alpvax.advancedautocrafting.block.axial;
 
+import alpvax.advancedautocrafting.Capabilities;
+import alpvax.advancedautocrafting.item.AAItems;
 import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.IProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.shapes.EntitySelectionContext;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.model.generators.BlockModelBuilder;
-import net.minecraftforge.client.model.generators.BlockModelProvider;
-import net.minecraftforge.client.model.generators.MultiPartBlockStateBuilder;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public abstract class AxialBlock<T extends Comparable<T>> extends Block {
   public static final Direction[] ALL_DIRECTIONS = Direction.values();
@@ -51,7 +56,7 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
   }
 
   private Map<Direction, IProperty<T>> directionToPropertyMap;
-  protected final AxialBlockShape<T> shape;
+  private final AxialBlockShape<T> shape;
 
   public AxialBlock(Properties properties, AxialBlockShape<T> shape, Function<Direction, IProperty<T>> directionPropertyProvider) {
     super(createBlockStateMap(directionPropertyProvider, properties));
@@ -80,45 +85,49 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
     return shape;
   }
 
+  @Nonnull
   @Override
   public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    if(context instanceof EntitySelectionContext) {
+      Entity e = ((EntitySelectionContext)context).getEntity();
+      if (e != null) {
+        if (context.hasItem(AAItems.MULTITOOL.get())
+                || (e instanceof LivingEntity && ((LivingEntity)e).getActiveItemStack().getCapability(Capabilities.MULTITOOL_CAPABILITY).isPresent())
+        ) {
+          Vec3d start = new Vec3d(e.prevPosX, e.prevPosY + e.getEyeHeight(), e.prevPosZ);
+          Vec3d end = start.add(e.getLook(0).scale(PlayerEntity.REACH_DISTANCE.clampValue(Double.MAX_VALUE)));
+          return getPartialBlockHighlight(state, rayTracePart(state, pos, start, end));
+        }
+      }
+    }
     Map<Direction, T> values = Maps.newEnumMap(Direction.class);
-    directionToPropertyMap.forEach((d, prop) -> {
-      values.put(d, state.get(prop));
-    });
+    directionToPropertyMap.forEach((d, prop) -> values.put(d, state.get(prop)));
     return shape.getCombinedShape(values);
   }
 
-  @OnlyIn(Dist.CLIENT)
-  public void buildBlockStateDefaults(Function<Block, MultiPartBlockStateBuilder> getBuilder, BlockModelProvider models) {
-    String path = "block/part/" + getRegistryName().getPath() + "_";
-    buildBlockState(
-        getBuilder.apply(this),
-        models.getBuilder(path + "core"),
-        (d, f) -> f.uvs(0, 0, 16, 16),
-        part -> models.getBuilder(path + part.name)
-    );
+  public IAxialPartInstance<T> rayTracePart(BlockState state, BlockPos pos, Vec3d start, Vec3d end) {
+    Direction dir = null;
+    AxialPart<T> part = null;
+    BlockRayTraceResult ray = shape.getCoreShape().rayTrace(start, end, pos);
+    double dSquared = ray == null ? Double.MAX_VALUE : ray.getHitVec().squareDistanceTo(start);
+    for (Direction d : ALL_DIRECTIONS) {
+      T propValue = state.get(getConnectionProp(d));
+      for (AxialPart<T> p : shape.validParts(propValue).collect(Collectors.toList())) {
+        ray = p.getShape(d).rayTrace(start, end, pos);
+        if (ray != null) {
+          double d2 = ray.getHitVec().squareDistanceTo(start);
+          if (d2 < dSquared) {
+            dSquared = d2;
+            dir = d;
+            part = p;
+          }
+        }
+      }
+    }
+    return dir == null ? IAxialPartInstance.AxialCore.from(shape) : new IAxialPartInstance.Impl<T>(part, dir);
   }
 
-  @OnlyIn(Dist.CLIENT)
-  public void buildBlockState(MultiPartBlockStateBuilder builder,
-                              BlockModelBuilder coreModelBuilder,
-                              BiConsumer<Direction, BlockModelBuilder.ElementBuilder.FaceBuilder> coreFaceMapper,
-                              Function<AxialPart<T>, BlockModelBuilder> modelBuilderFactory
-  ) {
-    builder.part().modelFile(shape.buildCorePart(coreModelBuilder, coreFaceMapper)).addModel();
-    directionToPropertyMap.forEach((dir, value) -> {
-      int yrot = dir.getAxis().isHorizontal() ? (((int) dir.getHorizontalAngle()) + 180) % 360 : 0;
-      int xrot = dir.getYOffset() == 0 ? 0 : dir.getYOffset() > 0 ? 270 : 90;
-      shape.parts.values().forEach(part -> {
-        builder.part()
-            .modelFile(part.makeModelElement(modelBuilderFactory.apply(part)).end())
-            .rotationY(yrot)
-            .rotationX(xrot)
-            .uvLock(true)
-            .addModel()
-            .condition(value, part.getAllowedValues());
-      });
-    });
+  protected VoxelShape getPartialBlockHighlight(BlockState state, IAxialPartInstance<T> partInstance) {
+    return partInstance.shape();
   }
 }

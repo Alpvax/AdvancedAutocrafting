@@ -65,5 +65,12 @@ public class AARecipeProvider extends RecipeProvider {
         .addCriterion("has_iron_bars", hasIronBars)
         .addCriterion("has_iron_block", hasIronBlock)
         .build(consumer);
+    ShapedRecipeBuilder.shapedRecipe(AAItems.MULTITOOL.get())
+        .patternLine("IR ").patternLine("RIR").patternLine(" RI")
+        .key('I', Tags.Items.INGOTS_IRON)
+        .key('R', Tags.Items.DYES_RED)
+        .addCriterion("has_iron", hasItem(Tags.Items.INGOTS_IRON))
+        .addCriterion("has_red_dye", hasItem(Tags.Items.DYES_RED))
+        .build(consumer);
   }
 }

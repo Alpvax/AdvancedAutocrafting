@@ -32,5 +32,19 @@ public class Capabilities {
 
       }
     }, () -> new SimpleNetworkNode(BlockPos.ZERO));
+    CapabilityManager.INSTANCE.register(IMultitool.class, new Capability.IStorage<IMultitool>()
+    {
+      @Override
+      public INBT writeNBT(Capability<IMultitool> capability, IMultitool instance, Direction side)
+      {
+        return null;
+      }
+
+      @Override
+      public void readNBT(Capability<IMultitool> capability, IMultitool instance, Direction side, INBT base)
+      {
+
+      }
+    }, () -> new IMultitool() {});
   }
 }

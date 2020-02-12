@@ -10,20 +10,20 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-public class IMultitool {
+public interface IMultitool {
   //TODO: Useful methods?
 
-  public static class Provider implements ICapabilityProvider {
-    private IMultitool multitool;
+  class Provider implements ICapabilityProvider {
+    private Supplier<IMultitool> multitoolSup;
 
     Provider() {
-      this(Capabilities.MULTITOOL_CAPABILITY::getDefaultInstance);
+      this(() -> Capabilities.MULTITOOL_CAPABILITY.getDefaultInstance());
     }
     Provider(Supplier<IMultitool> sup) {
-      multitool = sup.get();
+      multitoolSup = sup;
     }
 
-    private LazyOptional<IMultitool> capability = LazyOptional.of(() -> multitool);
+    private LazyOptional<IMultitool> capability = LazyOptional.of(() -> multitoolSup.get());
 
     @Nonnull
     @Override

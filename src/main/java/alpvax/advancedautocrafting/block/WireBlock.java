@@ -4,18 +4,29 @@ import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.block.axial.AxialBlock;
 import alpvax.advancedautocrafting.block.axial.AxialBlockShape;
 import alpvax.advancedautocrafting.block.axial.AxialPart;
+import alpvax.advancedautocrafting.block.axial.IAxialPartInstance;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import java.util.Locale;
 
 public class WireBlock extends AxialBlock<WireBlock.ConnectionState> {
@@ -50,7 +61,7 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> {
           "arm",
           2/16F,
           0F,
-          0.5F,
+          0.5F - CORE_RADIUS,
           ConnectionState.CONNECTION, ConnectionState.INTERFACE
       )
           .face(Direction.SOUTH, null))
@@ -120,11 +131,62 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> {
     return ConnectionState.NONE;
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
     BlockPos dPos = fromPos.subtract(pos);
     Direction d = Direction.byLong(dPos.getX(), dPos.getY(), dPos.getZ());
     worldIn.setBlockState(pos, withConnectionState(state, d, makeConnection(state, worldIn, pos, d, fromPos)), 2);
     super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
+  }
+
+  private BlockState getToggledState(BlockState state, IWorldReader world, BlockPos pos, Direction d) {
+    IProperty<ConnectionState> prop = getConnectionProp(d);
+    ConnectionState val = state.get(prop);
+    if(val == ConnectionState.DISABLED) {
+      state = withConnectionState(state, d, ConnectionState.NONE);
+      return withConnectionState(state, d, makeConnection(state, world, pos, d, pos.offset(d)));
+    } else {
+      return withConnectionState(state, d, ConnectionState.DISABLED);
+    }
+  }
+
+  @SuppressWarnings("deprecation")
+  @Nonnull
+  @Override
+  public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
+    if (worldIn.isRemote) {
+      return ActionResultType.SUCCESS;
+    } else {
+      ItemStack stack = player.getHeldItem(hand);
+      if(!stack.isEmpty() && stack.getCapability(Capabilities.MULTITOOL_CAPABILITY).isPresent()) {
+        // Multitool
+        if(player.isShiftKeyDown()) {
+          worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
+          if(!player.isCreative()) {
+            spawnAsEntity(worldIn, pos, new ItemStack(this));
+          }
+        } else {
+          Vec3d start = new Vec3d(player.prevPosX, player.prevPosY + player.getEyeHeight(), player.prevPosZ);
+          Vec3d end = start.add(player.getLook(0).scale(player.getAttribute(PlayerEntity.REACH_DISTANCE).getValue()));
+          Direction dir = rayTracePart(state, pos, start, end).direction();
+          if (dir == null) {
+            dir = rayTraceResult.getFace();
+          }
+          worldIn.setBlockState(pos, getToggledState(state, worldIn, pos, dir));
+        }
+        return ActionResultType.SUCCESS;
+      }
+      return super.onBlockActivated(state, worldIn, pos, player, hand, rayTraceResult);
+    }
+  }
+
+  @Override
+  protected VoxelShape getPartialBlockHighlight(BlockState state, IAxialPartInstance<ConnectionState> partInstance) {
+    Direction d = partInstance.direction();
+    if (d == null) {
+      return getBlockShape().getCoreShape();
+    }
+    return getBlockShape().getAxialShape(d, state.get(getConnectionProp(d)));
   }
 }

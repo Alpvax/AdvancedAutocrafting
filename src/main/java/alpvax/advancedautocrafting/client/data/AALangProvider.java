@@ -23,11 +23,12 @@ public class AALangProvider extends LanguageProvider {
 
   @Override
   protected void addTranslations() {
-    add(AdvancedAutocrafting.ITEM_GROUP, "Advanced Autocrafting");
+    add(AAItems.ITEM_GROUP, "Advanced Autocrafting");
 
     add(AATranslationKeys.ITEM_POS_LORE, "Bound position: %s");
 
     add(AAItems.REMOTE_POS.get(), "Remote Position Reference");
+    add(AAItems.MULTITOOL.get(), "Multitool");
 
     addBlock(AABlocks.CONTROLLER);
     addBlock(AABlocks.REMOTE_MARKER, "Remote Position Marker");

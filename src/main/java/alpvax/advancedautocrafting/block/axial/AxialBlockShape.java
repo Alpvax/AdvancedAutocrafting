@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class AxialBlockShape<T extends Comparable<T>> {
   private AxialBlockShape(String modelName) {
@@ -34,13 +36,23 @@ public class AxialBlockShape<T extends Comparable<T>> {
   public VoxelShape getCombinedShape(Map<Direction, T> propertyValues) {
     List<VoxelShape> shapes = new ArrayList<>();
     propertyValues.forEach((d, v) -> {
-      parts.values().stream()
-          .filter(p -> p.allowedValues.contains(v))
-          .forEach(p -> {
-            shapes.add(p.getShape(d));
-          });
+      shapes.add(getAxialShape(d, v));
     });
-    return VoxelShapes.or(coreShape, shapes.toArray(new VoxelShape[0]));
+    return VoxelShapes.or(getCoreShape(), shapes.toArray(new VoxelShape[0]));
+  }
+
+  public VoxelShape getCoreShape() {
+    return coreShape;
+  }
+
+  public VoxelShape getAxialShape(Direction d, T propertyValue) {
+    return VoxelShapes.or(
+        VoxelShapes.empty(),
+        validParts(propertyValue)
+            .map(p -> p.getShape(d))
+            .collect(Collectors.toList())
+            .toArray(new VoxelShape[0])
+    );
   }
 
   @OnlyIn(Dist.CLIENT)
@@ -76,6 +88,10 @@ public class AxialBlockShape<T extends Comparable<T>> {
 
   public void forEach(Consumer<AxialPart<T>> consumer) {
     parts.values().forEach(consumer);
+  }
+
+  public Stream<AxialPart<T>> validParts(T propValue) {
+    return parts.values().stream().filter(p -> p.allowedValues.contains(propValue));
   }
 
   public static <T extends Comparable<T>> Builder<T> builder(String modelName, Class<T> valueClass) {

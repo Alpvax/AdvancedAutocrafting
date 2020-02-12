@@ -4,6 +4,7 @@
   "block.advancedautocrafting.remote_marker": "Remote Position Marker",
   "block.advancedautocrafting.remote_master": "Remote Network Container",
   "block.advancedautocrafting.wire": "Wire",
+  "item.advancedautocrafting.multitool": "Multitool",
   "item.advancedautocrafting.remote_pos": "Remote Position Reference",
   "itemGroup.advancedautocrafting": "Advanced Autocrafting"
 }
