@@ -27,6 +27,7 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Locale;
 
 public class WireBlock extends AxialBlock<WireBlock.ConnectionState> {
@@ -85,10 +86,19 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> {
       );
 
   public WireBlock(Block.Properties properties) {
-    super(properties,
-        WIRE_SHAPE,
-        d -> EnumProperty.create(d.getName(), ConnectionState.class)
-    );
+    super(properties, WIRE_SHAPE);
+  }
+
+  @Nullable
+  @Override
+  protected IProperty<ConnectionState> buildPropertyForDirection(Direction d) {
+    return EnumProperty.create(d.getName(), ConnectionState.class);
+  }
+
+  @Nonnull
+  @Override
+  protected ConnectionState getDefaultPropertyValue(Direction d) {
+    return ConnectionState.NONE;
   }
 
   @Override
@@ -97,7 +107,8 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> {
   }
 
   private BlockState withConnectionState(BlockState bState, Direction dir, ConnectionState cState) {
-    return bState.with(getConnectionProp(dir), cState);
+    IProperty<ConnectionState> prop = getConnectionProp(dir);
+    return prop == null ? bState : bState.with(prop, cState);
   }
 
   public BlockState makeConnections(IBlockReader world, BlockPos thisPos) {
