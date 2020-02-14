@@ -8,11 +8,15 @@ import alpvax.advancedautocrafting.block.axial.IAxialPartInstance;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.IWaterLoggable;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
@@ -30,7 +34,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Locale;
 
-public class WireBlock extends AxialBlock<WireBlock.ConnectionState> {
+import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
+
+public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements IWaterLoggable {
   public enum ConnectionState implements IStringSerializable {
     NONE,
     CONNECTION,
@@ -87,6 +93,13 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> {
 
   public WireBlock(Block.Properties properties) {
     super(properties, WIRE_SHAPE);
+    setDefaultState(getDefaultState().with(WATERLOGGED, false));
+  }
+
+  @Override
+  protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    super.fillStateContainer(builder);
+    builder.add(WATERLOGGED);
   }
 
   @Nullable
@@ -199,5 +212,12 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> {
       return getBlockShape().getCoreShape();
     }
     return getBlockShape().getAxialShape(d, state.get(getConnectionProp(d)));
+  }
+
+  @SuppressWarnings("deprecation")
+  @Nonnull
+  @Override
+  public IFluidState getFluidState(BlockState state) {
+    return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
   }
 }
