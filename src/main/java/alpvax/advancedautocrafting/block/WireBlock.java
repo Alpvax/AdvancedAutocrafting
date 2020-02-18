@@ -179,15 +179,13 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
   @Nonnull
   @Override
   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
-    if (worldIn.isRemote) {
-      return ActionResultType.SUCCESS;
-    } else {
-      ItemStack stack = player.getHeldItem(hand);
-      if(!stack.isEmpty() && stack.getCapability(Capabilities.MULTITOOL_CAPABILITY).isPresent()) {
-        // Multitool
-        if(player.isShiftKeyDown()) {
+    ItemStack stack = player.getHeldItem(hand);
+    if(!stack.isEmpty() && stack.getCapability(Capabilities.MULTITOOL_CAPABILITY).isPresent()) {
+      // Multitool
+      if (!worldIn.isRemote) {
+        if (player.isShiftKeyDown()) {
           worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
-          if(!player.isCreative()) {
+          if (!player.isCreative()) {
             spawnAsEntity(worldIn, pos, new ItemStack(this));
           }
         } else {
@@ -199,10 +197,10 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
           }
           worldIn.setBlockState(pos, getToggledState(state, worldIn, pos, dir));
         }
-        return ActionResultType.SUCCESS;
       }
-      return super.onBlockActivated(state, worldIn, pos, player, hand, rayTraceResult);
+      return ActionResultType.SUCCESS;
     }
+    return super.onBlockActivated(state, worldIn, pos, player, hand, rayTraceResult);
   }
 
   @Override
