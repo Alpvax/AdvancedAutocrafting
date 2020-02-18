@@ -4,11 +4,13 @@ import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.item.multitool.IMultitool;
 import alpvax.advancedautocrafting.item.multitool.MultitoolInst;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class MultitoolItem extends Item {
   public MultitoolItem(Item.Properties properties) {
-    super(properties);
+    super(properties.maxStackSize(1));
   }
 
   @Nullable
@@ -48,6 +50,44 @@ public class MultitoolItem extends Item {
   public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
     return false;
   }
+
+  @Override
+  public ItemStack getContainerItem(ItemStack itemStack)
+  {
+    return itemStack;
+  }
+
+  @Override
+  public String getHighlightTip(ItemStack item, String displayName)
+  {
+    return displayName;//TODO
+  }
+  @Override
+  public CompoundNBT getShareTag(ItemStack stack)
+  {
+    return stack.getTag(); //TODO
+  }
+
+  @Override
+  public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+    //TODO: tick items
+  }
+
+  @Override
+  public boolean itemInteractionForEntity(ItemStack stack, PlayerEntity playerIn, LivingEntity target, Hand hand) {
+    ItemStack s = getMultiTool(stack).selectToolForEntity(playerIn, target);
+    return s != null && s.interactWithEntity(playerIn, target, hand) || super.itemInteractionForEntity(stack, playerIn, target, hand);
+  }
+
+  /*TODO: implement:
+  onItemRightClick
+      onItemUse
+  onItemUseFinish
+      onItemUseFirst
+  onLeftClickEntity
+      onPlayerStoppedUsing
+  onUsingTick
+   */
 
   @Override
   public float getDestroySpeed(ItemStack stack, BlockState state) {

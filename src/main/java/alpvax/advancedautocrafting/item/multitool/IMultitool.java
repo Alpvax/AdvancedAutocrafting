@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 public interface IMultitool extends INBTSerializable<CompoundNBT> {
   //ItemStack selectTool(BlockState lookedAt, IWorldReader world, BlockPos pos);
   @Nullable ItemStack selectToolForBlock(LivingEntity user, BlockState lookedAt, IWorldReader world, BlockPos pos);
-  @Nullable ItemStack selectToolForEntity(LivingEntity user, MultiToolType type, Entity target);
+  @Nullable ItemStack selectToolForEntity(LivingEntity user, Entity target);
   @Nullable ItemStack selectToolForType(MultiToolType type);
   @Nullable ItemStack selectWeapon(LivingEntity user, LivingEntity target);
   Stream<ItemStack> allTools();

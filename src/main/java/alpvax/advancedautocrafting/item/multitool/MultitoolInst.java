@@ -1,10 +1,16 @@
 package alpvax.advancedautocrafting.item.multitool;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorldReader;
 import net.minecraftforge.common.util.Constants;
 
+import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -28,6 +34,30 @@ public class MultitoolInst implements IMultitool.Modifiable {
   public ItemStack selectTool(BlockState lookedAt, IWorldReader world, BlockPos pos) {
     return null;
   }*/
+
+  @Nullable
+  @Override
+  public ItemStack selectToolForBlock(LivingEntity user, BlockState lookedAt, IWorldReader world, BlockPos pos) {
+    return null;//TODO:
+  }
+
+  @Nullable
+  @Override
+  public ItemStack selectToolForEntity(LivingEntity user, Entity target) {
+    return null;//TODO:
+  }
+
+  @Nullable
+  @Override
+  public ItemStack selectToolForType(MultiToolType type) {
+    return null;//TODO:
+  }
+
+  @Nullable
+  @Override
+  public ItemStack selectWeapon(LivingEntity user, LivingEntity target) {
+    return null;//TODO:
+  }
 
   @Override
   public Stream<ItemStack> allTools() {
