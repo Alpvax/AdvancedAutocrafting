@@ -2,7 +2,8 @@ package alpvax.advancedautocrafting;
 
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
-import alpvax.advancedautocrafting.item.IMultitool;
+import alpvax.advancedautocrafting.item.multitool.IMultitool;
+import alpvax.advancedautocrafting.item.multitool.MultitoolInst;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -45,6 +46,6 @@ public class Capabilities {
       {
 
       }
-    }, () -> new IMultitool() {});
+    }, MultitoolInst::new);
   }
 }
