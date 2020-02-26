@@ -3,6 +3,7 @@ package alpvax.advancedautocrafting;
 import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.client.data.AABlockstateProvider;
 import alpvax.advancedautocrafting.client.data.AALangProvider;
+import alpvax.advancedautocrafting.client.gui.ControllerScreen;
 import alpvax.advancedautocrafting.client.gui.RemoteMasterScreen;
 import alpvax.advancedautocrafting.container.AAContainerTypes;
 import alpvax.advancedautocrafting.data.AALootTableProvider;
@@ -66,6 +67,7 @@ public class AdvancedAutocrafting {
   private void setupClient(final FMLClientSetupEvent event) {
     //ClientRegistry.bindTileEntitySpecialRenderer(DrinkMixerTileEntity.class, new DrinkMixerRenderer());
     ScreenManager.registerFactory(AAContainerTypes.REMOTE_MASTER.get(), RemoteMasterScreen::new);
+    ScreenManager.registerFactory(AAContainerTypes.CONTROLLER.get(), ControllerScreen::new);
   }
 
   private void onServerStarting(final FMLServerStartingEvent event) {

@@ -2,6 +2,7 @@ package alpvax.advancedautocrafting.block.tile;
 
 import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.block.AABlocks;
+import alpvax.advancedautocrafting.container.ControllerContainer;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,7 +33,7 @@ public class ControllerTileEntity extends TileEntity  implements INamedContainer
   @Nullable
   @Override
   public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player) {
-    return null;//TODO:new ControllerContainer(id, playerInventory, this);
+    return new ControllerContainer(id, playerInventory, this);
   }
 
   @Nonnull

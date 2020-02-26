@@ -4,28 +4,13 @@ package alpvax.advancedautocrafting.container;
 import alpvax.advancedautocrafting.block.tile.RemoteMasterTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.IContainerFactory;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class RemoteMasterContainer extends Container {
-  private final RemoteMasterTileEntity tileentity;
-
-  /**
-   * Logical-client-side constructor, called from {@link ContainerType#create(IContainerFactory)}
-   * Calls the logical-server-side constructor with the TileEntity at the pos in the PacketBuffer
-   */
-  public RemoteMasterContainer(final int windowId, final PlayerInventory playerInventory, final PacketBuffer data) {
-    this(windowId, playerInventory, (RemoteMasterTileEntity)playerInventory.player.world.getTileEntity(data.readBlockPos()));
-  }
-
+public class RemoteMasterContainer extends AbstractTileEntityContainer<RemoteMasterTileEntity> {
   public RemoteMasterContainer(final int id, final PlayerInventory playerInventory, final RemoteMasterTileEntity tile) {
-    super(AAContainerTypes.REMOTE_MASTER.get(), id);
-    tileentity = tile;
+    super(AAContainerTypes.REMOTE_MASTER.get(), id, tile);
 
     for(int j = 0; j < 3; ++j) {
       for(int k = 0; k < 9; ++k) {
@@ -43,11 +28,6 @@ public class RemoteMasterContainer extends Container {
     for(int i1 = 0; i1 < 9; ++i1) {
       this.addSlot(new Slot(playerInventory, i1, 8 + i1 * 18, 143));
     }
-  }
-
-  @Override
-  public boolean canInteractWith(PlayerEntity playerIn) {
-    return tileentity.canPlayerUse(playerIn);
   }
 
   @Override
