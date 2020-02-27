@@ -2,6 +2,7 @@ package alpvax.advancedautocrafting;
 
 import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.client.data.AABlockstateProvider;
+import alpvax.advancedautocrafting.client.data.AAItemModelProvider;
 import alpvax.advancedautocrafting.client.data.AALangProvider;
 import alpvax.advancedautocrafting.client.gui.ControllerScreen;
 import alpvax.advancedautocrafting.client.gui.RemoteMasterScreen;
@@ -81,7 +82,7 @@ public class AdvancedAutocrafting {
     if (event.includeClient()) {
       gen.addProvider(new AABlockstateProvider(gen, event.getExistingFileHelper()));
       //TODO: Generate item models when supported by forge:
-      // gen.addProvider(new AAItemModelProvider(gen, event.getExistingFileHelper()));
+      gen.addProvider(new AAItemModelProvider(gen, event.getExistingFileHelper()));
       gen.addProvider(new AALangProvider(gen));
     }
     if (event.includeServer()) {

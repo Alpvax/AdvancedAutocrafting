@@ -2,6 +2,7 @@ package alpvax.advancedautocrafting.client.data;
 
 import alpvax.advancedautocrafting.AdvancedAutocrafting;
 import alpvax.advancedautocrafting.block.AABlocks;
+import alpvax.advancedautocrafting.item.AAItems;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.util.IItemProvider;
@@ -30,9 +31,18 @@ public class AAItemModelProvider extends ItemModelProvider {
   @Override
   protected void registerModels() {
 
+    generated(AAItems.REMOTE_POS);
+    handheld(AAItems.MULTITOOL);
+
     // BLOCKS
     blockItem(AABlocks.CONTROLLER);
     blockItem(AABlocks.REMOTE_MARKER);
+    blockItem(AABlocks.REMOTE_MASTER);
+    blockItem(AABlocks.WIRE, "_core");
+    /*axialBlock(AABlocks.WIRE, Map.of(
+        Direction.NORTH, WireBlock.ConnectionState.CONNECTION,
+        Direction.SOUTH, WireBlock.ConnectionState.CONNECTION
+    ));*/
   }
 
 
@@ -50,19 +60,8 @@ public class AAItemModelProvider extends ItemModelProvider {
   }
 
   private ItemModelBuilder blockItem(Supplier<? extends Block> block, String suffix) {
-    return withExistingParent(name(block), modLoc("block/" + name(block) + suffix));
-  }
-
-  private ItemModelBuilder blockWithInventoryModel(Supplier<? extends Block> block) {
-    return withExistingParent(name(block), modLoc("block/" + name(block) + "_inventory"));
-  }
-
-  private ItemModelBuilder blockSprite(Supplier<? extends Block> block) {
-    return blockSprite(block, modLoc("block/" + name(block)));
-  }
-
-  private ItemModelBuilder blockSprite(Supplier<? extends Block> block, ResourceLocation texture) {
-    return generated(() -> block.get().asItem(), texture);
+    String name = name(block);
+    return getBuilder(name).parent(new ModelFile.UncheckedModelFile(modLoc("block/" + name + suffix)));
   }
 
   private ItemModelBuilder generated(Supplier<? extends IItemProvider> item) {
@@ -80,4 +79,22 @@ public class AAItemModelProvider extends ItemModelProvider {
   private ItemModelBuilder handheld(Supplier<? extends IItemProvider> item, ResourceLocation texture) {
     return withExistingParent(name(item), "item/handheld").texture("layer0", texture);
   }
+
+  /*private <T extends Comparable<T>> ItemModelBuilder axialBlock(Supplier<? extends AxialBlock<T>> block, Map<Direction, T> propValues) {
+    ItemModelBuilder builder = withExistingParent(name(block), mcLoc("block/block"));
+    AxialBlockShape<T> shape = block.get().getBlockShape();
+    shape.makeCoreElement(builder, (d, f) -> f.uvs(0, 0, 16, 16));
+    propValues.forEach((d, v) -> {
+      Direction.Axis axis = d.getAxis().isHorizontal() ? Direction.Axis.Y : Direction.Axis.X;
+      float angle = d.getHorizontalAngle() + 180F % 360F;
+      if (!d.getAxis().isHorizontal()) {
+        axis = Direction.Axis.X;
+        angle = d.getYOffset() > 0 ? 270 : 90;
+      }
+      final Direction.Axis rotAxis = axis;
+      final float rotAngle = angle;
+      shape.validParts(v).forEach(p -> p.makeModelElement(builder).rotation().axis(rotAxis).angle(rotAngle));
+    });
+    return builder;
+  }*/
 }
