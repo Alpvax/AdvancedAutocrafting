@@ -38,11 +38,7 @@ public class AAItemModelProvider extends ItemModelProvider {
     blockItem(AABlocks.CONTROLLER);
     blockItem(AABlocks.REMOTE_MARKER);
     blockItem(AABlocks.REMOTE_MASTER);
-    blockItem(AABlocks.WIRE, "_core");
-    /*axialBlock(AABlocks.WIRE, Map.of(
-        Direction.NORTH, WireBlock.ConnectionState.CONNECTION,
-        Direction.SOUTH, WireBlock.ConnectionState.CONNECTION
-    ));*/
+    //blockItem(AABlocks.WIRE, "_core");
   }
 
 
@@ -79,22 +75,4 @@ public class AAItemModelProvider extends ItemModelProvider {
   private ItemModelBuilder handheld(Supplier<? extends IItemProvider> item, ResourceLocation texture) {
     return withExistingParent(name(item), "item/handheld").texture("layer0", texture);
   }
-
-  /*private <T extends Comparable<T>> ItemModelBuilder axialBlock(Supplier<? extends AxialBlock<T>> block, Map<Direction, T> propValues) {
-    ItemModelBuilder builder = withExistingParent(name(block), mcLoc("block/block"));
-    AxialBlockShape<T> shape = block.get().getBlockShape();
-    shape.makeCoreElement(builder, (d, f) -> f.uvs(0, 0, 16, 16));
-    propValues.forEach((d, v) -> {
-      Direction.Axis axis = d.getAxis().isHorizontal() ? Direction.Axis.Y : Direction.Axis.X;
-      float angle = d.getHorizontalAngle() + 180F % 360F;
-      if (!d.getAxis().isHorizontal()) {
-        axis = Direction.Axis.X;
-        angle = d.getYOffset() > 0 ? 270 : 90;
-      }
-      final Direction.Axis rotAxis = axis;
-      final float rotAngle = angle;
-      shape.validParts(v).forEach(p -> p.makeModelElement(builder).rotation().axis(rotAxis).angle(rotAngle));
-    });
-    return builder;
-  }*/
 }
