@@ -83,8 +83,9 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
     return list;
   }
 
+  @Nonnull
   public NonNullList<BlockPos> getRemotePositions() {
-    return getItems().stream().map((stack) -> AAUtil.readPosFromItemStack(stack)).filter(Objects::nonNull).collect(Collectors.toCollection(NonNullList::create));
+    return getItems().stream().map(AAUtil::readPosFromItemStack).filter(Objects::nonNull).collect(Collectors.toCollection(NonNullList::create));
   }
 
   public void dropItems(World worldIn, BlockPos pos, BlockState newState) {

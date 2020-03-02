@@ -160,7 +160,7 @@ public class BlockHighlightRender {
     RenderSystem.pushMatrix();
     matrixStack.push();
     matrixStack.translate(-renderInfo.getProjectedView().getX(), -renderInfo.getProjectedView().getY(), -renderInfo.getProjectedView().getZ()); // translate back to camera
-    Matrix4f matrix4f = matrixStack.getLast().getPositionMatrix(); // get final transformation matrix, handy to get yaw+pitch transformation
+    Matrix4f matrix4f = matrixStack.getLast().getMatrix(); // get final transformation matrix, handy to get yaw+pitch transformation
     RenderSystem.multMatrix(matrix4f);
     RenderSystem.enableBlend();
     RenderSystem.disableTexture();

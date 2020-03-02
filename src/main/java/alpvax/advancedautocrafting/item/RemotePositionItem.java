@@ -46,7 +46,7 @@ public class RemotePositionItem extends Item {
         }
       });
     }
-    return ActionResult.func_226248_a_(stack);
+    return ActionResult.resultSuccess(stack);
   }
 
   @Override

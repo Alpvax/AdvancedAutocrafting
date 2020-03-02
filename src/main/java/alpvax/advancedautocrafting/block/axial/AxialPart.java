@@ -39,9 +39,10 @@ public class AxialPart<T extends Comparable<T>> {
 
   private final Map<Direction, VoxelShape> shapes = Maps.newEnumMap(Direction.class);
 
+  @SafeVarargs
   public AxialPart(String name, float radius, float start, float end, T... allowedValues) {
     Preconditions.checkArgument(!Strings.isNullOrEmpty(name), "Part name cannot be null (or \"\")");
-    Preconditions.checkArgument(name != "core", "Part name cannot be \"core\")");
+    Preconditions.checkArgument(!name.equals("core"), "Part name cannot be \"core\")");
     this.name = name;
     this.radius = radius;
     this.start = start;
@@ -68,6 +69,7 @@ public class AxialPart<T extends Comparable<T>> {
     return shapes.get(d);
   }
 
+  @SuppressWarnings("unchecked")
   public T[] getAllowedValues() {
     return allowedValues.toArray((T[])Array.newInstance(valueClass, 0));
   }

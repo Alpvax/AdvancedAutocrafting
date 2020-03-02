@@ -14,6 +14,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ControllerBlock extends Block {
@@ -43,6 +44,8 @@ public class ControllerBlock extends Block {
     }
   }*/
 
+  @SuppressWarnings("deprecation")
+  @Nonnull
   @Override
   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
     final TileEntity tileEntity = worldIn.getTileEntity(pos);

@@ -18,6 +18,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class RemoteMasterBlock extends Block {
@@ -36,7 +37,8 @@ public class RemoteMasterBlock extends Block {
     return new RemoteMasterTileEntity();
   }
 
-  public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+  @SuppressWarnings("deprecation")
+  public void onReplaced(BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, BlockState newState, boolean isMoving) {
     if (state.getBlock() != newState.getBlock() && !isMoving) {
       TileEntity tileentity = worldIn.getTileEntity(pos);
       if (tileentity instanceof RemoteMasterTileEntity) {
@@ -48,6 +50,8 @@ public class RemoteMasterBlock extends Block {
     }
   }
 
+  @Nonnull
+  @SuppressWarnings("deprecation")
   @Override
   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
     if (worldIn.isRemote) {
@@ -67,7 +71,7 @@ public class RemoteMasterBlock extends Block {
     if(!stack.isEmpty()) {
       if(stack.getItem() instanceof BlockItem) {
         BlockState state = ((BlockItem) stack.getItem()).getBlock().getDefaultState();
-        tile.getRemotePositions().stream().forEach((p) -> worldIn.setBlockState(p, state));
+        tile.getRemotePositions().forEach((p) -> worldIn.setBlockState(p, state));
         return false;
       } else if(AAUtil.hasPosition(stack)) {
         tile.addItem(stack.copy());
@@ -76,7 +80,7 @@ public class RemoteMasterBlock extends Block {
       }
       return true;
     } else {
-      tile.getRemotePositions().stream().forEach((p) -> worldIn.setBlockState(p, Blocks.AIR.getDefaultState()));
+      tile.getRemotePositions().forEach((p) -> worldIn.setBlockState(p, Blocks.AIR.getDefaultState()));
       return false;
     }
   }
