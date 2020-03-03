@@ -11,8 +11,8 @@ import net.minecraftforge.energy.IEnergyStorage;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class NodeFuctionality<T> implements ICapabilityProvider {
-  public static final NodeFuctionality<IEnergyStorage> ENERGY = new NodeFuctionality<>() {
+public abstract class NodeFunctionality<T> implements ICapabilityProvider {
+  public static final NodeFunctionality<IEnergyStorage> FORGE_ENERGY = new NodeFunctionality<IEnergyStorage>() {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {

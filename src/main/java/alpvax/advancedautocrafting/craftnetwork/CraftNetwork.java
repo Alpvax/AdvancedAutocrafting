@@ -1,10 +1,13 @@
 package alpvax.advancedautocrafting.craftnetwork;
 
-import alpvax.advancedautocrafting.craftnetwork.function.NodeFuctionality;
+import alpvax.advancedautocrafting.craftnetwork.connection.INodeConnection;
+import alpvax.advancedautocrafting.craftnetwork.function.NodeFunctionality;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.energy.IEnergyStorage;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -19,8 +22,19 @@ public class CraftNetwork implements IEnergyStorage {
   private INetworkNode controller;
   private Set<INetworkNode> dirtyNodes = new HashSet<>();
   private Object2IntMap<INetworkNode> nodeScores = Object2IntMaps.emptyMap();
-  private Multimap<NodeFuctionality<?>, INetworkNode> byFunction = HashMultimap.create();
+  private Multimap<NodeFunctionality<?>, INetworkNode> byFunction = HashMultimap.create();
 
+  public CraftNetwork(INetworkNode controllerNode) {
+    controller = controllerNode;
+    markDirty(controller);
+  }
+
+  public ITextComponent chatNetworkDisplay() {
+    return new StringTextComponent(nodeScores.object2IntEntrySet().stream()
+        .map(e -> String.format("%s = %s", e.getKey().getPos(), e.getIntValue()))
+        .collect(Collectors.joining("\n"))
+    );
+  }
   /*public void connect(INetworkNode node, ){}
 
   private int updateScore(INetworkNode node) {
@@ -56,14 +70,18 @@ public class CraftNetwork implements IEnergyStorage {
       }).collect(Collectors.toSet());
       toVisit.removeAll(currentScore);
       currentScore++;
-      nodes.forEach(nodePair -> toVisit.put(nodePair.getKey(), nodePair.getValue()));
+      nodes.forEach(nodePair -> {
+        if (!visited.containsKey(nodePair.getValue())) {
+          toVisit.put(nodePair.getKey(), nodePair.getValue());
+        }
+      });
     }
     return visited;
   }
 
   private Stream<IEnergyStorage> energyNodes() {
-    return byFunction.get(NodeFuctionality.ENERGY).stream()
-               .map(node -> node.getFunctionality(NodeFuctionality.ENERGY))
+    return byFunction.get(NodeFunctionality.FORGE_ENERGY).stream()
+               .map(node -> node.getFunctionality(NodeFunctionality.FORGE_ENERGY))
                .filter(Optional::isPresent)
                .map(o -> o.get());
   }

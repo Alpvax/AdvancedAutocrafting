@@ -2,7 +2,7 @@ package alpvax.advancedautocrafting.block.tile;
 
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.connection.INodeConnection;
-import alpvax.advancedautocrafting.craftnetwork.function.NodeFuctionality;
+import alpvax.advancedautocrafting.craftnetwork.function.NodeFunctionality;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 
@@ -17,7 +17,7 @@ public class DummyNetworkNode implements INetworkNode {
 
   @Nonnull
   @Override
-  public NonNullList<INodeConnection> getConnections() {
+  public NonNullList<? extends INodeConnection<?>> getConnections() {
     return NonNullList.create();
   }
 
@@ -31,7 +31,7 @@ public class DummyNetworkNode implements INetworkNode {
   public void connectionChanged() {}
 
   @Override
-  public <T> Optional<T> getFunctionality(NodeFuctionality<T> functionality) {
+  public <T> Optional<T> getFunctionality(NodeFunctionality<T> functionality) {
     return Optional.empty();
   }
 

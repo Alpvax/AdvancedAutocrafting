@@ -52,6 +52,7 @@ public class ControllerBlock extends Block {
     if (tileEntity instanceof ControllerTileEntity) {
       if (!worldIn.isRemote) {
         NetworkHooks.openGui((ServerPlayerEntity) player, (ControllerTileEntity) tileEntity, pos);
+        player.sendMessage(((ControllerTileEntity) tileEntity).getNetwork().chatNetworkDisplay());
       }
       return ActionResultType.SUCCESS;
     }

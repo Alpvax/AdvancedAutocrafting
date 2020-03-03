@@ -7,7 +7,7 @@ import alpvax.advancedautocrafting.container.RemoteMasterContainer;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.connection.INodeConnection;
 import alpvax.advancedautocrafting.craftnetwork.connection.RemoteNodeConnection;
-import alpvax.advancedautocrafting.craftnetwork.function.NodeFuctionality;
+import alpvax.advancedautocrafting.craftnetwork.function.NodeFunctionality;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -63,7 +63,7 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
     return new INetworkNode() {
       @Nonnull
       @Override
-      public NonNullList<INodeConnection> getConnections() {
+      public NonNullList<RemoteNodeConnection> getConnections() {
         return RemoteMasterTileEntity.this.getItems().stream().map((stack) -> {
           BlockPos pos = AAUtil.readPosFromItemStack(stack);
           TileEntity tile = world.getTileEntity(pos);
@@ -87,7 +87,7 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
       }
 
       @Override
-      public <T> Optional<T> getFunctionality(NodeFuctionality<T> functionality) {
+      public <T> Optional<T> getFunctionality(NodeFunctionality<T> functionality) {
         return Optional.empty(); //TODO:???
       }
     };
