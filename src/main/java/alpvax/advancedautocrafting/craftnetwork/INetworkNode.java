@@ -1,12 +1,19 @@
 package alpvax.advancedautocrafting.craftnetwork;
 
-import net.minecraft.util.Direction;
+import alpvax.advancedautocrafting.craftnetwork.connection.INodeConnection;
+import alpvax.advancedautocrafting.craftnetwork.function.NodeFuctionality;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
 
 public interface INetworkNode {
-  @Nonnull NonNullList<INetworkNode> getChildNodes(Direction inbound);
+  @Nonnull NonNullList<INodeConnection> getConnections();
   @Nonnull BlockPos getPos();
+  void connectionChanged();
+  <T> Optional<T> getFunctionality(NodeFuctionality<T> functionality);
+  default int upkeepCost() {
+    return 1;//TODO: Config?
+  }
 }

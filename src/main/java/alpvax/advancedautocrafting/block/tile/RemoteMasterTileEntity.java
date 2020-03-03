@@ -5,7 +5,9 @@ import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.container.RemoteMasterContainer;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
-import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
+import alpvax.advancedautocrafting.craftnetwork.connection.INodeConnection;
+import alpvax.advancedautocrafting.craftnetwork.connection.RemoteNodeConnection;
+import alpvax.advancedautocrafting.craftnetwork.function.NodeFuctionality;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -29,6 +31,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class RemoteMasterTileEntity extends TileEntity implements INamedContainerProvider {
@@ -58,16 +61,34 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
 
   private INetworkNode makeNetworkNode() {
     return new INetworkNode() {
+      @Nonnull
       @Override
-      public NonNullList<INetworkNode> getChildNodes(Direction inbound) {
-        return RemoteMasterTileEntity.this.getItems().stream().map((stack) ->
-            new SimpleNetworkNode(AAUtil.readPosFromItemStack(stack))).collect(Collectors.toCollection(NonNullList::create)
-        );
+      public NonNullList<INodeConnection> getConnections() {
+        return RemoteMasterTileEntity.this.getItems().stream().map((stack) -> {
+          BlockPos pos = AAUtil.readPosFromItemStack(stack);
+          TileEntity tile = world.getTileEntity(pos);
+          INetworkNode node = null;
+          if (tile != null) {
+            LazyOptional<INetworkNode> cap = tile.getCapability(Capabilities.NODE_CAPABILITY);
+            node = cap.orElse(null);
+          }
+          return new RemoteNodeConnection(this, node == null ? new DummyNetworkNode(pos) : node);
+        }).collect(Collectors.toCollection(NonNullList::create));
       }
 
       @Override
       public BlockPos getPos() {
         return RemoteMasterTileEntity.this.pos;
+      }
+
+      @Override
+      public void connectionChanged() {
+
+      }
+
+      @Override
+      public <T> Optional<T> getFunctionality(NodeFuctionality<T> functionality) {
+        return Optional.empty(); //TODO:???
       }
     };
   }

@@ -3,6 +3,7 @@ package alpvax.advancedautocrafting;
 import alpvax.advancedautocrafting.client.data.lang.AATranslationKeys;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.util.Constants;
@@ -43,5 +44,10 @@ public class AAUtil {
   public static TranslationTextComponent getItemPositionText(@Nonnull ItemStack stack) {
     BlockPos pos = readPosFromItemStack(stack);
     return new TranslationTextComponent(AATranslationKeys.ITEM_POS_LORE, pos != null ? pos : "None");
+  }
+
+  public static Direction getDirection(BlockPos from, BlockPos to) {
+    BlockPos vec = to.subtract(from);
+    return Direction.getFacingFromVector(vec.getX(), vec.getY(), vec.getZ());
   }
 }
