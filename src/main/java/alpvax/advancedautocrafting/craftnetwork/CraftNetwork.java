@@ -1,11 +1,11 @@
 package alpvax.advancedautocrafting.craftnetwork;
 
-import alpvax.advancedautocrafting.craftnetwork.connection.INodeConnection;
 import alpvax.advancedautocrafting.craftnetwork.function.NodeFunctionality;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.energy.IEnergyStorage;
@@ -13,6 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,10 +24,10 @@ public class CraftNetwork implements IEnergyStorage {
   private Set<INetworkNode> dirtyNodes = new HashSet<>();
   private Object2IntMap<INetworkNode> nodeScores = Object2IntMaps.emptyMap();
   private Multimap<NodeFunctionality<?>, INetworkNode> byFunction = HashMultimap.create();
+  private int upkeep = 0;
 
   public CraftNetwork(INetworkNode controllerNode) {
     controller = controllerNode;
-    markDirty(controller);
   }
 
   public ITextComponent chatNetworkDisplay() {
@@ -41,7 +42,7 @@ public class CraftNetwork implements IEnergyStorage {
     return -1;//TODO
   }*/
 
-  void markDirty(INetworkNode dirtyNode) {
+  public void markDirty(INetworkNode dirtyNode) {
     dirtyNodes.add(dirtyNode);
   }
 
@@ -52,19 +53,20 @@ public class CraftNetwork implements IEnergyStorage {
   public void update() {
     if (!dirtyNodes.isEmpty()) {
       nodeScores = recalculateAll(); //TODO: update individual nodes
+      upkeep = nodeScores.keySet().parallelStream().map(INetworkNode::upkeepCost).reduce(Integer::sum).orElse(0);
     }
-    nodeScores.keySet().forEach(node -> extractEnergy(node.upkeepCost(), true));
+    extractEnergy(upkeep, false);
   }
 
   Object2IntMap<INetworkNode> recalculateAll() {
-    Object2IntMap<INetworkNode> visited = Object2IntMaps.emptyMap();
+    Object2IntMap<INetworkNode> visited = new Object2IntOpenHashMap<>();
     Multimap<Integer, INetworkNode> toVisit = HashMultimap.create();
     int currentScore = 0;
     //Set<INetworkNode> nodes = new HashSet<>();
     toVisit.put(0, controller);
     while (!toVisit.isEmpty()) {
       int cScore = currentScore;
-      Set<Pair<Integer, INetworkNode>> nodes = toVisit.get(currentScore).stream().flatMap(node -> {
+      Set<Pair<Integer, INetworkNode>> nodes = toVisit.get(currentScore).stream().filter(Objects::nonNull).flatMap(node -> {
         visited.put(node, cScore);
         return node.getConnections().stream().map(conn -> Pair.of(cScore + conn.transferCost(), conn.getChild()));
       }).collect(Collectors.toSet());
@@ -76,7 +78,12 @@ public class CraftNetwork implements IEnergyStorage {
         }
       });
     }
+    dirtyNodes.removeAll(visited.keySet());
     return visited;
+  }
+
+  public boolean isActive() {
+    return getEnergyStored() >= upkeep;
   }
 
   private Stream<IEnergyStorage> energyNodes() {
@@ -99,7 +106,13 @@ public class CraftNetwork implements IEnergyStorage {
 
   @Override
   public int extractEnergy(int maxExtract, boolean simulate) {
-    return 0;
+    Set<IEnergyStorage> energy = energyNodes().collect(Collectors.toSet());
+    Iterator<IEnergyStorage> it = energy.iterator();
+    int remaining = maxExtract;
+    while (it.hasNext() && remaining > 0) {
+      remaining -= it.next().extractEnergy(remaining, simulate);
+    }
+    return maxExtract - remaining;
   }
 
   @Override
