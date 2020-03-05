@@ -22,6 +22,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -63,7 +64,7 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
     return new INetworkNode() {
       @Nonnull
       @Override
-      public NonNullList<RemoteNodeConnection> getConnections() {
+      public NonNullList<INodeConnection<?>> getConnections() {
         return RemoteMasterTileEntity.this.getItems().stream().map((stack) -> {
           BlockPos pos = AAUtil.readPosFromItemStack(stack);
           TileEntity tile = world.getTileEntity(pos);
@@ -72,8 +73,14 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
             LazyOptional<INetworkNode> cap = tile.getCapability(Capabilities.NODE_CAPABILITY);
             node = cap.orElse(null);
           }
-          return new RemoteNodeConnection(this, node == null ? new DummyNetworkNode(pos) : node);
+          return new RemoteNodeConnection(this, node == null ? new DummyNetworkNode(getWorld(), pos) : node);
         }).collect(Collectors.toCollection(NonNullList::create));
+      }
+
+      @Nonnull
+      @Override
+      public IWorldReader getWorld() {
+        return RemoteMasterTileEntity.this.world;
       }
 
       @Override

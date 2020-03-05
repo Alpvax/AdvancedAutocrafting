@@ -1,28 +1,28 @@
 package alpvax.advancedautocrafting.craftnetwork;
 
+import alpvax.advancedautocrafting.craftnetwork.connection.INodeConnection;
 import alpvax.advancedautocrafting.craftnetwork.function.NodeFunctionality;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMaps;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.energy.IEnergyStorage;
-import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.ObjIntConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CraftNetwork implements IEnergyStorage {
   private INetworkNode controller;
   private Set<INetworkNode> dirtyNodes = new HashSet<>();
-  private Object2IntMap<INetworkNode> nodeScores = Object2IntMaps.emptyMap();
+  private Map<INetworkNode, Integer> nodeScores = new HashMap<>();
   private Multimap<NodeFunctionality<?>, INetworkNode> byFunction = HashMultimap.create();
   private int upkeep = 0;
 
@@ -31,8 +31,11 @@ public class CraftNetwork implements IEnergyStorage {
   }
 
   public ITextComponent chatNetworkDisplay() {
-    return new StringTextComponent(nodeScores.object2IntEntrySet().stream()
-        .map(e -> String.format("%s = %s", e.getKey().getPos(), e.getIntValue()))
+    return new StringTextComponent("Network:\n" + nodeScores.entrySet().stream()
+        .map(e -> {
+          INetworkNode node = e.getKey();
+          return String.format("%s (pos = %s; score = %d)", node.getBlockState().getBlock(), node.getPos(), e.getValue());
+        })
         .collect(Collectors.joining("\n"))
     );
   }
@@ -58,31 +61,11 @@ public class CraftNetwork implements IEnergyStorage {
     extractEnergy(upkeep, false);
   }
 
-  Object2IntMap<INetworkNode> recalculateAll() {
-    Object2IntMap<INetworkNode> visited = new Object2IntOpenHashMap<>();
-    Multimap<Integer, INetworkNode> toVisit = HashMultimap.create();
-    int currentScore = 0;
-    //Set<INetworkNode> nodes = new HashSet<>();
-    toVisit.put(0, controller);
-    while (!toVisit.isEmpty()) {
-      int cScore = currentScore;
-      Set<Pair<Integer, INetworkNode>> nodes = toVisit.get(currentScore).stream().filter(Objects::nonNull).flatMap(node -> {
-        visited.put(node, cScore);
-        return node.getConnections().stream().map(conn -> Pair.of(cScore + conn.transferCost(), conn.getChild()));
-      }).collect(Collectors.toSet());
-      toVisit.removeAll(currentScore);
-      currentScore++;
-      nodes.forEach(nodePair -> {
-        if (!visited.containsKey(nodePair.getValue())) {
-          toVisit.put(nodePair.getKey(), nodePair.getValue());
-        }
-      });
-    }
-    dirtyNodes.removeAll(visited.keySet());
-    return visited;
+  Map<INetworkNode, Integer> recalculateAll() {
+    return new NodeProcessor(controller).setProcessCallback((node, score) -> dirtyNodes.remove(node)).process();
   }
 
-  public boolean isActive() {
+  public final boolean isActive() {
     return getEnergyStored() >= upkeep;
   }
 
@@ -90,7 +73,7 @@ public class CraftNetwork implements IEnergyStorage {
     return byFunction.get(NodeFunctionality.FORGE_ENERGY).stream()
                .map(node -> node.getFunctionality(NodeFunctionality.FORGE_ENERGY))
                .filter(Optional::isPresent)
-               .map(o -> o.get());
+               .map(Optional::get);
   }
 
   @Override
@@ -137,5 +120,58 @@ public class CraftNetwork implements IEnergyStorage {
   @Override
   public boolean canReceive() {
     return energyNodes().anyMatch(IEnergyStorage::canReceive);
+  }
+
+  private static class NodeProcessor {
+    private final Map<INetworkNode, Integer> processed = new HashMap<>();
+    private final Map<INetworkNode, Integer> toProcess = new HashMap<>();
+    private int currentScore = 0;
+    private ObjIntConsumer<INetworkNode> callback = null;
+
+    private NodeProcessor() {}
+    private NodeProcessor(INetworkNode node) {
+      this(node, 0);
+    }
+    private NodeProcessor(INetworkNode node, int score) {
+      this();
+      addNode(node, score);
+    }
+    public NodeProcessor setProcessCallback(ObjIntConsumer<INetworkNode> callback) {
+      this.callback = callback;
+      return this;
+    }
+    private void addNode(INetworkNode node, int score) {
+      toProcess.compute(node, (k, prevScore) -> prevScore != null ? Math.min(prevScore, score) : score);
+    }
+    private Optional<NonNullList<INodeConnection<?>>> processNode(INetworkNode node) {
+      int score = toProcess.compute(node, (k, prevScore) -> prevScore - 1); // Will throw NPE if node not in map
+      if (score < 1) {
+        NonNullList<INodeConnection<?>> connections = node.getConnections();
+        connections.removeIf(conn -> processed.containsKey(conn.getChild()));
+        toProcess.remove(node);
+        return Optional.of(connections);
+      }
+      return Optional.empty();
+    }
+    private void runLoop() {
+      new HashMap<INetworkNode, Integer>(toProcess).forEach(((node, count) -> {
+        Optional<NonNullList<INodeConnection<?>>> children = processNode(node);
+        if (children.isPresent()) {
+          processed.put(node, currentScore);
+          if (callback != null) {
+            callback.accept(node, currentScore);
+          }
+          children.get().forEach(connection -> addNode(connection.getChild(), connection.transferCost()));
+        }
+      }));
+      currentScore++;
+    }
+
+    public Map<INetworkNode, Integer> process() {
+      while (!toProcess.isEmpty()) {
+        runLoop();
+      }
+      return processed;
+    }
   }
 }

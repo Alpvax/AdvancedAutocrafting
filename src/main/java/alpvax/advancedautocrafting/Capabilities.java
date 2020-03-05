@@ -1,14 +1,16 @@
 package alpvax.advancedautocrafting;
 
+import alpvax.advancedautocrafting.block.tile.DummyNetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
-import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
 import alpvax.advancedautocrafting.item.IMultitool;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public class Capabilities {
   @CapabilityInject(INetworkNode.class)
@@ -31,7 +33,7 @@ public class Capabilities {
       {
 
       }
-    }, () -> new SimpleNetworkNode(BlockPos.ZERO));
+    }, () -> new DummyNetworkNode(ServerLifecycleHooks.getCurrentServer().getWorld(DimensionType.OVERWORLD), BlockPos.ZERO));
     CapabilityManager.INSTANCE.register(IMultitool.class, new Capability.IStorage<IMultitool>()
     {
       @Override

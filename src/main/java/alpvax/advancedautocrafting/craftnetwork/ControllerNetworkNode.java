@@ -7,6 +7,7 @@ import alpvax.advancedautocrafting.craftnetwork.function.NodeFunctionality;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorldReader;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
@@ -20,12 +21,18 @@ public class ControllerNetworkNode implements INetworkNode {
 
   @Nonnull
   @Override
-  public NonNullList<? extends INodeConnection<?>> getConnections() {
-    NonNullList<DirectNodeConnection> list = NonNullList.create();
+  public NonNullList<INodeConnection<?>> getConnections() {
+    NonNullList<INodeConnection<?>> list = NonNullList.create();
     for (Direction d : ALL_DIRECTIONS) {
       INetworkNode.getAdjacentNode(getPos(), tileEntity.getWorld(), d).ifPresent(node -> list.add(new DirectNodeConnection(this, node, d)));
     }
     return list;
+  }
+
+  @Nonnull
+  @Override
+  public IWorldReader getWorld() {
+    return tileEntity.getWorld();
   }
 
   @Nonnull
