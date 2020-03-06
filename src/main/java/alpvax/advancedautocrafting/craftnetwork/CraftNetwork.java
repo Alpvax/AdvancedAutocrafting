@@ -5,10 +5,12 @@ import alpvax.advancedautocrafting.craftnetwork.function.NodeFunctionality;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.energy.IEnergyStorage;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,13 +33,20 @@ public class CraftNetwork implements IEnergyStorage {
   }
 
   public ITextComponent chatNetworkDisplay() {
-    return new StringTextComponent("Network:\n" + nodeScores.entrySet().stream()
-        .map(e -> {
+    ITextComponent text = new StringTextComponent("Network:\n");
+    nodeScores.entrySet().stream()
+        .filter(e -> e.getKey().getClass() != WireNetworkNode.class) // don't hide wire node subclasses
+        .sorted(Comparator.comparingInt(Map.Entry::getValue))
+        .forEachOrdered(e -> {
           INetworkNode node = e.getKey();
-          return String.format("%s (pos = %s; score = %d)", node.getBlockState().getBlock(), node.getPos(), e.getValue());
-        })
-        .collect(Collectors.joining("\n"))
-    );
+          BlockPos pos = node.getPos();
+          text.appendSibling(node.getBlockState().getBlock().getNameTextComponent())
+              .appendText(String.format(" @ (%d, %d, %d); score = %d\n",
+                  pos.getX(), pos.getY(), pos.getZ(),
+                  e.getValue()
+              ));
+        });
+    return text;
   }
   /*public void connect(INetworkNode node, ){}
 
