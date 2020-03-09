@@ -17,9 +17,10 @@ public class ControllerNetworkNode implements INetworkNode {
     tileEntity = tile;
   }
 
+  @Nonnull
   @Override
-  public boolean isConnectionDisabled(Direction dir) {
-    return false;
+  public Connectivity getConnectivity(Direction dir) {
+    return Connectivity.CONNECT;
   }
 
   @Nonnull

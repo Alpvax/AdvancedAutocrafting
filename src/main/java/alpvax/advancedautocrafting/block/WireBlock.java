@@ -43,9 +43,22 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
   @Override
   public INetworkNode createNode(BlockState state, IWorldReader world, BlockPos pos) {
     return world.getBlockState(pos).getBlock() == this ? new SimpleNetworkConnectionNode(world, pos) {
+      @Nonnull
       @Override
-      public boolean isConnectionDisabled(Direction dir) {
-        return getBlockState().get(getConnectionProp(dir)) == ConnectionState.DISABLED;
+      public Connectivity getConnectivity(Direction dir) {
+        IProperty<ConnectionState> prop = getConnectionProp(dir);
+        if (prop != null) {
+          switch (getBlockState().get(prop)) {
+            case DISABLED:
+              return Connectivity.BLOCK;
+            case INTERFACE:
+            case CONNECTION:
+              return Connectivity.CONNECT;
+            case NONE:
+              return Connectivity.ACCEPT;
+          }
+        }
+        return Connectivity.BLOCK;
       }
     } : null;
   }

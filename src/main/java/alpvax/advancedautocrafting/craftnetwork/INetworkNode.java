@@ -21,7 +21,22 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface INetworkNode {
-  boolean isConnectionDisabled(Direction dir);
+  enum Connectivity {
+    /**
+     * Prevent connections on this side
+     */
+    BLOCK,
+    /**
+     * Attempt to connect on this face
+     */
+    CONNECT,
+    /**
+     * Neither attempt to connect or refuse connection.
+     * Leave connectivity up to adjacent node
+     */
+    ACCEPT;
+  }
+  @Nonnull Connectivity getConnectivity(Direction dir);
   @Nonnull IWorldReader getWorld();
   @Nonnull BlockPos getPos();
   @Nonnull Set<NodeFunctionality<?>> getFunctionalities();
@@ -78,6 +93,6 @@ public interface INetworkNode {
 
   static Optional<INetworkNode> getAdjacentConnectedNode(BlockPos thisPos, IWorldReader world, Direction d) {
     Direction opp = d.getOpposite();
-    return getNodeAt(world, thisPos.offset(d), opp).filter(node -> node.isConnectionDisabled(opp));
+    return getNodeAt(world, thisPos.offset(d), opp).filter(node -> node.getConnectivity(opp) != Connectivity.BLOCK);
   }
 }

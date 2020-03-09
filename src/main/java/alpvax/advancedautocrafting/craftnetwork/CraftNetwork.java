@@ -1,9 +1,11 @@
 package alpvax.advancedautocrafting.craftnetwork;
 
+import alpvax.advancedautocrafting.craftnetwork.connection.DirectNodeConnection;
 import alpvax.advancedautocrafting.craftnetwork.connection.INodeConnection;
 import alpvax.advancedautocrafting.craftnetwork.function.NodeFunctionality;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -22,6 +24,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CraftNetwork implements IEnergyStorage {
+  private static final Direction[] ALL_DIRECTIONS = Direction.values();
+
   private INetworkNode controller;
   private Set<INetworkNode> dirtyNodes = new HashSet<>();
   private Map<INetworkNode, Integer> nodeScores = new HashMap<>();
@@ -157,10 +161,18 @@ public class CraftNetwork implements IEnergyStorage {
     private Optional<NonNullList<INodeConnection<?>>> processNode(INetworkNode node) {
       int score = toProcess.compute(node, (k, prevScore) -> prevScore - 1); // Will throw NPE if node not in map
       if (score < 1) {
-        Optional<NonNullList<INodeConnection<?>>> connections = node.getFunctionality(NodeFunctionality.EXTENDED_CONNECT);
-        connections.map(c -> c.removeIf(conn -> processed.containsKey(conn.getChild())));
+        NonNullList<INodeConnection<?>> list = NonNullList.create();
+        for (Direction d : ALL_DIRECTIONS) {
+          if (node.getConnectivity(d) == INetworkNode.Connectivity.CONNECT) {
+            INetworkNode.getAdjacentConnectedNode(node.getPos(), node.getWorld(), d).ifPresent(adj -> {
+              list.add(new DirectNodeConnection(node, adj, d));
+            });
+          }
+        }
+        node.getFunctionality(NodeFunctionality.EXTENDED_CONNECT).ifPresent(list::addAll);
+        list.removeIf(conn -> processed.containsKey(conn.getChild()));
         toProcess.remove(node);
-        return connections;
+        return Optional.of(list);
       }
       return Optional.empty();
     }

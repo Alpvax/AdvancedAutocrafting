@@ -77,9 +77,10 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
         }).collect(Collectors.toCollection(NonNullList::create));
       }
 
+      @Nonnull
       @Override
-      public boolean isConnectionDisabled(Direction dir) {
-        return false;
+      public Connectivity getConnectivity(Direction dir) {
+        return Connectivity.ACCEPT;
       }
 
       @Nonnull
