@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class RemoteMasterTileEntity extends TileEntity implements INamedContainerProvider {
@@ -63,7 +64,6 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
   private INetworkNode makeNetworkNode() {
     return new INetworkNode() {
       @Nonnull
-      @Override
       public NonNullList<INodeConnection<?>> getConnections() {
         return RemoteMasterTileEntity.this.getItems().stream().map((stack) -> {
           BlockPos pos = AAUtil.readPosFromItemStack(stack);
@@ -77,25 +77,35 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
         }).collect(Collectors.toCollection(NonNullList::create));
       }
 
+      @Override
+      public boolean isConnectionDisabled(Direction dir) {
+        return false;
+      }
+
       @Nonnull
       @Override
       public IWorldReader getWorld() {
         return RemoteMasterTileEntity.this.world;
       }
 
+      @Nonnull
       @Override
       public BlockPos getPos() {
         return RemoteMasterTileEntity.this.pos;
       }
 
+      @Nonnull
       @Override
-      public void connectionChanged() {
-
+      public Set<NodeFunctionality<?>> getFunctionalities() {
+        return Set.of(NodeFunctionality.EXTENDED_CONNECT);
       }
 
+      @Nonnull
       @Override
       public <T> Optional<T> getFunctionality(NodeFunctionality<T> functionality) {
-        return Optional.empty(); //TODO:???
+        return NodeFunctionality
+                   .chain(NodeFunctionality.EXTENDED_CONNECT, this::getConnections)
+                   .get(functionality);
       }
     };
   }

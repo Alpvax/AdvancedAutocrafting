@@ -5,6 +5,9 @@ import alpvax.advancedautocrafting.block.axial.AxialBlock;
 import alpvax.advancedautocrafting.block.axial.AxialBlockShape;
 import alpvax.advancedautocrafting.block.axial.AxialPart;
 import alpvax.advancedautocrafting.block.axial.IAxialPartInstance;
+import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
+import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkConnectionNode;
+import alpvax.advancedautocrafting.craftnetwork.connection.ISimpleCraftNetworkNodeFactory;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -36,7 +39,17 @@ import java.util.Locale;
 
 import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements IWaterLoggable {
+public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements IWaterLoggable, ISimpleCraftNetworkNodeFactory {
+  @Override
+  public INetworkNode createNode(BlockState state, IWorldReader world, BlockPos pos) {
+    return world.getBlockState(pos).getBlock() == this ? new SimpleNetworkConnectionNode(world, pos) {
+      @Override
+      public boolean isConnectionDisabled(Direction dir) {
+        return getBlockState().get(getConnectionProp(dir)) == ConnectionState.DISABLED;
+      }
+    } : null;
+  }
+
   public enum ConnectionState implements IStringSerializable {
     NONE,
     CONNECTION,

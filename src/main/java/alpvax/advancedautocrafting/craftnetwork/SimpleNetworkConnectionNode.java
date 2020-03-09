@@ -1,27 +1,40 @@
-package alpvax.advancedautocrafting.block.tile;
+package alpvax.advancedautocrafting.craftnetwork;
 
-import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.function.NodeFunctionality;
-import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-public class DummyNetworkNode implements INetworkNode {
+public abstract class SimpleNetworkConnectionNode implements INetworkNode {
   private final IWorldReader world;
   private final BlockPos pos;
-  public DummyNetworkNode(IWorldReader world, BlockPos pos) {
+
+  public SimpleNetworkConnectionNode(IWorldReader world, BlockPos pos) {
     this.world = world;
     this.pos = pos;
   }
 
   @Override
-  public boolean isConnectionDisabled(Direction dir) {
-    return false;
+  public int hashCode() {
+    return Objects.hash(world, pos);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof SimpleNetworkConnectionNode) {
+      SimpleNetworkConnectionNode node = (SimpleNetworkConnectionNode) obj;
+      return world.equals(node.world) && pos.equals(node.pos);
+    }
+    return super.equals(obj);
+  }
+
+  @Override
+  public int upkeepCost() {
+    return 0;
   }
 
   @Nonnull
@@ -39,17 +52,12 @@ public class DummyNetworkNode implements INetworkNode {
   @Nonnull
   @Override
   public Set<NodeFunctionality<?>> getFunctionalities() {
-    return Collections.emptySet();
+    return Set.of();
   }
 
   @Nonnull
   @Override
   public <T> Optional<T> getFunctionality(NodeFunctionality<T> functionality) {
     return Optional.empty();
-  }
-
-  @Override
-  public int upkeepCost() {
-    return 0;
   }
 }

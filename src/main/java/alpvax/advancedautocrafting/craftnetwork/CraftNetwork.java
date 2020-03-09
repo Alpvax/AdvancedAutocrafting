@@ -35,12 +35,14 @@ public class CraftNetwork implements IEnergyStorage {
   public ITextComponent chatNetworkDisplay() {
     ITextComponent text = new StringTextComponent("Network:\n");
     nodeScores.entrySet().stream()
-        .filter(e -> e.getKey().getClass() != WireNetworkNode.class) // don't hide wire node subclasses
+        // Hide nodes which only provide connections
+        .filter(e -> e.getKey().getFunctionalities().stream().anyMatch(nf -> nf != NodeFunctionality.EXTENDED_CONNECT))
+        // Order by distance from controller
         .sorted(Comparator.comparingInt(Map.Entry::getValue))
         .forEachOrdered(e -> {
           INetworkNode node = e.getKey();
           BlockPos pos = node.getPos();
-          text.appendSibling(node.getBlockState().getBlock().getNameTextComponent())
+          text.appendSibling(node.getName())
               .appendText(String.format(" @ (%d, %d, %d); score = %d\n",
                   pos.getX(), pos.getY(), pos.getZ(),
                   e.getValue()
@@ -155,15 +157,15 @@ public class CraftNetwork implements IEnergyStorage {
     private Optional<NonNullList<INodeConnection<?>>> processNode(INetworkNode node) {
       int score = toProcess.compute(node, (k, prevScore) -> prevScore - 1); // Will throw NPE if node not in map
       if (score < 1) {
-        NonNullList<INodeConnection<?>> connections = node.getConnections();
-        connections.removeIf(conn -> processed.containsKey(conn.getChild()));
+        Optional<NonNullList<INodeConnection<?>>> connections = node.getFunctionality(NodeFunctionality.EXTENDED_CONNECT);
+        connections.map(c -> c.removeIf(conn -> processed.containsKey(conn.getChild())));
         toProcess.remove(node);
-        return Optional.of(connections);
+        return connections;
       }
       return Optional.empty();
     }
     private void runLoop() {
-      new HashMap<INetworkNode, Integer>(toProcess).forEach(((node, count) -> {
+      new HashMap<>(toProcess).forEach(((node, count) -> {
         Optional<NonNullList<INodeConnection<?>>> children = processNode(node);
         if (children.isPresent()) {
           processed.put(node, currentScore);
