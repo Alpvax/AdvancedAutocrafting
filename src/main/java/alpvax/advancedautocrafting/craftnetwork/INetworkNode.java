@@ -48,6 +48,8 @@ public interface INetworkNode {
   default int upkeepCost() {
     return 1;
   }
+  default void onConnect(CraftNetwork network) {}
+  default void onDisconnect(CraftNetwork network) {}
 
   /* =========== Helper methods =========== */
   @Nonnull

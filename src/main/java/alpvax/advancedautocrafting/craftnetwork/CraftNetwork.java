@@ -71,7 +71,12 @@ public class CraftNetwork implements IEnergyStorage {
 
   public void update() {
     if (!dirtyNodes.isEmpty()) {
-      nodeScores = recalculateAll(); //TODO: update individual nodes
+      Map<INetworkNode, Integer> newScores = recalculateAll(); //TODO: update individual nodes
+      Set<INetworkNode> oldNodes = nodeScores.keySet();
+      Set<INetworkNode> newNodes = newScores.keySet();
+      oldNodes.stream().filter(n -> !newNodes.contains(n)).forEach(n -> n.onDisconnect(this));
+      newNodes.stream().filter(n -> !oldNodes.contains(n)).forEach(n -> n.onConnect(this));
+      nodeScores = newScores;
       upkeep = nodeScores.keySet().parallelStream().map(INetworkNode::upkeepCost).reduce(Integer::sum).orElse(0);
     }
     extractEnergy(upkeep, false);
