@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IWorldReader;
@@ -70,7 +71,7 @@ public interface INetworkNode {
     return null;
   }
 
-  Map<Block, ISimpleCraftNetworkNodeFactory> NON_TILE_NODES = new HashMap<>();
+  Map<ResourceLocation, ISimpleCraftNetworkNodeFactory> NON_TILE_NODES = new HashMap<>();
 
   static Optional<INetworkNode> getNodeAt(IWorldReader world, BlockPos pos, @Nullable Direction fromDir) {
     BlockState state = world.getBlockState(pos);
@@ -82,10 +83,11 @@ public interface INetworkNode {
       }
     }
     Block block = state.getBlock();
+    ResourceLocation name = block.getRegistryName();
     INetworkNode node = null;
-    if (NON_TILE_NODES.containsKey(block)) {
-      node = NON_TILE_NODES.get(block).createNode(state, world, pos);
-    } else if (state.getBlock() instanceof ISimpleCraftNetworkNodeFactory) {
+    if (NON_TILE_NODES.containsKey(name)) {
+      node = NON_TILE_NODES.get(name).createNode(state, world, pos);
+    } else if (block instanceof ISimpleCraftNetworkNodeFactory) {
       node = ((ISimpleCraftNetworkNodeFactory) block).createNode(state, world, pos);
     }
     return Optional.ofNullable(node);

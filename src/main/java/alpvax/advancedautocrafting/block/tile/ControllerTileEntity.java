@@ -15,6 +15,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -25,11 +26,18 @@ public class ControllerTileEntity extends TileEntity implements INamedContainerP
   private final CraftNetwork network;
   private final ControllerNetworkNode networkNode;
   private LazyOptional<INetworkNode> networkCapability;
+
   public ControllerTileEntity() {
     super(AABlocks.TileTypes.CONTROLLER.get());
     networkNode = new ControllerNetworkNode(this);
     network = new CraftNetwork(networkNode);
     networkCapability = LazyOptional.of(() -> networkNode);
+  }
+
+  @Override
+  public void markDirty() {
+    markNetworkDirty();
+    super.markDirty();
   }
 
   public CraftNetwork getNetwork() {
@@ -62,7 +70,13 @@ public class ControllerTileEntity extends TileEntity implements INamedContainerP
   @Override
   public void setPos(BlockPos p_174878_1_) {
     super.setPos(p_174878_1_);
-    network.markDirty(networkNode);
+    markNetworkDirty();
+  }
+
+  @Override
+  public void setWorldAndPos(World p_226984_1_, BlockPos p_226984_2_) {
+    super.setWorldAndPos(p_226984_1_, p_226984_2_);
+    markNetworkDirty();
   }
 
   public void markNetworkDirty() {

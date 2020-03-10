@@ -7,12 +7,15 @@ import alpvax.advancedautocrafting.client.data.AALangProvider;
 import alpvax.advancedautocrafting.client.gui.ControllerScreen;
 import alpvax.advancedautocrafting.client.gui.RemoteMasterScreen;
 import alpvax.advancedautocrafting.container.AAContainerTypes;
+import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
+import alpvax.advancedautocrafting.craftnetwork.connection.ISimpleCraftNetworkNodeFactory;
 import alpvax.advancedautocrafting.data.AALootTableProvider;
 import alpvax.advancedautocrafting.data.AARecipeProvider;
 import alpvax.advancedautocrafting.data.BlockPosLootFunction;
 import alpvax.advancedautocrafting.item.AAItems;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -23,8 +26,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -93,5 +98,19 @@ public class AdvancedAutocrafting {
       gen.addProvider(new AARecipeProvider(gen));
       gen.addProvider(new AALootTableProvider(gen));
     }
+  }
+
+  /*
+  private void enqueIMC(InterModEnqueueEvent event) {
+    Example registration of custom simple block (a block without a TileEntity, and therefore no capabilities)
+    InterModComms.sendTo(MODID, () -> Pair.of(AABlocks.WIRE.getId(), (state, world, pos) -> new NetworkNodeImpl()));
+  }*/
+
+  private void processIMC(InterModProcessEvent event) {
+    event.getIMCStream("registersimpletile"::equalsIgnoreCase)
+        .forEach(msg -> {
+      Pair<ResourceLocation, ISimpleCraftNetworkNodeFactory> val = msg.<Pair<ResourceLocation, ISimpleCraftNetworkNodeFactory>>getMessageSupplier().get();
+      INetworkNode.NON_TILE_NODES.put(val.getKey(), val.getValue());
+    });
   }
 }

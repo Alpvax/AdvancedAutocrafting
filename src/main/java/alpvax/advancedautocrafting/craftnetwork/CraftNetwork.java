@@ -40,7 +40,8 @@ public class CraftNetwork implements IEnergyStorage {
     ITextComponent text = new StringTextComponent("Network:\n");
     nodeScores.entrySet().stream()
         // Hide nodes which only provide connections
-        .filter(e -> e.getKey().getFunctionalities().stream().anyMatch(nf -> nf != NodeFunctionality.EXTENDED_CONNECT))
+        //TODO: Config:
+        //.filter(e -> e.getKey().getFunctionalities().stream().anyMatch(nf -> nf != NodeFunctionality.EXTENDED_CONNECT))
         // Order by distance from controller
         .sorted(Comparator.comparingInt(Map.Entry::getValue))
         .forEachOrdered(e -> {
