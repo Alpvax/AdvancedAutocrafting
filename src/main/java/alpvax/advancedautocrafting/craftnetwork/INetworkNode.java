@@ -12,6 +12,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
@@ -37,11 +38,13 @@ public interface INetworkNode {
      */
     ACCEPT;
   }
+
   @Nonnull Connectivity getConnectivity(Direction dir);
   @Nonnull IWorldReader getWorld();
   @Nonnull BlockPos getPos();
   @Nonnull Set<NodeFunctionality<?>> getFunctionalities();
   @Nonnull <T> Optional<T> getFunctionality(NodeFunctionality<T> functionality);
+  @Nullable CraftNetwork getNetwork();
   default ITextComponent getName() {
     return getBlockState().getBlock().getNameTextComponent();
   }
@@ -52,6 +55,12 @@ public interface INetworkNode {
   default void onDisconnect(CraftNetwork network) {}
 
   /* =========== Helper methods =========== */
+  default void markDirty() {
+    CraftNetwork network = getNetwork();
+    if (network != null) {
+      network.markDirty(this);
+    }
+  }
   @Nonnull
   default BlockState getBlockState() {
     return getWorld().getBlockState(getPos());
@@ -71,6 +80,27 @@ public interface INetworkNode {
       return tileEntityClass.cast(tile);
     }
     return null;
+  }
+
+  static void handleNeighborChange(World worldIn, BlockPos pos, BlockPos fromPos) {
+    BlockPos dPos = fromPos.subtract(pos);
+    Direction d = Direction.byLong(dPos.getX(), dPos.getY(), dPos.getZ());
+    getNodeAt(worldIn, pos, d.getOpposite()).ifPresent((thisNode) ->
+        getNodeAt(worldIn, fromPos, d).filter(node -> node.getConnectivity(d.getOpposite()) != Connectivity.BLOCK).ifPresent((thatNode) -> {
+          CraftNetwork thisNet = thisNode.getNetwork();
+          CraftNetwork thatNet = thatNode.getNetwork();
+          if (thisNet != thatNet) {
+            if (thisNet != null) {
+              thisNet.markDirty(thisNode);
+              thisNet.markDirty(thatNode);
+            }
+            if (thatNet != null){
+              thatNet.markDirty(thatNode);
+              thatNet.markDirty(thisNode);
+            }
+          }
+        })
+    );
   }
 
   Map<ResourceLocation, ISimpleCraftNetworkNodeFactory> NON_TILE_NODES = new HashMap<>();

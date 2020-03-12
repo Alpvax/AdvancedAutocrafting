@@ -8,26 +8,26 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
-public abstract class SimpleNetworkConnectionNode implements INetworkNode {
-  private final IWorldReader world;
-  private final BlockPos pos;
-
+public abstract class SimpleNetworkConnectionNode extends AbstractNetworkNode {
+  public SimpleNetworkConnectionNode(Supplier<IWorldReader> worldSup, Supplier<BlockPos> posSup) {
+    super(worldSup, posSup);
+  }
   public SimpleNetworkConnectionNode(IWorldReader world, BlockPos pos) {
-    this.world = world;
-    this.pos = pos;
+    super(world, pos);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(world, pos);
+    return Objects.hash(getWorld(), getPos());
   }
 
   @Override
   public boolean equals(Object obj) {
     if (obj instanceof SimpleNetworkConnectionNode) {
       SimpleNetworkConnectionNode node = (SimpleNetworkConnectionNode) obj;
-      return world.equals(node.world) && pos.equals(node.pos);
+      return getWorld().equals(node.getWorld()) && getPos().equals(node.getPos());
     }
     return super.equals(obj);
   }
@@ -35,18 +35,6 @@ public abstract class SimpleNetworkConnectionNode implements INetworkNode {
   @Override
   public int upkeepCost() {
     return 0;
-  }
-
-  @Nonnull
-  @Override
-  public IWorldReader getWorld() {
-    return world;
-  }
-
-  @Nonnull
-  @Override
-  public BlockPos getPos() {
-    return pos;
   }
 
   @Nonnull

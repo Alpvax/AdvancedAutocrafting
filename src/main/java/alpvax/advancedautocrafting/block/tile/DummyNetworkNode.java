@@ -1,5 +1,6 @@
 package alpvax.advancedautocrafting.block.tile;
 
+import alpvax.advancedautocrafting.craftnetwork.CraftNetwork;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.function.NodeFunctionality;
 import net.minecraft.util.Direction;
@@ -7,6 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -47,6 +49,12 @@ public class DummyNetworkNode implements INetworkNode {
   @Override
   public <T> Optional<T> getFunctionality(NodeFunctionality<T> functionality) {
     return Optional.empty();
+  }
+
+  @Nullable
+  @Override
+  public CraftNetwork getNetwork() {
+    return null;
   }
 
   @Override

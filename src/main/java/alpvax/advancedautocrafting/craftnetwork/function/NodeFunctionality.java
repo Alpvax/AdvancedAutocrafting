@@ -1,5 +1,6 @@
 package alpvax.advancedautocrafting.craftnetwork.function;
 
+import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.connection.INodeConnection;
 import com.google.common.collect.Maps;
 import net.minecraft.util.NonNullList;
@@ -8,7 +9,8 @@ import net.minecraftforge.energy.IEnergyStorage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 public class NodeFunctionality<T> {
@@ -23,19 +25,22 @@ public class NodeFunctionality<T> {
     return (NodeFunctionality<T>) values.computeIfAbsent(name, NodeFunctionality::new);
   }
 
-  public static <T> Chain chain(NodeFunctionality<T> functionality, Supplier<T> value) {
-    return new Chain().chain(functionality, value);
+  public static <T> Chain chain(NodeFunctionality<T> functionality, Function<INetworkNode, T> factory) {
+    return new Chain().chain(functionality, factory);
   }
   public static final class Chain {
-    private Map<NodeFunctionality<?>, Supplier<?>> values = new HashMap<>();
-    public <T> Chain chain(NodeFunctionality<T> functionality, Supplier<T> value) {
-      values.put(functionality, value);
+    private Map<NodeFunctionality<?>, Function<INetworkNode, ?>> values = new HashMap<>();
+    public <T> Chain chain(NodeFunctionality<T> functionality, Function<INetworkNode, T> factory) {
+      values.put(functionality, factory);
       return this;
     }
-    public <T> Optional<T> get(NodeFunctionality<T> functionality) {
+    public <T> Optional<T> get(NodeFunctionality<T> functionality, INetworkNode node) {
       return Optional.ofNullable(values.get(functionality))
-          .map(Supplier::get)
+          .map(f -> f.apply(node))
           .map(functionality::cast);
+    }
+    public Set<NodeFunctionality<?>> handled() {
+      return values.keySet();
     }
   }
 

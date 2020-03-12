@@ -188,6 +188,7 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
     Direction d = Direction.byLong(dPos.getX(), dPos.getY(), dPos.getZ());
     worldIn.setBlockState(pos, withConnectionState(state, d, makeConnection(state, worldIn, pos, d, fromPos)), 2);
     super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
+    INetworkNode.handleNeighborChange(worldIn, pos, fromPos);
   }
 
   private BlockState getToggledState(BlockState state, IWorldReader world, BlockPos pos, Direction d) {

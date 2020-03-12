@@ -4,8 +4,8 @@ import alpvax.advancedautocrafting.AAUtil;
 import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.container.RemoteMasterContainer;
+import alpvax.advancedautocrafting.craftnetwork.AbstractNetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
-import alpvax.advancedautocrafting.craftnetwork.connection.INodeConnection;
 import alpvax.advancedautocrafting.craftnetwork.connection.RemoteNodeConnection;
 import alpvax.advancedautocrafting.craftnetwork.function.NodeFunctionality;
 import net.minecraft.block.BlockState;
@@ -22,7 +22,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -32,8 +31,6 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class RemoteMasterTileEntity extends TileEntity implements INamedContainerProvider {
@@ -51,7 +48,7 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
     @Override
     protected void onContentsChanged(int slot) {
       super.onContentsChanged(slot);
-      //TODO:network.markNodeDirty();
+      networkCapability.ifPresent(INetworkNode::markDirty);
     }
   };
   private LazyOptional<IItemHandler> items = LazyOptional.of(() -> inventory);
@@ -62,7 +59,21 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
   }
 
   private INetworkNode makeNetworkNode() {
-    return new INetworkNode() {
+    return new AbstractNetworkNode.Builder(this)
+        .withConnectivity(INetworkNode.Connectivity.ACCEPT)
+        .withFunctionality(NodeFunctionality.EXTENDED_CONNECT, thisNode ->
+            RemoteMasterTileEntity.this.getItems().stream().map((stack) -> {
+              BlockPos pos = AAUtil.readPosFromItemStack(stack);
+              TileEntity tile = world.getTileEntity(pos);
+              INetworkNode node = null;
+              if (tile != null) {
+                LazyOptional<INetworkNode> cap = tile.getCapability(Capabilities.NODE_CAPABILITY);
+                node = cap.orElse(null);
+              }
+              return new RemoteNodeConnection(thisNode, node == null ? new DummyNetworkNode(getWorld(), pos) : node);
+            }).collect(Collectors.toCollection(NonNullList::create))
+        );
+    /* {
       @Nonnull
       public NonNullList<INodeConnection<?>> getConnections() {
         return RemoteMasterTileEntity.this.getItems().stream().map((stack) -> {
@@ -108,7 +119,13 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
                    .chain(NodeFunctionality.EXTENDED_CONNECT, this::getConnections)
                    .get(functionality);
       }
-    };
+
+      @Nullable
+      @Override
+      public CraftNetwork getNetwork() {
+        return null;
+      }
+    };*/
   }
 
   private NonNullList<ItemStack> getItems() {

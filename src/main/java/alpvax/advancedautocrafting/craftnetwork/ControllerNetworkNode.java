@@ -7,6 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.Set;
 
@@ -41,9 +42,16 @@ public class ControllerNetworkNode implements INetworkNode {
     return Set.of();
   }
 
+  @Nonnull
   @Override
   public <T> Optional<T> getFunctionality(NodeFunctionality<T> functionality) {
     return Optional.empty();
+  }
+
+  @Nullable
+  @Override
+  public CraftNetwork getNetwork() {
+    return tileEntity.getNetwork();
   }
 
   @Override

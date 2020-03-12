@@ -1,6 +1,7 @@
 package alpvax.advancedautocrafting.block;
 
 import alpvax.advancedautocrafting.block.tile.ControllerTileEntity;
+import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -62,5 +63,12 @@ public class ControllerBlock extends Block {
       return ActionResultType.SUCCESS;
     }
     return super.onBlockActivated(state, worldIn, pos, player, hand, rayTraceResult);
+  }
+
+  @SuppressWarnings("deprecation")
+  @Override
+  public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+    super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
+    INetworkNode.handleNeighborChange(worldIn, pos, fromPos);
   }
 }
