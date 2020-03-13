@@ -55,6 +55,7 @@ public class AdvancedAutocrafting {
     });
 
     MinecraftForge.EVENT_BUS.addListener(this::onServerStarting);
+    Capabilities.registerAttachEvents();
 
     // Registry objects
     AABlocks.BLOCKS.register(modBus);
