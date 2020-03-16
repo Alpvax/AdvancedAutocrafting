@@ -17,8 +17,8 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -111,26 +111,28 @@ public class NodeManager {
     return map;
   }
 
-  private Set<NetworkNodeEntry> getNeighbours(BlockPos pos) {
-    Set<NetworkNodeEntry> set = new HashSet<>();
+  private EnumMap<Direction, NetworkNodeEntry> getNeighbours(BlockPos pos) {
+    EnumMap<Direction, NetworkNodeEntry> map = new EnumMap<>(Direction.class);
     for (Direction d : ALL_DIRECTIONS) {
       BlockPos adj = pos.offset(d);
       NetworkNodeEntry entry = getNodeEntry(world, adj);
-      if (entry.isNode() && entry.isConnected(d.getOpposite())) {
-        set.add(entry);
+      if (entry != null && entry.isNode() && entry.isConnected(d.getOpposite())) {
+        map.put(d, entry);
       }
     }
-    return set;
+    return map;
   }
 
   protected void setNode(@Nonnull BlockPos pos, @Nullable INetworkNode node) {
-    NetworkNodeEntry entry = getEntry(pos, node);
-    if (node == null) {
-      nodes.remove(pos);
-    }
-    if(entry.getNode() != node){
-      entry.setNode(node);
-      getNeighbours(pos).forEach(NetworkNodeEntry::markDirty);
+    NetworkNodeEntry entry = getEntry(pos, node != null);
+    if (entry != null) {
+      if (node == null) {
+        nodes.remove(pos);
+      }
+      if (entry.getNode() != node) {
+        entry.setNode(node);
+        getNeighbours(pos).forEach((d, e) -> e.markDirty());
+      }
     }
   }
 
