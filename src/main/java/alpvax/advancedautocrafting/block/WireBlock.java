@@ -8,6 +8,7 @@ import alpvax.advancedautocrafting.block.axial.IAxialPartInstance;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkConnectionNode;
 import alpvax.advancedautocrafting.craftnetwork.connection.ISimpleCraftNetworkNodeFactory;
+import alpvax.advancedautocrafting.craftnetwork.manager.NodeManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -228,6 +229,22 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
       return ActionResultType.SUCCESS;
     }
     return super.onBlockActivated(state, worldIn, pos, player, hand, rayTraceResult);
+  }
+
+  @SuppressWarnings("deprecation")
+  @Override
+  public void onBlockAdded(BlockState state, World worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {
+    super.onBlockAdded(state, worldIn, pos, oldState, isMoving);
+    NodeManager.get(worldIn, pos).addNode(createNode(state, worldIn, pos));
+  }
+
+  @SuppressWarnings("deprecation")
+  @Override
+  public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+    super.onReplaced(state, worldIn, pos, newState, isMoving);
+    if (state.getBlock() != newState.getBlock()) {
+      NodeManager.get(worldIn, pos).removeNode(pos);
+    }
   }
 
   @Override

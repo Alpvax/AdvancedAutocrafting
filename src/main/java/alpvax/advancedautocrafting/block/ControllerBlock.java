@@ -57,7 +57,7 @@ public class ControllerBlock extends Block {
         if (player.isShiftKeyDown()) {
           tile.markNetworkDirty();
         } else {
-          player.sendMessage(tile.getNetwork().chatNetworkDisplay());
+          player.sendMessage(tile.getNetwork().chatNetworkDisplay(false));
         }
       }
       return ActionResultType.SUCCESS;

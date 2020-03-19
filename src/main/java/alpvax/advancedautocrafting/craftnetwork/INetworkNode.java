@@ -51,8 +51,9 @@ public interface INetworkNode {
   default int upkeepCost() {
     return 1;
   }
-  default void onConnect(CraftNetwork network) {}
-  default void onDisconnect(CraftNetwork network) {}
+  default void onConnectionChange(Direction d, @Nullable INetworkNode oldNeighbor, @Nullable INetworkNode newNeighbor) {} //TODO: improve and use
+  default void onNetworkConnect(CraftNetwork network) {}
+  default void onNetworkDisconnect(CraftNetwork network) {}
 
   /* =========== Helper methods =========== */
   default void markDirty() {

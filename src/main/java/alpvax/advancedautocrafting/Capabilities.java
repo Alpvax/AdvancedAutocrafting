@@ -74,7 +74,7 @@ public class Capabilities {
   }
 
   public static void registerAttachEvents() {
-    MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, Capabilities::attachChunk);
+    MinecraftForge.EVENT_BUS.addGenericListener(Chunk.class, EventPriority.LOWEST, Capabilities::attachChunk);
   }
 
   private static void attachChunk(AttachCapabilitiesEvent<Chunk> event) {

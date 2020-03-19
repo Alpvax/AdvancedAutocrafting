@@ -6,6 +6,7 @@ import alpvax.advancedautocrafting.client.data.AAItemModelProvider;
 import alpvax.advancedautocrafting.client.data.AALangProvider;
 import alpvax.advancedautocrafting.client.gui.ControllerScreen;
 import alpvax.advancedautocrafting.client.gui.RemoteMasterScreen;
+import alpvax.advancedautocrafting.command.NetworkCommand;
 import alpvax.advancedautocrafting.container.AAContainerTypes;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.connection.ISimpleCraftNetworkNodeFactory;
@@ -79,6 +80,7 @@ public class AdvancedAutocrafting {
 
   private void onServerStarting(final FMLServerStartingEvent event) {
     //Register commands
+    NetworkCommand.register(event.getCommandDispatcher());
     //CommandTropicsTeleport.register(event.getServer().getCommandManager().getDispatcher());
   }
 

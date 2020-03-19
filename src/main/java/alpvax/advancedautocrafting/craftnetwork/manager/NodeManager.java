@@ -27,7 +27,9 @@ public class NodeManager {
 
   public static class Provider implements ICapabilityProvider { //Serializable<CompoundNBT> {
     NodeManager manager;
-    public Provider(Chunk chunk) { manager = new NodeManager(chunk.getWorld(), chunk.getPos()); }
+    public Provider(Chunk chunk) {
+      manager = new NodeManager(chunk.getWorld(), chunk.getPos());
+    }
     @Nonnull @Override public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
       return Capabilities.NODE_MANAGER_CAPABILITY.orEmpty(cap, LazyOptional.of(() -> manager));
     }

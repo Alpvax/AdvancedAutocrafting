@@ -36,8 +36,13 @@ public class CraftNetwork implements IEnergyStorage {
     controller = controllerNode;
   }
 
-  public ITextComponent chatNetworkDisplay() {
-    ITextComponent text = new StringTextComponent("Network:\n");
+  public ITextComponent chatNetworkDisplay(boolean outputPos) {
+    ITextComponent text = new StringTextComponent("Network");
+    if (outputPos) {
+      BlockPos cPos = controller.getPos();
+      text.appendText(String.format(" at (%d, %d, %d)", cPos.getX(), cPos.getY(), cPos.getZ()));
+    }
+    text.appendText(":\n");
     nodeScores.entrySet().stream()
         // Hide nodes which only provide connections
         //TODO: Config:
@@ -47,7 +52,7 @@ public class CraftNetwork implements IEnergyStorage {
         .forEachOrdered(e -> {
           INetworkNode node = e.getKey();
           BlockPos pos = node.getPos();
-          text.appendSibling(node.getName())
+          text.appendText("\t").appendSibling(node.getName())
               .appendText(String.format(" @ (%d, %d, %d); score = %d\n",
                   pos.getX(), pos.getY(), pos.getZ(),
                   e.getValue()
@@ -74,8 +79,8 @@ public class CraftNetwork implements IEnergyStorage {
       Map<INetworkNode, Integer> newScores = recalculateAll(); //TODO: update individual nodes
       Set<INetworkNode> oldNodes = nodeScores.keySet();
       Set<INetworkNode> newNodes = newScores.keySet();
-      oldNodes.stream().filter(n -> !newNodes.contains(n)).forEach(n -> n.onDisconnect(this));
-      newNodes.stream().filter(n -> !oldNodes.contains(n)).forEach(n -> n.onConnect(this));
+      oldNodes.stream().filter(n -> !newNodes.contains(n)).forEach(n -> n.onNetworkDisconnect(this));
+      newNodes.stream().filter(n -> !oldNodes.contains(n)).forEach(n -> n.onNetworkConnect(this));
       nodeScores = newScores;
       upkeep = nodeScores.keySet().parallelStream().map(INetworkNode::upkeepCost).reduce(Integer::sum).orElse(0);
     }

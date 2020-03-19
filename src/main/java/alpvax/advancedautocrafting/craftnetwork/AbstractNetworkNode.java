@@ -114,12 +114,12 @@ public class AbstractNetworkNode implements INetworkNode {
   }
 
   @Override
-  public void onConnect(CraftNetwork network) {
+  public void onNetworkConnect(CraftNetwork network) {
     this.currentNetwork = network;
   }
 
   @Override
-  public void onDisconnect(CraftNetwork network) {
+  public void onNetworkDisconnect(CraftNetwork network) {
     this.currentNetwork = null;
   }
 
