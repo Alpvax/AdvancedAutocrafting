@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public abstract class SimpleNetworkConnectionNode extends AbstractNetworkNode {
+public /*abstract*/ class SimpleNetworkConnectionNode extends AbstractNetworkNode {
   public SimpleNetworkConnectionNode(Supplier<IWorldReader> worldSup, Supplier<BlockPos> posSup) {
     super(worldSup, posSup);
   }

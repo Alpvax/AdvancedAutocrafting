@@ -60,7 +60,7 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
 
   private INetworkNode makeNetworkNode() {
     return new AbstractNetworkNode.Builder(this)
-        .withConnectivity(INetworkNode.Connectivity.ACCEPT)
+        //.withConnectivity(INetworkNode.Connectivity.ACCEPT)
         .withFunctionality(NodeFunctionality.EXTENDED_CONNECT, thisNode ->
             RemoteMasterTileEntity.this.getItems().stream().map((stack) -> {
               BlockPos pos = AAUtil.readPosFromItemStack(stack);

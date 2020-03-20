@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class NodeManager {
@@ -37,6 +38,10 @@ public class NodeManager {
 
   // *************** HELPER GETTERS ***************
   @Nonnull
+  public static NodeManager get(INetworkNode node) {
+    return get(node.getWorld(), node.getPos());
+  }
+  @Nonnull
   public static NodeManager get(IWorldReader world, BlockPos pos) {
     return get(world.getChunk(pos));
   }
@@ -52,6 +57,13 @@ public class NodeManager {
     return cap.orElseThrow(() -> new NullPointerException(
         String.format("Attempting to get NodeManager from Chunk {%s} failed: Capability doesn't exist!", chunk)
     ));
+  }
+
+  public static Optional<INetworkNode> getNodeAt(IWorldReader world, BlockPos pos) {
+    return get(world, pos).getNodeAt(pos);
+  }
+  public static Optional<Set<CraftNetwork>> getNetworksAt(IWorldReader world, BlockPos pos) {
+    return get(world, pos).getNetworksAt(pos);
   }
 
   @Nullable
@@ -72,7 +84,7 @@ public class NodeManager {
   private NetworkNodeEntry getEntry(@Nonnull BlockPos pos) {
     return getEntry(pos, true);
   }
-  @Nullable
+
   private NetworkNodeEntry getEntry(@Nonnull BlockPos pos, boolean create) {
     ChunkPos cpos = new ChunkPos(pos);
     if (cpos.equals(chunkPos)) {
@@ -111,6 +123,14 @@ public class NodeManager {
       }
     });
     return map;
+  }
+
+  public Optional<INetworkNode> getNodeAt(BlockPos pos) {
+    return Optional.ofNullable(getEntry(pos, false)).map(NetworkNodeEntry::getNode);
+  }
+
+  public Optional<Set<CraftNetwork>> getNetworksAt(BlockPos pos) {
+    return Optional.ofNullable(getEntry(pos, false)).map(NetworkNodeEntry::getNetworks);
   }
 
   private EnumMap<Direction, NetworkNodeEntry> getNeighbours(BlockPos pos) {

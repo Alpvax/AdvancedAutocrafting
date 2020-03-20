@@ -1,6 +1,5 @@
 package alpvax.advancedautocrafting.craftnetwork;
 
-import alpvax.advancedautocrafting.craftnetwork.connection.DirectNodeConnection;
 import alpvax.advancedautocrafting.craftnetwork.connection.INodeConnection;
 import alpvax.advancedautocrafting.craftnetwork.function.NodeFunctionality;
 import com.google.common.collect.HashMultimap;
@@ -170,16 +169,18 @@ public class CraftNetwork implements IEnergyStorage {
       toProcess.compute(node, (k, prevScore) -> prevScore != null ? Math.min(prevScore, score) : score);
     }
     private Optional<NonNullList<INodeConnection<?>>> processNode(INetworkNode node) {
+      @SuppressWarnings("ConstantConditions")
       int score = toProcess.compute(node, (k, prevScore) -> prevScore - 1); // Will throw NPE if node not in map
       if (score < 1) {
         NonNullList<INodeConnection<?>> list = NonNullList.create();
-        for (Direction d : ALL_DIRECTIONS) {
+        list.addAll(node.createConnectionManager().childConnections());
+        /*for (Direction d : ALL_DIRECTIONS) {
           if (node.getConnectivity(d) == INetworkNode.Connectivity.CONNECT) {
             INetworkNode.getAdjacentConnectedNode(node.getPos(), node.getWorld(), d).ifPresent(adj -> {
               list.add(new DirectNodeConnection(node, adj, d));
             });
           }
-        }
+        }*/
         node.getFunctionality(NodeFunctionality.EXTENDED_CONNECT).ifPresent(list::addAll);
         list.removeIf(conn -> processed.containsKey(conn.getChild()));
         toProcess.remove(node);

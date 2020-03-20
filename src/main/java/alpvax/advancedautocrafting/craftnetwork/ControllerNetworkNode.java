@@ -18,11 +18,11 @@ public class ControllerNetworkNode implements INetworkNode {
     tileEntity = tile;
   }
 
-  @Nonnull
+  /*@Nonnull
   @Override
   public Connectivity getConnectivity(Direction dir) {
     return Connectivity.CONNECT;
-  }
+  }*/
 
   @Nonnull
   @Override

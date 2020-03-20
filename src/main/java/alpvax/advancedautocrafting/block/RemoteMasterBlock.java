@@ -2,7 +2,6 @@ package alpvax.advancedautocrafting.block;
 
 import alpvax.advancedautocrafting.AAUtil;
 import alpvax.advancedautocrafting.block.tile.RemoteMasterTileEntity;
-import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -55,7 +54,7 @@ public class RemoteMasterBlock extends Block {
   @Override
   public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
     super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
-    INetworkNode.handleNeighborChange(worldIn, pos, fromPos);
+    //TODO:INetworkNode.handleNeighborChange(worldIn, pos, fromPos);
   }
 
   @Nonnull

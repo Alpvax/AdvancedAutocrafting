@@ -1,9 +1,8 @@
 package alpvax.advancedautocrafting.craftnetwork;
 
-import alpvax.advancedautocrafting.Capabilities;
+import alpvax.advancedautocrafting.craftnetwork.connection.AdjacentNodeConnectionManager;
 import alpvax.advancedautocrafting.craftnetwork.connection.ISimpleCraftNetworkNodeFactory;
 import alpvax.advancedautocrafting.craftnetwork.function.NodeFunctionality;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.tileentity.TileEntity;
@@ -12,8 +11,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -23,23 +20,26 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface INetworkNode {
-  enum Connectivity {
+  /*enum Connectivity {
     /**
      * Prevent connections on this side
-     */
+     *
     BLOCK,
     /**
      * Attempt to connect on this face
-     */
+     *
     CONNECT,
     /**
      * Neither attempt to connect or refuse connection.
      * Leave connectivity up to adjacent node
-     */
+     *
     ACCEPT;
   }
 
-  @Nonnull Connectivity getConnectivity(Direction dir);
+  @Nonnull Connectivity getConnectivity(Direction dir);*/
+  @Nonnull default AdjacentNodeConnectionManager createConnectionManager() {
+    return new AdjacentNodeConnectionManager(this);
+  }
   @Nonnull IWorldReader getWorld();
   @Nonnull BlockPos getPos();
   @Nonnull Set<NodeFunctionality<?>> getFunctionalities();
@@ -83,7 +83,7 @@ public interface INetworkNode {
     return null;
   }
 
-  static void handleNeighborChange(World worldIn, BlockPos pos, BlockPos fromPos) {
+  /*static void handleNeighborChange(World worldIn, BlockPos pos, BlockPos fromPos) {
     BlockPos dPos = fromPos.subtract(pos);
     Direction d = Direction.byLong(dPos.getX(), dPos.getY(), dPos.getZ());
     getNodeAt(worldIn, pos, d.getOpposite()).ifPresent((thisNode) ->
@@ -102,11 +102,11 @@ public interface INetworkNode {
           }
         })
     );
-  }
+  }*/
 
-  Map<ResourceLocation, ISimpleCraftNetworkNodeFactory> NON_TILE_NODES = new HashMap<>();
+  Map<ResourceLocation, ISimpleCraftNetworkNodeFactory> NON_TILE_NODES = new HashMap<>(); //TODO: Reimplement non-tileEntity nodes
 
-  static Optional<INetworkNode> getNodeAt(IWorldReader world, BlockPos pos, @Nullable Direction fromDir) {
+  /*static Optional<INetworkNode> getNodeAt(IWorldReader world, BlockPos pos, @Nullable Direction fromDir) {
     BlockState state = world.getBlockState(pos);
     TileEntity tile = world.getTileEntity(pos);
     if (tile != null) {
@@ -129,5 +129,5 @@ public interface INetworkNode {
   static Optional<INetworkNode> getAdjacentConnectedNode(BlockPos thisPos, IWorldReader world, Direction d) {
     Direction opp = d.getOpposite();
     return getNodeAt(world, thisPos.offset(d), opp).filter(node -> node.getConnectivity(opp) != Connectivity.BLOCK);
-  }
+  }*/
 }

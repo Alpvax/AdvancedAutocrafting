@@ -7,6 +7,7 @@ import alpvax.advancedautocrafting.block.axial.AxialPart;
 import alpvax.advancedautocrafting.block.axial.IAxialPartInstance;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkConnectionNode;
+import alpvax.advancedautocrafting.craftnetwork.connection.AdjacentNodeConnectionManager;
 import alpvax.advancedautocrafting.craftnetwork.connection.ISimpleCraftNetworkNodeFactory;
 import alpvax.advancedautocrafting.craftnetwork.manager.NodeManager;
 import net.minecraft.block.Block;
@@ -44,7 +45,7 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
   @Override
   public INetworkNode createNode(BlockState state, IWorldReader world, BlockPos pos) {
     return world.getBlockState(pos).getBlock() == this ? new SimpleNetworkConnectionNode(world, pos) {
-      @Nonnull
+      /*@Nonnull
       @Override
       public Connectivity getConnectivity(Direction dir) {
         IProperty<ConnectionState> prop = getConnectionProp(dir);
@@ -60,6 +61,16 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
           }
         }
         return Connectivity.BLOCK;
+      }*/
+
+      @Nonnull
+      @Override
+      public AdjacentNodeConnectionManager createConnectionManager() {
+        AdjacentNodeConnectionManager m = super.createConnectionManager();
+        forEachDirection((d, c) -> {
+          m.setConnectionState(d, state.get(c) != ConnectionState.DISABLED);
+        });
+        return m;
       }
     } : null;
   }
@@ -189,7 +200,7 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
     Direction d = Direction.byLong(dPos.getX(), dPos.getY(), dPos.getZ());
     worldIn.setBlockState(pos, withConnectionState(state, d, makeConnection(state, worldIn, pos, d, fromPos)), 2);
     super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
-    INetworkNode.handleNeighborChange(worldIn, pos, fromPos);
+    //TODO:INetworkNode.handleNeighborChange(worldIn, pos, fromPos);
   }
 
   private BlockState getToggledState(BlockState state, IWorldReader world, BlockPos pos, Direction d) {

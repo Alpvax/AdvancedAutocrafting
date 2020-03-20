@@ -2,6 +2,7 @@ package alpvax.advancedautocrafting.block.tile;
 
 import alpvax.advancedautocrafting.craftnetwork.CraftNetwork;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
+import alpvax.advancedautocrafting.craftnetwork.connection.AdjacentNodeConnectionManager;
 import alpvax.advancedautocrafting.craftnetwork.function.NodeFunctionality;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -21,10 +22,16 @@ public class DummyNetworkNode implements INetworkNode {
     this.pos = pos;
   }
 
-  @Nonnull
+  /*@Nonnull
   @Override
   public Connectivity getConnectivity(Direction dir) {
     return Connectivity.ACCEPT;
+  }*/
+
+  @Nonnull
+  @Override
+  public DummyNodeConnectionManager createConnectionManager() {
+    return new DummyNodeConnectionManager();
   }
 
   @Nonnull
@@ -60,5 +67,21 @@ public class DummyNetworkNode implements INetworkNode {
   @Override
   public int upkeepCost() {
     return 0;
+  }
+
+  private class DummyNodeConnectionManager extends AdjacentNodeConnectionManager{
+    public DummyNodeConnectionManager() {
+      super(DummyNetworkNode.this);
+    }
+
+    @Override
+    public boolean canConnectFrom(Direction fromDir) {
+      return false;
+    }
+
+    @Override
+    public boolean canConnectTo(Direction dir) {
+      return false;
+    }
   }
 }

@@ -8,10 +8,8 @@ import net.minecraft.world.IWorldReader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.EnumMap;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -21,14 +19,14 @@ public class AbstractNetworkNode implements INetworkNode {
   protected Supplier<IWorldReader> worldSup;
   protected Supplier<BlockPos> posSup;
   protected NodeFunctionality.Chain functionalities;
-  protected EnumMap<Direction, Function<AbstractNetworkNode, Connectivity>> connectivityMap;
+  //protected EnumMap<Direction, Function<AbstractNetworkNode, Connectivity>> connectivityMap;
   protected CraftNetwork currentNetwork = null;
 
   public AbstractNetworkNode(Supplier<IWorldReader> worldSup, Supplier<BlockPos> posSup) {
     this.worldSup = worldSup;
     this.posSup = posSup;
     functionalities = new NodeFunctionality.Chain();
-    connectivityMap = new EnumMap<>(Direction.class);
+    //connectivityMap = new EnumMap<>(Direction.class);
   }
   public AbstractNetworkNode(TileEntity tileEntity) {
     this(tileEntity::getWorld, tileEntity::getPos);
@@ -58,7 +56,7 @@ public class AbstractNetworkNode implements INetworkNode {
 
     /**
      * Does not override existing values!
-     */
+     *
     public Builder withConnectivity(Connectivity allSides) {
       for (Direction dir : ALL_DIRECTIONS) {
         connectivityMap.computeIfAbsent(dir, d -> n -> allSides);
@@ -67,27 +65,33 @@ public class AbstractNetworkNode implements INetworkNode {
     }
     /**
      * Overrides existing value!
-     */
+     *
     public Builder withConnectivity(Direction d, Connectivity connectivity) {
       connectivityMap.put(d, n -> connectivity);
       return this;
     }
     /**
      * Overrides all values to use mapper function instead!
-     */
+     *
     public Builder withConnectivity(BiFunction<Direction, AbstractNetworkNode, Connectivity> connectivityMapper) {
       for (Direction dir : ALL_DIRECTIONS) {
         connectivityMap.put(dir, n -> connectivityMapper.apply(dir, n));
       }
       return this;
-    }
+    }*/
   }
 
-  @Nonnull
+  /*@Nonnull
   @Override
   public Connectivity getConnectivity(Direction dir) {
     return connectivityMap.get(dir).apply(this);
-  }
+  }*/
+
+  /*@Nonnull
+  @Override
+  public AdjacentNodeConnectionManager createConnectionManager() {
+    return new AdjacentNodeConnectionManager(this);
+  }*/
 
   @Nonnull
   @Override
