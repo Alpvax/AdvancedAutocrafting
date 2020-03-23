@@ -3,9 +3,16 @@ package alpvax.advancedautocrafting.craftnetwork.manager;
 import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.craftnetwork.CraftNetwork;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
+import alpvax.advancedautocrafting.craftnetwork.connection.ISimpleCraftNetworkNodeFactory;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IWorldReader;
@@ -13,7 +20,11 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
+import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -23,10 +34,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-public class NodeManager {
+public class NodeManager implements INBTSerializable<CompoundNBT> {
   private static final Direction[] ALL_DIRECTIONS = Direction.values();
 
-  public static class Provider implements ICapabilityProvider { //Serializable<CompoundNBT> {
+  public static class Provider implements ICapabilitySerializable<CompoundNBT> {
     NodeManager manager;
     public Provider(Chunk chunk) {
       manager = new NodeManager(chunk.getWorld(), chunk.getPos());
@@ -34,6 +45,37 @@ public class NodeManager {
     @Nonnull @Override public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
       return Capabilities.NODE_MANAGER_CAPABILITY.orEmpty(cap, LazyOptional.of(() -> manager));
     }
+    @Override
+    public CompoundNBT serializeNBT() {
+      return manager.serializeNBT();
+    }
+    @Override
+    public void deserializeNBT(CompoundNBT nbt) {
+      manager.deserializeNBT(nbt);
+    }
+  }
+
+  // *************** NODE CREATION ***************
+
+  public static Map<ResourceLocation, ISimpleCraftNetworkNodeFactory> NON_TILE_NODES = new HashMap<>(); //TODO: Reimplement non-tileEntity nodes
+  private static Optional<INetworkNode> createNode(IWorldReader world, BlockPos pos) {
+    BlockState state = world.getBlockState(pos);
+    TileEntity tile = world.getTileEntity(pos);
+    if (tile != null) {
+      LazyOptional<INetworkNode> cap = tile.getCapability(Capabilities.NODE_CAPABILITY);
+      if (cap.isPresent()) {
+        return  Optional.of(cap.orElseThrow(() -> new NullPointerException("Impossible condition reached: null cap passes isPresent check")));
+      }
+    }
+    Block block = state.getBlock();
+    ResourceLocation name = block.getRegistryName();
+    INetworkNode node = null;
+    if (NON_TILE_NODES.containsKey(name)) {
+      node = NON_TILE_NODES.get(name).createNode(state, world, pos);
+    } else if (block instanceof ISimpleCraftNetworkNodeFactory) {
+      node = ((ISimpleCraftNetworkNodeFactory) block).createNode(state, world, pos);
+    }
+    return Optional.ofNullable(node);
   }
 
   // *************** HELPER GETTERS ***************
@@ -64,6 +106,10 @@ public class NodeManager {
   }
   public static Optional<Set<CraftNetwork>> getNetworksAt(IWorldReader world, BlockPos pos) {
     return get(world, pos).getNetworksAt(pos);
+  }
+
+  public static void markNodeDirty(@Nonnull INetworkNode node) {
+    get(node.getWorld(), node.getPos()).markDirty(node);
   }
 
   @Nullable
@@ -107,7 +153,7 @@ public class NodeManager {
    * Get all the nodes handled by this manager.
    * For just the nodes, use `.keySet` on the return value.
    * @return a Multimap (multiple values) of all nodes, with their connected networks.
-   * Will have a single value `null` if the node is not currently connected to any network.
+   * Entry will have a single value `null` if the node is not currently connected to any network.
    */
   @Nonnull
   public Multimap<INetworkNode, CraftNetwork> getNodes() {
@@ -125,12 +171,18 @@ public class NodeManager {
     return map;
   }
 
+  @Nonnull
   public Optional<INetworkNode> getNodeAt(BlockPos pos) {
     return Optional.ofNullable(getEntry(pos, false)).map(NetworkNodeEntry::getNode);
   }
 
+  @Nonnull
   public Optional<Set<CraftNetwork>> getNetworksAt(BlockPos pos) {
     return Optional.ofNullable(getEntry(pos, false)).map(NetworkNodeEntry::getNetworks);
+  }
+
+  public void markDirty(@Nonnull INetworkNode node) {
+    Optional.ofNullable(getEntry(node.getPos(), false)).ifPresent(NetworkNodeEntry::markDirty);
   }
 
   private EnumMap<Direction, NetworkNodeEntry> getNeighbours(BlockPos pos) {
@@ -167,5 +219,37 @@ public class NodeManager {
   }
   public void removeNode(@Nonnull BlockPos pos) {
     setNode(pos, null);
+  }
+
+  @Override
+  public CompoundNBT serializeNBT() {
+    CompoundNBT nbt = new CompoundNBT();
+    ListNBT positions = new ListNBT();
+    for (Map.Entry<BlockPos, NetworkNodeEntry> e : nodes.entrySet()) {
+      BlockPos pos = e.getKey();
+      NetworkNodeEntry entry = e.getValue();
+      if (entry.isNode()) { //Only save valid nodes
+        CompoundNBT tag = new CompoundNBT();
+        tag.putIntArray("position", new int[]{pos.getX(), pos.getY(), pos.getZ()});
+        //TODO: what else?
+        positions.add(tag);
+      } else {
+        LogManager.getLogger().warn("Attempting to save empty node at {}. How did this happen?!", pos);
+        //How did this happen?!
+      }
+    }
+    nbt.put("nodes", positions);
+    return nbt;
+  }
+
+  @Override
+  public void deserializeNBT(CompoundNBT nbt) {
+    ListNBT positions = nbt.getList("nodes", Constants.NBT.TAG_COMPOUND);
+    for (int i = 0; i < positions.size(); i++) {
+      CompoundNBT tag = positions.getCompound(i);
+      int[] p = tag.getIntArray("position");
+      BlockPos pos = new BlockPos(p[0], p[1], p[2]);
+      createNode(world, pos).ifPresent(this::addNode);
+    }
   }
 }

@@ -8,8 +8,8 @@ import alpvax.advancedautocrafting.client.gui.ControllerScreen;
 import alpvax.advancedautocrafting.client.gui.RemoteMasterScreen;
 import alpvax.advancedautocrafting.command.NetworkCommand;
 import alpvax.advancedautocrafting.container.AAContainerTypes;
-import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.connection.ISimpleCraftNetworkNodeFactory;
+import alpvax.advancedautocrafting.craftnetwork.manager.NodeManager;
 import alpvax.advancedautocrafting.data.AALootTableProvider;
 import alpvax.advancedautocrafting.data.AARecipeProvider;
 import alpvax.advancedautocrafting.data.BlockPosLootFunction;
@@ -113,7 +113,7 @@ public class AdvancedAutocrafting {
     event.getIMCStream("registersimpletile"::equalsIgnoreCase)
         .forEach(msg -> {
       Pair<ResourceLocation, ISimpleCraftNetworkNodeFactory> val = msg.<Pair<ResourceLocation, ISimpleCraftNetworkNodeFactory>>getMessageSupplier().get();
-      INetworkNode.NON_TILE_NODES.put(val.getKey(), val.getValue());
+      NodeManager.NON_TILE_NODES.put(val.getKey(), val.getValue());
     });
   }
 }
