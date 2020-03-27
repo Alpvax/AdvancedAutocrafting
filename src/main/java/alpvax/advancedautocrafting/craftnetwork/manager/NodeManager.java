@@ -18,16 +18,20 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunk;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.fml.LogicalSide;
 import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +40,10 @@ import java.util.Set;
 
 public class NodeManager implements INBTSerializable<CompoundNBT> {
   private static final Direction[] ALL_DIRECTIONS = Direction.values();
+  static {
+    MinecraftForge.EVENT_BUS.addListener(NodeManager::tickWorld);
+  }
+  private static final Multimap<IWorldReader, ChunkPos> dirtyManagers = HashMultimap.create();
 
   public static class Provider implements ICapabilitySerializable<CompoundNBT> {
     NodeManager manager;
@@ -52,6 +60,15 @@ public class NodeManager implements INBTSerializable<CompoundNBT> {
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
       manager.deserializeNBT(nbt);
+    }
+  }
+
+  private static void tickWorld(TickEvent.WorldTickEvent event) {
+    if (event.phase == TickEvent.Phase.END && event.side == LogicalSide.SERVER) {
+      IWorldReader world = event.world;
+      dirtyManagers.get(world).stream()
+          .map(pos -> get(world, pos))
+          .forEach(NodeManager::updateNodes);
     }
   }
 
@@ -121,31 +138,38 @@ public class NodeManager implements INBTSerializable<CompoundNBT> {
   // *************** INSTANCE FUNCTIONALITY ***************
   private final IWorldReader world;
   private final ChunkPos chunkPos;
+  private final Map<BlockPos, NetworkNodeEntry> nodes = new HashMap<>();
+
   public NodeManager(IWorldReader world, ChunkPos pos) {
     this.world = world;
     chunkPos = pos;
   }
 
-  @Nonnull
-  private NetworkNodeEntry getEntry(@Nonnull BlockPos pos) {
-    return getEntry(pos, true);
-  }
-
-  private NetworkNodeEntry getEntry(@Nonnull BlockPos pos, boolean create) {
+  protected final void validatePos(@Nonnull BlockPos pos, @Nullable String message) {
     ChunkPos cpos = new ChunkPos(pos);
-    if (cpos.equals(chunkPos)) {
-      return create
-          ? nodes.computeIfAbsent(pos, NetworkNodeEntry::new)
-          : nodes.get(pos);
-    } else {
+    if (!cpos.equals(chunkPos)) {
       throw new IndexOutOfBoundsException(String.format(
-          "Attempted to get instance of node from the wrong chunk! Requested: %s (%s); Requested from %s",
-          pos, cpos, chunkPos
+          "Attempted to %s from the wrong chunk! Requested pos: %s (Chunk: %s); Requested from Chunk: %s",
+          message == null ? "get node" : message, pos, cpos, chunkPos
       ));
     }
   }
 
-  private final Map<BlockPos, NetworkNodeEntry> nodes = new HashMap<>();
+  @Nullable
+  private NetworkNodeEntry getEntry(@Nonnull BlockPos pos) {
+    NetworkNodeEntry entry = getEntryRaw(pos, false);
+    if (entry != null && entry.isDirty()) {
+      createNode(world, pos).ifPresent(entry::setNode);
+    }
+    return entry;
+  }
+
+  private NetworkNodeEntry getEntryRaw(@Nonnull BlockPos pos, boolean create) {
+    validatePos(pos, "get instance of node");
+    return create
+        ? nodes.computeIfAbsent(pos, NetworkNodeEntry::new)
+        : nodes.get(pos);
+  }
   //private final Map<BlockPos, INetworkNode> nodes = new HashMap<>();
   //private final Multimap<BlockPos, CraftNetwork> connectedNetworks = HashMultimap.create();
 
@@ -173,16 +197,16 @@ public class NodeManager implements INBTSerializable<CompoundNBT> {
 
   @Nonnull
   public Optional<INetworkNode> getNodeAt(BlockPos pos) {
-    return Optional.ofNullable(getEntry(pos, false)).map(NetworkNodeEntry::getNode);
+    return Optional.ofNullable(getEntry(pos)).map(NetworkNodeEntry::getNode);
   }
 
   @Nonnull
   public Optional<Set<CraftNetwork>> getNetworksAt(BlockPos pos) {
-    return Optional.ofNullable(getEntry(pos, false)).map(NetworkNodeEntry::getNetworks);
+    return Optional.ofNullable(getEntry(pos)).map(NetworkNodeEntry::getNetworks);
   }
 
   public void markDirty(@Nonnull INetworkNode node) {
-    Optional.ofNullable(getEntry(node.getPos(), false)).ifPresent(NetworkNodeEntry::markDirty);
+    Optional.ofNullable(getEntryRaw(node.getPos(), false)).ifPresent(NetworkNodeEntry::markDirty);
   }
 
   private EnumMap<Direction, NetworkNodeEntry> getNeighbours(BlockPos pos) {
@@ -197,28 +221,45 @@ public class NodeManager implements INBTSerializable<CompoundNBT> {
     return map;
   }
 
-  protected void setNode(@Nonnull BlockPos pos, @Nullable INetworkNode node) {
-    NetworkNodeEntry entry = getEntry(pos, node != null);
+  protected void setNode(@Nonnull BlockPos pos, @Nullable INetworkNode node, boolean updateNeighbors) {
+    validatePos(pos, "Attempted to set");
+    NetworkNodeEntry entry = getEntryRaw(pos, node != null);
     if (entry != null) {
       if (node == null) {
         nodes.remove(pos);
       }
       if (entry.getNode() != node) {
         entry.setNode(node);
-        getNeighbours(pos).forEach((d, e) -> e.markDirty());
+        if (updateNeighbors) {
+          getNeighbours(pos).forEach((d, e) -> e.markDirty());
+        }
       }
     }
   }
 
+  private void updateNodes() {
+    nodes.values().stream()
+        .filter(NetworkNodeEntry::isDirty)
+        .forEach(entry -> createNode(world, entry.pos).ifPresent(entry::setNode));
+    dirtyManagers.remove(world, this);
+  }
+
+  /* *
+   * Call to add a simple node, or to add the node already at that position (i.e. a tileentity)
+   * @param pos the pos to query for creating the node.
+   /
+  public void updateNode(BlockPos pos) {
+    createNode(world, pos).ifPresent(this::addNode);
+  }*/
   public void addNode(@Nonnull INetworkNode node) {
-    setNode(node.getPos(), node);
+    setNode(node.getPos(), node, true);
   }
 
   public void removeNode(@Nonnull INetworkNode node) {
     removeNode(node.getPos());
   }
   public void removeNode(@Nonnull BlockPos pos) {
-    setNode(pos, null);
+    setNode(pos, null, true);
   }
 
   @Override
@@ -248,8 +289,15 @@ public class NodeManager implements INBTSerializable<CompoundNBT> {
     for (int i = 0; i < positions.size(); i++) {
       CompoundNBT tag = positions.getCompound(i);
       int[] p = tag.getIntArray("position");
+      if (p.length != 3) {
+        throw new IndexOutOfBoundsException(String.format(
+            "Attempting to load invalid position: %s. Number of values must be 3, actual: %d",
+            Arrays.toString(p), p.length
+        ));
+      }
       BlockPos pos = new BlockPos(p[0], p[1], p[2]);
-      createNode(world, pos).ifPresent(this::addNode);
+      getEntryRaw(pos, true);
+      dirtyManagers.put(world, chunkPos);
     }
   }
 }

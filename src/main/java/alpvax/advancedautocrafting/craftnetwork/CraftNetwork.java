@@ -51,7 +51,7 @@ public class CraftNetwork implements IEnergyStorage {
         .forEachOrdered(e -> {
           INetworkNode node = e.getKey();
           BlockPos pos = node.getPos();
-          text.appendText("\t").appendSibling(node.getName())
+          text.appendText("  ").appendSibling(node.getName())
               .appendText(String.format(" @ (%d, %d, %d); score = %d\n",
                   pos.getX(), pos.getY(), pos.getZ(),
                   e.getValue()

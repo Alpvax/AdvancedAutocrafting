@@ -15,6 +15,7 @@ class NetworkNodeEntry {
   private INetworkNode node;
   private Set<CraftNetwork> networks = new HashSet<>();
   private final EnumMap<Direction, Boolean> connections = new EnumMap<>(Direction.class);
+  private boolean dirty = true;
 
   /*NetworkNodeEntry(NodeManager manager, BlockPos pos) {
     this.manager = manager;*/
@@ -36,11 +37,17 @@ class NetworkNodeEntry {
       networks.clear();
     }
     this.node = node;
+    dirty = false;
   }
 
   void markDirty() {
+    dirty = true;
     networks.forEach(network -> network.markDirty(this.node));
   }
+  boolean isDirty() {
+    return dirty;
+  }
+
   Set<CraftNetwork> getNetworks() {
     return networks;
   }

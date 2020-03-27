@@ -13,6 +13,8 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 import java.util.Comparator;
+import java.util.Objects;
+import java.util.Set;
 
 public class NetworkCommand {
   public static void register(CommandDispatcher<CommandSource> dispatcher) {
@@ -37,7 +39,7 @@ public class NetworkCommand {
     ServerPlayerEntity player = source.asPlayer();
     NodeManager manager = NodeManager.get(player.world, player.getPosition());
     ITextComponent text = new StringTextComponent(String.format("Networks in chunk{%d, %d}:\n", player.chunkCoordX, player.chunkCoordZ));
-    manager.getNodes().values().forEach(network -> {
+    manager.getNodes().values().stream().filter(Objects::nonNull).forEach(network -> {
       text.appendSibling(network.chatNetworkDisplay(true));
     });
     source.sendFeedback(text, false);
@@ -48,8 +50,9 @@ public class NetworkCommand {
     CommandSource source = ctx.getSource();
     ServerPlayerEntity player = source.asPlayer();
     NodeManager manager = NodeManager.get(player.world, player.getPosition());
-    ITextComponent text = new StringTextComponent(String.format("Nodes in chunk{%d, %d}:\n", player.chunkCoordX, player.chunkCoordZ));
-    manager.getNodes().keySet().stream()
+    Set<INetworkNode> nodes = manager.getNodes().keySet();
+    ITextComponent text = new StringTextComponent(String.format("Nodes in chunk{%d, %d} (total %d):", player.chunkCoordX, player.chunkCoordZ, nodes.size()));
+    nodes.stream()
         // Hide nodes which only provide connections
         //TODO: Config/command filter
         //.filter(n -> n.getFunctionalities().stream().anyMatch(nf -> nf != NodeFunctionality.EXTENDED_CONNECT))
@@ -57,7 +60,9 @@ public class NetworkCommand {
         .sorted(Comparator.comparing(INetworkNode::getPos))
         .forEachOrdered(node -> {
           BlockPos pos = node.getPos();
-          text.appendSibling(node.getName()).appendText(String.format(" @ (%d, %d, %d)\n", pos.getX(), pos.getY(), pos.getZ()));
+          text.appendText("\n  ")
+              .appendSibling(node.getName())
+              .appendText(String.format(" @ (%d, %d, %d)", pos.getX(), pos.getY(), pos.getZ()));
         });
     source.sendFeedback(text, false);
     return 0;
