@@ -264,6 +264,14 @@ public class NodeManager implements INBTSerializable<CompoundNBT> {
     setNode(pos, createNode(world, pos).orElse(null), true);
   }
 
+  /**
+   * Call to create a CraftNetwork at a location
+   * @param pos the location of the controller
+   */
+  public void initNetwork(BlockPos pos) {
+
+  }
+
   public void addNode(@Nonnull INetworkNode node) {
     setNode(node.getPos(), node, true);
   }

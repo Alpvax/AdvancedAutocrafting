@@ -1,6 +1,7 @@
 package alpvax.advancedautocrafting.block;
 
 import alpvax.advancedautocrafting.block.tile.ControllerTileEntity;
+import alpvax.advancedautocrafting.craftnetwork.manager.NodeManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,17 +33,22 @@ public class ControllerBlock extends Block {
     return new ControllerTileEntity();
   }
 
-  /*public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-    if (state.getBlock() != newState.getBlock() && !isMoving) {
+  @SuppressWarnings("deprecation")
+  @Override
+  public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+    /*if (state.getBlock() != newState.getBlock() && !isMoving) {
       TileEntity tileentity = worldIn.getTileEntity(pos);
       if (tileentity instanceof ControllerTileEntity) {
         ((ControllerTileEntity)tileentity).dropItems(worldIn, pos, newState);
         worldIn.updateComparatorOutputLevel(pos, this);
       }
 
-      super.onReplaced(state, worldIn, pos, newState, isMoving);
-    }
-  }*/
+    }*/
+    NodeManager manager = NodeManager.get(worldIn, pos);
+    manager.updateNode(pos);
+    manager.initNetwork(pos);
+    super.onReplaced(state, worldIn, pos, newState, isMoving);
+  }
 
   @SuppressWarnings("deprecation")
   @Nonnull

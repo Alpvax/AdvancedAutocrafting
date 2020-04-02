@@ -69,6 +69,7 @@ public class AdjacentNodeConnectionManager {
   protected Optional<AdjacentNodeConnectionManager> getNeighbourParent(Direction d) {
     return getNeighbourRaw(d).filter(ancm -> canConnectFrom(d.getOpposite()));
   }
+  @Nonnull
   private Optional<AdjacentNodeConnectionManager> getNeighbourRaw(Direction d) {
     return NodeManager.getNodeAt(world, pos.offset(d))
                .map(AdjacentNodeConnectionManager::new /*TODO: Implement correctly*/);
