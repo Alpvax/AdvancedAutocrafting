@@ -6,6 +6,7 @@ import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.connection.ISimpleCraftNetworkNodeFactory;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
@@ -134,6 +135,10 @@ public class NodeManager implements INBTSerializable<CompoundNBT> {
     return get(world, pos).nodes.get(pos);
   }
 
+  public static void updateNodeAt(IWorldReader world, BlockPos pos) {
+    get(world, pos).updateNode(pos);
+  }
+
 
   // *************** INSTANCE FUNCTIONALITY ***************
   private final IWorldReader world;
@@ -176,23 +181,30 @@ public class NodeManager implements INBTSerializable<CompoundNBT> {
   /**
    * Get all the nodes handled by this manager.
    * For just the nodes, use `.keySet` on the return value.
-   * @return a Multimap (multiple values) of all nodes, with their connected networks.
+   * @return an Unmodifiable Multimap (multiple values) of all nodes, with their connected networks.
    * Entry will have a single value `null` if the node is not currently connected to any network.
    */
   @Nonnull
   public Multimap<INetworkNode, CraftNetwork> getNodes() {
     Multimap<INetworkNode, CraftNetwork> map = HashMultimap.create();
-    nodes.values().stream().filter(NetworkNodeEntry::isNode).forEach(e -> {
-      Set<CraftNetwork> networks = e.getNetworks();
-      if (networks.isEmpty()) {
-        // Force add null to the map for nodes which don't have networks yet.
-        map.put(e.getNode(), null);
-      }
-      else {
-        map.putAll(e.getNode(), e.getNetworks());
-      }
-    });
-    return map;
+    nodes.values().stream()
+        .peek(entry -> {
+          if (entry.isDirty()) {
+            entry.setNode(createNode(world, entry.pos).orElse(null));
+          }
+        })
+        .filter(NetworkNodeEntry::isNode)
+        .forEach(e -> {
+          Set<CraftNetwork> networks = e.getNetworks();
+          if (networks.isEmpty()) {
+            // Force add null to the map for nodes which don't have networks yet.
+            map.put(e.getNode(), null);
+          }
+          else {
+            map.putAll(e.getNode(), e.getNetworks());
+          }
+        });
+    return Multimaps.unmodifiableMultimap(map);
   }
 
   @Nonnull
@@ -222,7 +234,7 @@ public class NodeManager implements INBTSerializable<CompoundNBT> {
   }
 
   protected void setNode(@Nonnull BlockPos pos, @Nullable INetworkNode node, boolean updateNeighbors) {
-    validatePos(pos, "Attempted to set");
+    validatePos(pos, "set node");
     NetworkNodeEntry entry = getEntryRaw(pos, node != null);
     if (entry != null) {
       if (node == null) {
@@ -240,17 +252,18 @@ public class NodeManager implements INBTSerializable<CompoundNBT> {
   private void updateNodes() {
     nodes.values().stream()
         .filter(NetworkNodeEntry::isDirty)
-        .forEach(entry -> createNode(world, entry.pos).ifPresent(entry::setNode));
-    dirtyManagers.remove(world, this);
+        .forEach(entry -> updateNode(entry.pos));
+    dirtyManagers.remove(world, chunkPos);
   }
 
-  /* *
+  /**
    * Call to add a simple node, or to add the node already at that position (i.e. a tileentity)
    * @param pos the pos to query for creating the node.
-   /
+   */
   public void updateNode(BlockPos pos) {
-    createNode(world, pos).ifPresent(this::addNode);
-  }*/
+    setNode(pos, createNode(world, pos).orElse(null), true);
+  }
+
   public void addNode(@Nonnull INetworkNode node) {
     setNode(node.getPos(), node, true);
   }
