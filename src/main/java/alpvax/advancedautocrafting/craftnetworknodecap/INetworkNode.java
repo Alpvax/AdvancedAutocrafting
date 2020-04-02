@@ -1,4 +1,4 @@
-package alpvax.advancedautocrafting.craftnetwork;
+package alpvax.advancedautocrafting.craftnetworknodecap;
 
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;

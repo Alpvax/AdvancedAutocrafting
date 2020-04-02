@@ -1,7 +1,7 @@
 package alpvax.advancedautocrafting;
 
-import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
-import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
+import alpvax.advancedautocrafting.craftnetworknodecap.INetworkNode;
+import alpvax.advancedautocrafting.craftnetworknodecap.SimpleNetworkNode;
 import alpvax.advancedautocrafting.item.IMultitool;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
