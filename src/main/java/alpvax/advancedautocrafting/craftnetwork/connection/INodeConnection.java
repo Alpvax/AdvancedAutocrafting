@@ -1,5 +1,6 @@
-package alpvax.advancedautocrafting.craftnetwork;
+package alpvax.advancedautocrafting.craftnetwork.connection;
 
+import alpvax.advancedautocrafting.craftnetwork.UniversalPos;
 import net.minecraft.util.Direction;
 
 import javax.annotation.Nonnull;

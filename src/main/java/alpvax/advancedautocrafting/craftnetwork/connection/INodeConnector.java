@@ -1,6 +1,7 @@
-package alpvax.advancedautocrafting.craftnetwork;
+package alpvax.advancedautocrafting.craftnetwork.connection;
 
 import alpvax.advancedautocrafting.Capabilities;
+import alpvax.advancedautocrafting.craftnetwork.UniversalPos;
 import alpvax.advancedautocrafting.craftnetwork.graph.NetworkGraph;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -20,7 +21,8 @@ public interface INodeConnector {
    * @return The position of the node this can connect to.
    * For adjacent connectors, will be one of the adjacent BlockPos'
    */
-  @Nonnull UniversalPos getTargetPos();
+  @Nonnull
+  UniversalPos getTargetPos();
 
   /**
    * @return The connector joining to this connector on the other side, or empty if there is no connector.
@@ -47,7 +49,7 @@ public interface INodeConnector {
               ? ConnectionState.CONNECTED : ConnectionState.BLOCKED);
         }
       });
-      return result.get();
+      return result.get();//TODO: is AtomicRef the best approach?
     }
     return ConnectionState.NOT_LOADED;
   }

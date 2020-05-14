@@ -1,5 +1,7 @@
 package alpvax.advancedautocrafting.craftnetwork;
 
+import alpvax.advancedautocrafting.Capabilities;
+import alpvax.advancedautocrafting.craftnetwork.node.INetworkNode;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -14,6 +16,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 public class UniversalPos implements Comparable<UniversalPos> {
   private final IWorld world;
@@ -31,6 +35,16 @@ public class UniversalPos implements Comparable<UniversalPos> {
     return getWorld().isAreaLoaded(getPos(), adjacentBlocks);
   }
 
+  public <T> T ifCraftNetNode(Function<INetworkNode, T> callback, boolean load) {
+    AtomicReference<T> res = new AtomicReference<>(null);
+    if (isLoaded() || load) {
+      getWorld().getCapability(Capabilities.NETWORK_GRAPH_CAPABILITY).ifPresent(graph -> {
+        res.set(graph.getNode(getPos()).map(callback).orElse(null));
+      });
+    }
+    return res.get();//TODO: is AtomicRef the best approach?
+  }
+
   public World getWorld() {
     return world.getWorld();
   }
@@ -41,6 +55,10 @@ public class UniversalPos implements Comparable<UniversalPos> {
 
   public BlockState getState() {
     return getWorld().getBlockState(getPos());
+  }
+
+  public UniversalPos offset(Direction d) {
+    return new UniversalPos(world, pos.offset(d));
   }
 
   /**

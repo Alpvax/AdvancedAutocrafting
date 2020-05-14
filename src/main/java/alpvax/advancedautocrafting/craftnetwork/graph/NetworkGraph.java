@@ -1,7 +1,7 @@
 package alpvax.advancedautocrafting.craftnetwork.graph;
 
 import alpvax.advancedautocrafting.Capabilities;
-import alpvax.advancedautocrafting.craftnetwork.NetworkNode;
+import alpvax.advancedautocrafting.craftnetwork.node.INetworkNode;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -12,10 +12,15 @@ import net.minecraftforge.event.world.BlockEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class NetworkGraph {
   private Map<BlockPos, NetworkedBlockPos> loadedPositions =  new HashMap<>();
-  private Map<BlockPos, NetworkNode> nodes =  new HashMap<>();
+  private Map<BlockPos, INetworkNode> nodes =  new HashMap<>();
+
+  public Optional<INetworkNode> getNode(BlockPos pos) {
+    return Optional.ofNullable(nodes.get(pos)); //TODO: fix implementation
+  }
 
   /**
    * Will be called for each neighbour of neighbourPos, when neighbour changes.

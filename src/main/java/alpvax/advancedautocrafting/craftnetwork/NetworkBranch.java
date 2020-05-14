@@ -6,11 +6,7 @@ import net.minecraft.world.IWorldReader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class NetworkBranch {
   class BranchNode extends NetworkNode {
