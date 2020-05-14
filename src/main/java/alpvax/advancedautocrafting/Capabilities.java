@@ -1,5 +1,6 @@
 package alpvax.advancedautocrafting;
 
+import alpvax.advancedautocrafting.craftnetwork.graph.NetworkGraph;
 import alpvax.advancedautocrafting.craftnetworknodecap.INetworkNode;
 import alpvax.advancedautocrafting.craftnetworknodecap.SimpleNetworkNode;
 import alpvax.advancedautocrafting.item.IMultitool;
@@ -13,6 +14,9 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 public class Capabilities {
   @CapabilityInject(INetworkNode.class)
   public static Capability<INetworkNode> NODE_CAPABILITY = null;
+
+  @CapabilityInject(NetworkGraph.class)
+  public static Capability<NetworkGraph> NETWORK_GRAPH_CAPABILITY = null;
 
   @CapabilityInject(IMultitool.class)
   public static Capability<IMultitool> MULTITOOL_CAPABILITY = null;
@@ -32,6 +36,20 @@ public class Capabilities {
 
       }
     }, () -> new SimpleNetworkNode(BlockPos.ZERO));
+    CapabilityManager.INSTANCE.register(NetworkGraph.class, new Capability.IStorage<NetworkGraph>()
+    {
+      @Override
+      public INBT writeNBT(Capability<NetworkGraph> capability, NetworkGraph instance, Direction side)
+      {
+        return null;
+      }
+
+      @Override
+      public void readNBT(Capability<NetworkGraph> capability, NetworkGraph instance, Direction side, INBT base)
+      {
+
+      }
+    }, NetworkGraph::new);
     CapabilityManager.INSTANCE.register(IMultitool.class, new Capability.IStorage<IMultitool>()
     {
       @Override
