@@ -2,12 +2,9 @@ package alpvax.advancedautocrafting.craftnetwork.connection;
 
 import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.craftnetwork.UniversalPos;
-import alpvax.advancedautocrafting.craftnetwork.graph.NetworkGraph;
-import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 public interface INodeConnector {
   enum Connectivity {
@@ -37,19 +34,16 @@ public interface INodeConnector {
   default ConnectionState isConnected() {
     UniversalPos pos = getTargetPos();
     if (pos.isLoaded()) {
-      AtomicReference<ConnectionState> result = new AtomicReference<>(ConnectionState.NO_TARGET);
-      LazyOptional<NetworkGraph> cap = pos.getWorld().getCapability(Capabilities.NETWORK_GRAPH_CAPABILITY);
-      cap.ifPresent(graph -> {
+      return pos.getWorld().getCapability(Capabilities.NETWORK_GRAPH_CAPABILITY).map(graph -> {
         //TODO: is block networked?
-        Optional<INodeConnector> conn = getTargetConnector();
-        if (conn.isPresent()) {
-          INodeConnector c = conn.get();
-          result.set((c.getInboundConnectivity() == Connectivity.ALLOW && getOutboundConnectivity() == Connectivity.ALLOW)
-                     || (c.getOutboundConnectivity() == Connectivity.ALLOW && getInboundConnectivity() == Connectivity.ALLOW)
-              ? ConnectionState.CONNECTED : ConnectionState.BLOCKED);
-        }
-      });
-      return result.get();//TODO: is AtomicRef the best approach?
+        return getTargetConnector().map(c ->
+          (c.getInboundConnectivity() == Connectivity.ALLOW && getOutboundConnectivity() == Connectivity.ALLOW)
+              || (c.getOutboundConnectivity() == Connectivity.ALLOW && getInboundConnectivity() == Connectivity.ALLOW)
+              ? ConnectionState.CONNECTED
+              : ConnectionState.BLOCKED
+        );
+      }).orElseThrow(() -> new NullPointerException(String.format("World %s does not have the network capability", pos.getWorld())))
+          .orElse(ConnectionState.NO_TARGET);
     }
     return ConnectionState.NOT_LOADED;
   }

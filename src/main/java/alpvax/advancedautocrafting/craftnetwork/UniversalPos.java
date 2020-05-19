@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class UniversalPos implements Comparable<UniversalPos> {
@@ -35,14 +35,10 @@ public class UniversalPos implements Comparable<UniversalPos> {
     return getWorld().isAreaLoaded(getPos(), adjacentBlocks);
   }
 
-  public <T> T ifCraftNetNode(Function<INetworkNode, T> callback, boolean load) {
-    AtomicReference<T> res = new AtomicReference<>(null);
-    if (isLoaded() || load) {
-      getWorld().getCapability(Capabilities.NETWORK_GRAPH_CAPABILITY).ifPresent(graph -> {
-        res.set(graph.getNode(getPos()).map(callback).orElse(null));
-      });
-    }
-    return res.get();//TODO: is AtomicRef the best approach?
+  public <T> Optional<T> ifCraftNetNode(Function<INetworkNode, T> callback, boolean load) {
+    return getWorld().getCapability(Capabilities.NETWORK_GRAPH_CAPABILITY).map(graph ->
+        graph.getNode(getPos()).map(callback)
+      ).orElseThrow(() -> new NullPointerException("World %s did not have network capability attached"));
   }
 
   public World getWorld() {
