@@ -7,6 +7,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -98,7 +99,7 @@ public class UniversalPos implements Comparable<UniversalPos> {
 
   @Override
   public int hashCode() {
-    return Objects.hash(world, pos);
+    return Objects.hash(world, new ChunkPos(pos), pos);
   }
 
   @Override
@@ -114,7 +115,7 @@ public class UniversalPos implements Comparable<UniversalPos> {
   }
 
   @Override
-  public int compareTo(UniversalPos o) {
+  public int compareTo(@Nonnull UniversalPos o) {
     return Comparator.<UniversalPos>comparingInt(up -> up.getWorld().getDimension().getType().getId())
         .thenComparing(UniversalPos::getPos).compare(this, o);
   }
