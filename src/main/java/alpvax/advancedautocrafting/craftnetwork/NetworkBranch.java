@@ -1,6 +1,7 @@
 package alpvax.advancedautocrafting.craftnetwork;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 
@@ -10,7 +11,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 public class NetworkBranch {
   class BranchNode extends NetworkNode {
@@ -143,7 +143,7 @@ public class NetworkBranch {
     node.prev = node.next = null;
     newEnd.next = null; //TODO: Connect to new junction?
     newStart.prev = null; //TODO: Connect to new junction?
-    return Set.of(
+    return Sets.newHashSet(
         new NetworkBranch(start),
         new NetworkBranch(newStart)
     );

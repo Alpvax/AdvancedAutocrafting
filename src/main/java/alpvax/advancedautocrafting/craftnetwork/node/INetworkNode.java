@@ -6,8 +6,8 @@ import alpvax.advancedautocrafting.craftnetwork.connection.INodeConnector;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface INetworkNode<T> {
+public interface INetworkNode {
   @Nonnull UniversalPos getPos();
 
-  @Nullable INodeConnector getConnector(T context);
+  @Nullable <T> INodeConnector getConnector(T context);
 }

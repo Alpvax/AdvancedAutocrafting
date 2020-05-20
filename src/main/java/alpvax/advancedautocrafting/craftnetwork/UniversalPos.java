@@ -8,8 +8,11 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -56,6 +59,11 @@ public class UniversalPos implements Comparable<UniversalPos> {
 
   public UniversalPos offset(Direction d) {
     return new UniversalPos(world, pos.offset(d));
+  }
+
+  public ITextComponent singleLineDisplay() {
+    return new StringTextComponent("Dimension: \"" + DimensionType.getKey(getWorld().getDimension().getType()).toString()
+        + "\"; Position: " + getPos() + ";");//TODO: Convert to translation?
   }
 
   /**

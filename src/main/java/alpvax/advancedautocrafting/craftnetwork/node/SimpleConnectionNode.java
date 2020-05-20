@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumMap;
 
-public class SimpleConnectionNode implements INetworkNode<Direction> {
+public class SimpleConnectionNode implements INetworkNode {
   private final UniversalPos pos;
   private final EnumMap<Direction, AdjacentConnector> connectors = new EnumMap<>(Direction.class);
 
@@ -28,7 +28,7 @@ public class SimpleConnectionNode implements INetworkNode<Direction> {
 
   @Nullable
   @Override
-  public INodeConnector getConnector(Direction context) {
-    return connectors.get(context);
+  public <T> INodeConnector getConnector(T context) {
+    return (context instanceof Direction) ? connectors.get(context) : null;
   }
 }
