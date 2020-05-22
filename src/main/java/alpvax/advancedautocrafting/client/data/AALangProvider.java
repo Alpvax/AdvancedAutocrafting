@@ -25,8 +25,6 @@ public class AALangProvider extends LanguageProvider {
   protected void addTranslations() {
     add(AAItems.ITEM_GROUP, "Advanced Autocrafting");
 
-    add(AATranslationKeys.ITEM_POS_LORE, "Bound position: %s");
-
     add(AAItems.REMOTE_POS.get(), "Remote Position Reference");
     add(AAItems.MULTITOOL.get(), "Multitool");
 
@@ -34,6 +32,8 @@ public class AALangProvider extends LanguageProvider {
     addBlock(AABlocks.REMOTE_MARKER, "Remote Position Marker");
     addBlock(AABlocks.REMOTE_MASTER, "Remote Network Container");
     addBlock(AABlocks.WIRE, "Wire");
+
+    AATranslationKeys.EN_US_MAPPINGS.forEach(this::add);
   }
 
   private void add(ItemGroup group, String name) {

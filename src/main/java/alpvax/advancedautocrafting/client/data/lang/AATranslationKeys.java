@@ -4,10 +4,13 @@ import alpvax.advancedautocrafting.AdvancedAutocrafting;
 import com.google.common.collect.Maps;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 public class AATranslationKeys {
-  public static final String ITEM_POS_LORE = key("bound", "position");
+  public static final Map<String, String> EN_US_MAPPINGS = new HashMap<>();
+
+  public static final String ITEM_POS_LORE = register("Bound position: %s", "bound", "position");
 
   private static String key(String... parts) {
     return AdvancedAutocrafting.MODID + ":" + String.join(".", parts);
@@ -22,5 +25,11 @@ public class AATranslationKeys {
       m.put(var, s);
     });
     return m;
+  }
+
+  private static String register(String translation_US, String... keyParts) {
+    String key = key(keyParts);
+    EN_US_MAPPINGS.put(key, translation_US);
+    return key;
   }
 }
