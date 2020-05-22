@@ -17,7 +17,10 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-import static alpvax.advancedautocrafting.block.AABlocks.*;
+import static alpvax.advancedautocrafting.block.AABlocks.CONTROLLER;
+import static alpvax.advancedautocrafting.block.AABlocks.REMOTE_MARKER;
+import static alpvax.advancedautocrafting.block.AABlocks.REMOTE_MASTER;
+import static alpvax.advancedautocrafting.block.AABlocks.WIRE;
 
 public class AABlockstateProvider extends BlockStateProvider {
   private static final Direction[] ALL_DIRECTIONS = Direction.values();

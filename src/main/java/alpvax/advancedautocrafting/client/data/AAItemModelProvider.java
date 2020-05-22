@@ -34,6 +34,9 @@ public class AAItemModelProvider extends ItemModelProvider {
     generated(AAItems.REMOTE_POS);
     handheld(AAItems.MULTITOOL);
 
+    handheld(AAItems.SOUL_SLICER);
+    generated(AAItems.SOUL_SLIVER);
+
     // BLOCKS
     blockItem(AABlocks.CONTROLLER);
     blockItem(AABlocks.REMOTE_MARKER);

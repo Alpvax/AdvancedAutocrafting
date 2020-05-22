@@ -2,17 +2,44 @@ package alpvax.advancedautocrafting.util;
 
 import alpvax.advancedautocrafting.AdvancedAutocrafting;
 import alpvax.advancedautocrafting.client.data.lang.AATranslationKeys;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.minecraft.MinecraftSessionService;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 public class BlockPosUtil {
   public static final String POSITION_NBT_KEY = AdvancedAutocrafting.MODID + ":position";
+  private static PlayerProfileCache profileCache;
+  private static MinecraftSessionService sessionService;
+
+  public static void initServer(MinecraftServer server) {
+    profileCache = server.getPlayerProfileCache();
+    sessionService = server.getMinecraftSessionService();
+  }
+
+  @Nullable
+  public static GameProfile getProfile(UUID playerID) {
+    if (profileCache != null && sessionService != null) {
+      GameProfile profile = profileCache.getProfileByUUID(playerID);
+      if (profile == null) {
+        profile = new GameProfile(playerID, null);
+      }
+      if (!profile.isComplete()) {
+        profile = sessionService.fillProfileProperties(profile, true);
+      }
+      return profile;
+    }
+    return null;
+  }
 
   public static void writePosToNBT(@Nonnull CompoundNBT nbt, @Nonnull BlockPos pos) {
     CompoundNBT tag = new CompoundNBT();

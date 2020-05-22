@@ -82,6 +82,7 @@ public class AdvancedAutocrafting {
   private void onServerStarting(final FMLServerStartingEvent event) {
     //Register commands
     //CommandTropicsTeleport.register(event.getServer().getCommandManager().getDispatcher());
+    AAUtil.initServer(event.getServer());
   }
 
   private void gatherData(GatherDataEvent event) {
@@ -89,7 +90,6 @@ public class AdvancedAutocrafting {
 
     if (event.includeClient()) {
       gen.addProvider(new AABlockstateProvider(gen, event.getExistingFileHelper()));
-      //TODO: Generate item models when supported by forge:
       gen.addProvider(new AAItemModelProvider(gen, event.getExistingFileHelper()));
       gen.addProvider(new AALangProvider(gen));
     }

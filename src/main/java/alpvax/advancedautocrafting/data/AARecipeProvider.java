@@ -14,7 +14,10 @@ import net.minecraftforge.common.Tags;
 
 import java.util.function.Consumer;
 
-import static alpvax.advancedautocrafting.block.AABlocks.*;
+import static alpvax.advancedautocrafting.block.AABlocks.CONTROLLER;
+import static alpvax.advancedautocrafting.block.AABlocks.REMOTE_MARKER;
+import static alpvax.advancedautocrafting.block.AABlocks.REMOTE_MASTER;
+import static alpvax.advancedautocrafting.block.AABlocks.WIRE;
 
 public class AARecipeProvider extends RecipeProvider {
 

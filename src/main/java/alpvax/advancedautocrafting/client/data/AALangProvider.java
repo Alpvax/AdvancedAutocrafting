@@ -27,6 +27,8 @@ public class AALangProvider extends LanguageProvider {
 
     add(AAItems.REMOTE_POS.get(), "Remote Position Reference");
     add(AAItems.MULTITOOL.get(), "Multitool");
+    add(AAItems.SOUL_SLICER.get(), "Soul Slicer");
+    add(AAItems.SOUL_SLIVER.get(), "Soul Sliver");
 
     addBlock(AABlocks.CONTROLLER);
     addBlock(AABlocks.REMOTE_MARKER, "Remote Position Marker");

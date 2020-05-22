@@ -31,4 +31,7 @@ public class AAItems {
   public static final RegistryObject<MultitoolItem> MULTITOOL = ITEMS.register("multitool", () -> new MultitoolItem(
       new Item.Properties().group(ITEM_GROUP)
   ));
+
+  public static final RegistryObject<Item> SOUL_SLICER = ITEMS.register("soul_slicer", SoulSlicer::new);
+  public static final RegistryObject<Item> SOUL_SLIVER = ITEMS.register("soul_sliver", SoulSliver::new);
 }

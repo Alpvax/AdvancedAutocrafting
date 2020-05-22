@@ -1,10 +1,16 @@
 {
   "advancedautocrafting:bound.position": "Bound position: %s",
+  "advancedautocrafting:soul.not.consumable": "You cannot consume this soul",
+  "advancedautocrafting:soul.notenough": "You do not have enough soul slivers left to do that",
+  "advancedautocrafting:soul.player": "A Sliver of %s's Soul",
+  "advancedautocrafting:soul.slicer.arrangement": "You need to use the %s in your main hand, and your offhand needs to be empty",
   "block.advancedautocrafting.controller": "Autocrafting Controller",
   "block.advancedautocrafting.remote_marker": "Remote Position Marker",
   "block.advancedautocrafting.remote_master": "Remote Network Container",
   "block.advancedautocrafting.wire": "Wire",
   "item.advancedautocrafting.multitool": "Multitool",
   "item.advancedautocrafting.remote_pos": "Remote Position Reference",
+  "item.advancedautocrafting.soul_slicer": "Soul Slicer",
+  "item.advancedautocrafting.soul_sliver": "Soul Sliver",
   "itemGroup.advancedautocrafting": "Advanced Autocrafting"
 }
