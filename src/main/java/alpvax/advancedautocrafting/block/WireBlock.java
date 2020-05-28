@@ -183,7 +183,7 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
     if(!stack.isEmpty() && stack.getCapability(Capabilities.MULTITOOL_CAPABILITY).isPresent()) {
       // Multitool
       if (!worldIn.isRemote) {
-        if (player.isShiftKeyDown()) {
+        if (player.isSneaking()) {
           worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
           if (!player.isCreative()) {
             spawnAsEntity(worldIn, pos, new ItemStack(this));
