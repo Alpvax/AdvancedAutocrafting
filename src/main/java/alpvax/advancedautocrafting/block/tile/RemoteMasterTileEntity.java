@@ -1,11 +1,11 @@
 package alpvax.advancedautocrafting.block.tile;
 
-import alpvax.advancedautocrafting.AAUtil;
 import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.container.RemoteMasterContainer;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
+import alpvax.advancedautocrafting.util.BlockPosUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -35,7 +35,7 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
   public ItemStackHandler inventory = new ItemStackHandler(27) {
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-      return AAUtil.hasPosition(stack);
+      return BlockPosUtil.hasPosition(stack);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
       @Override
       public NonNullList<INetworkNode> getChildNodes(Direction inbound) {
         return RemoteMasterTileEntity.this.getItems().stream().map((stack) ->
-            new SimpleNetworkNode(AAUtil.readPosFromItemStack(stack))).collect(Collectors.toCollection(NonNullList::create)
+            new SimpleNetworkNode(BlockPosUtil.readPosFromItemStack(stack))).collect(Collectors.toCollection(NonNullList::create)
         );
       }
 
@@ -85,7 +85,7 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
 
   @Nonnull
   public NonNullList<BlockPos> getRemotePositions() {
-    return getItems().stream().map(AAUtil::readPosFromItemStack).filter(Objects::nonNull).collect(Collectors.toCollection(NonNullList::create));
+    return getItems().stream().map(BlockPosUtil::readPosFromItemStack).filter(Objects::nonNull).collect(Collectors.toCollection(NonNullList::create));
   }
 
   public void dropItems(World worldIn, BlockPos pos, BlockState newState) {

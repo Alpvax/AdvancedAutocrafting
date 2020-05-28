@@ -1,7 +1,7 @@
 package alpvax.advancedautocrafting.item;
 
-import alpvax.advancedautocrafting.AAUtil;
 import alpvax.advancedautocrafting.client.render.BlockHighlightRender;
+import alpvax.advancedautocrafting.util.BlockPosUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -30,13 +30,13 @@ public class RemotePositionItem extends Item {
    */
   @OnlyIn(Dist.CLIENT)
   public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-    tooltip.add(AAUtil.getItemPositionText(stack).applyTextStyle(TextFormatting.GRAY));
+    tooltip.add(BlockPosUtil.getItemPositionText(stack).applyTextStyle(TextFormatting.GRAY));
   }
 
   @Override
   public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
     ItemStack stack = player.getHeldItem(hand);
-    BlockPos pos = AAUtil.readPosFromItemStack(stack);
+    BlockPos pos = BlockPosUtil.readPosFromItemStack(stack);
     if(world.isRemote) {
       DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
         if(BlockHighlightRender.manager.contains(pos)) {
@@ -56,7 +56,7 @@ public class RemotePositionItem extends Item {
 
   @OnlyIn(Dist.CLIENT)
   private boolean isRendering(ItemStack stack) {
-    BlockPos pos = AAUtil.readPosFromItemStack(stack);
+    BlockPos pos = BlockPosUtil.readPosFromItemStack(stack);
     return pos != null && BlockHighlightRender.manager.contains(pos);
   }
 }

@@ -1,7 +1,7 @@
 package alpvax.advancedautocrafting.data;
 
-import alpvax.advancedautocrafting.AAUtil;
 import alpvax.advancedautocrafting.AdvancedAutocrafting;
+import alpvax.advancedautocrafting.util.BlockPosUtil;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import net.minecraft.item.ItemStack;
@@ -26,7 +26,7 @@ public class BlockPosLootFunction extends LootFunction {
   protected ItemStack doApply(ItemStack stack, LootContext context) {
     BlockPos pos = context.get(LootParameters.POSITION);
     CompoundNBT stackNBT = stack.getOrCreateTag();
-    AAUtil.writePosToNBT(stackNBT, pos);
+    BlockPosUtil.writePosToNBT(stackNBT, pos);
     return stack;
   }
 

@@ -1,5 +1,6 @@
-package alpvax.advancedautocrafting;
+package alpvax.advancedautocrafting.util;
 
+import alpvax.advancedautocrafting.AdvancedAutocrafting;
 import alpvax.advancedautocrafting.client.data.lang.AATranslationKeys;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -10,7 +11,7 @@ import net.minecraftforge.common.util.Constants;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class AAUtil {
+public class BlockPosUtil {
   public static final String POSITION_NBT_KEY = AdvancedAutocrafting.MODID + ":position";
 
   public static void writePosToNBT(@Nonnull CompoundNBT nbt, @Nonnull BlockPos pos) {
