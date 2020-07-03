@@ -1,4 +1,4 @@
-package alpvax.advancedautocrafting.util;
+package alpvax.advancedautocrafting.api.util;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
