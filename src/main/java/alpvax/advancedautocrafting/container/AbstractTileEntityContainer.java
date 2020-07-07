@@ -15,6 +15,7 @@ public abstract class AbstractTileEntityContainer<T extends TileEntity> extends 
   public interface ITileEntityContainerFactory<T extends TileEntity, C extends AbstractTileEntityContainer<T>> extends IContainerFactory<C> {
     C create(final int id, final PlayerInventory inv, final T tile);
 
+    @SuppressWarnings("unchecked")
     @Override
     default C create(int windowId, PlayerInventory inv, PacketBuffer data) {
       return create(windowId, inv, (T)inv.player.world.getTileEntity(data.readBlockPos()));
