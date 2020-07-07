@@ -1,9 +1,8 @@
 package alpvax.advancedautocrafting.api.util;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.ITextComponent;
@@ -11,18 +10,18 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.Objects;
 
-public class UniversalPos implements Comparable<UniversalPos> {
+public class UniversalPos implements Comparable<UniversalPos>, ITileEntityProvider<World> {
   private final IWorld world;
   private final BlockPos pos;
 
+  public static UniversalPos from(IWorldPosCallable c) {
+    return c.apply(UniversalPos::new).orElseThrow(() -> new NullPointerException("Failed to create UniversalPos from IWorldPosCallable: " + c.toString()));
+  }
   public UniversalPos(@Nonnull IWorld world, @Nonnull BlockPos pos) {
     this.world = world;
     this.pos = pos;
@@ -41,10 +40,12 @@ public class UniversalPos implements Comparable<UniversalPos> {
     ).orElseThrow(() -> new NullPointerException("World %s did not have network capability attached"));
   }*/
 
+  @Nonnull
   public World getWorld() {
     return world.getWorld();
   }
 
+  @Nonnull
   public BlockPos getPos() {
     return pos;
   }
@@ -53,6 +54,10 @@ public class UniversalPos implements Comparable<UniversalPos> {
     return getWorld().getBlockState(getPos());
   }
 
+  /**
+   * Equivalent of {@link BlockPos#offset}
+   * @return a new UniversalPos with the same world, and the offset pos
+   */
   public UniversalPos offset(Direction d) {
     return new UniversalPos(world, pos.offset(d));
   }
@@ -60,45 +65,6 @@ public class UniversalPos implements Comparable<UniversalPos> {
   public ITextComponent singleLineDisplay() {
     return new StringTextComponent("Dimension: \"" + DimensionType.getKey(getWorld().getDimension().getType()).toString()
                                        + "\"; Position: " + getPos() + ";");//TODO: Convert to translation?
-  }
-
-  /**
-   * Convenience redirect to {@link IWorld#getTileEntity(BlockPos)}.
-   * Use if you do not care what type the TE is (or you intend to cast it yourself).
-   */
-  @Nullable
-  public TileEntity getTileEntityRaw() {
-    return getWorld().getTileEntity(getPos());
-  }
-  /**
-   * Will return the TileEntity returned by {@link IWorld#getTileEntity(BlockPos)}, but only if it matches the provided type.
-   */
-  @Nullable
-  public <T extends TileEntity> T getTileEntity(TileEntityType<T> type) {
-    return type.func_226986_a_(getWorld(), getPos());
-  }
-  /**
-   * Convenience method to cast the TileEntity returned by {@link IWorld#getTileEntity(BlockPos)} to type T.
-   * Unsafe. Will throw {@link ClassCastException} if cast is not possible.
-   */
-  @Nullable
-  @SuppressWarnings("unchecked")
-  public <T extends TileEntity> T getTileEntity() {
-    return (T) getTileEntityRaw();
-  }
-  /**
-   * Attempts to cast the TileEntity returned by {@link IWorld#getTileEntity(BlockPos)} to the class provided.
-   * Will throw {@link ClassCastException} if cast is not possible.
-   */
-  @Nullable
-  public <T extends TileEntity> T getTileEntity(Class <T> type) {
-    return type.cast(getTileEntityRaw());
-  }
-
-  @Nonnull
-  public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-    TileEntity t = getTileEntityRaw();
-    return t != null ? t.getCapability(cap, side) : LazyOptional.empty();
   }
 
   @Override
