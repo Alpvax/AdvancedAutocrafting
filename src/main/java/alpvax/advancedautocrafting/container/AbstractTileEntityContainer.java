@@ -6,6 +6,7 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.fml.network.IContainerFactory;
 
@@ -41,9 +42,9 @@ public abstract class AbstractTileEntityContainer<T extends TileEntity> extends 
 
   @Override
   public boolean canInteractWith(PlayerEntity playerIn) {
-    return playerIn.getPosition().withinDistance(
-        getTileEntity().getPos(),
-        playerIn.getAttribute(PlayerEntity.REACH_DISTANCE).getValue() + 1
+    return getTileEntity().getPos().withinDistance(
+        playerIn.getPositionVec(),
+        playerIn.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue() + 1
     );
   }
 }

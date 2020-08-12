@@ -13,8 +13,8 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface ITileEntityProvider<T extends IBlockReader> {
-  @Nonnull T getWorld();
+public interface ITileEntityProvider<W extends IBlockReader> {
+  @Nonnull W getWorld();
   @Nonnull BlockPos getPos();
 
   /**
@@ -22,7 +22,7 @@ public interface ITileEntityProvider<T extends IBlockReader> {
    * Use if you do not care what type the TE is (or you intend to cast it yourself).
    */
   @Nullable
-  default TileEntity getTileEntityRaw() {
+  default TileEntity getTileEntity() {
     return getWorld().getTileEntity(getPos());
   }
   /**
@@ -32,23 +32,6 @@ public interface ITileEntityProvider<T extends IBlockReader> {
   default <T extends TileEntity> T getTileEntity(TileEntityType<T> type) {
     return type.func_226986_a_(getWorld(), getPos());
   }
-  /**
-   * Convenience method to cast the TileEntity returned by {@link IBlockReader#getTileEntity(BlockPos)} to type T.
-   * Unsafe. Will throw {@link ClassCastException} if cast is not possible.
-   */
-  @Nullable
-  @SuppressWarnings("unchecked")
-  default <T extends TileEntity> T getTileEntity() {
-    return (T) getTileEntityRaw();
-  }
-  /**
-   * Attempts to cast the TileEntity returned by {@link IBlockReader#getTileEntity(BlockPos)} to the class provided.
-   * Will throw {@link ClassCastException} if cast is not possible.
-   */
-  @Nullable
-  default <T extends TileEntity> T getTileEntity(Class <T> type) {
-    return type.cast(getTileEntityRaw());
-  }
 
   /**
    * Convenience method to get a capability from the TileEntity at this postion.
@@ -57,7 +40,7 @@ public interface ITileEntityProvider<T extends IBlockReader> {
    */
   @Nonnull
   default <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-    TileEntity t = getTileEntityRaw();
+    TileEntity t = getTileEntity();
     return t != null ? t.getCapability(cap, side) : LazyOptional.empty();
   }
 

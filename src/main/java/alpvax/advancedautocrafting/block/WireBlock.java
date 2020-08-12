@@ -4,18 +4,17 @@ import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.block.axial.AxialBlock;
 import alpvax.advancedautocrafting.block.axial.AxialBlockShape;
 import alpvax.advancedautocrafting.block.axial.AxialPart;
-import alpvax.advancedautocrafting.block.axial.IAxialPartInstance;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.IWaterLoggable;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.EnumProperty;
-import net.minecraft.state.IProperty;
+import net.minecraft.state.Property;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
@@ -24,11 +23,11 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeMod;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -50,14 +49,19 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
       name = name().toLowerCase(Locale.ENGLISH);
     }
 
-    @Override
-    public String getName() {
+    public boolean isNotDisabled() {
+      return this != DISABLED;
+    }
+
+    @Nonnull
+    @Override //getName
+    public String func_176610_l() {
       return name;
     }
 
     @Override
     public String toString() {
-      return getName();
+      return name;
     }
   }
 
@@ -97,15 +101,15 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
   }
 
   @Override
-  protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+  protected void fillStateContainer(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
     super.fillStateContainer(builder);
     builder.add(WATERLOGGED);
   }
 
   @Nullable
   @Override
-  protected IProperty<ConnectionState> buildPropertyForDirection(Direction d) {
-    return EnumProperty.create(d.getName(), ConnectionState.class);
+  protected Property<ConnectionState> buildPropertyForDirection(Direction d) {
+    return EnumProperty.create(d.func_176610_l(), ConnectionState.class);
   }
 
   @Nonnull
@@ -120,39 +124,33 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
   }
 
   private BlockState withConnectionState(BlockState bState, Direction dir, ConnectionState cState) {
-    IProperty<ConnectionState> prop = getConnectionProp(dir);
-    return prop == null ? bState : bState.with(prop, cState);
+    return getConnectionProp(dir).map(prop -> bState.with(prop, cState)).orElse(bState);
   }
 
   public BlockState makeConnections(IBlockReader world, BlockPos thisPos) {
     BlockState state = getDefaultState();
     for(Direction d : ALL_DIRECTIONS) {
       BlockPos pos = thisPos.offset(d);
-      state = withConnectionState(state, d, makeConnection(state, world, thisPos, d, pos));
+      state = withConnectionState(state, d, makeConnection(world, thisPos, d, pos));
     }
     return state;
   }
 
-  public ConnectionState makeConnection(BlockState state, IBlockReader world, BlockPos thisPos, Direction dir, BlockPos neighborPos) {
-    if(state.get(getConnectionProp(dir)) == ConnectionState.DISABLED) {
-      return ConnectionState.DISABLED;
-    }
-    BlockState neighbor = world.getBlockState(neighborPos);
-    IProperty<ConnectionState> prop = getConnectionProp(dir.getOpposite());
-    if(neighbor.has(prop)) {
-      if(neighbor.get(prop) == ConnectionState.DISABLED) {
-        return ConnectionState.NONE;
-      }
-      return ConnectionState.CONNECTION;
-    }
-    /*if(WIRE_BLOCKS.contains(neighbor.getBlock())) { //TODO: Convert to block tag
-      return ConnectionState.CONNECTION;
-    }*/
+  /**
+   * Do not call if state is DISABLED
+   */
+  public ConnectionState makeConnection(IBlockReader world, BlockPos thisPos, Direction dir, BlockPos neighborPos) {
     TileEntity tile = world.getTileEntity(neighborPos);
     if(tile != null && tile.getCapability(Capabilities.NODE_CAPABILITY).isPresent()) {
       return ConnectionState.INTERFACE;
     }
-    return ConnectionState.NONE;
+    BlockState neighbor = world.getBlockState(neighborPos);
+    return getConnectionProp(dir.getOpposite())
+               .filter(prop -> neighbor.func_235901_b_/*has*/(prop) && neighbor.get(prop).isNotDisabled())
+               .map(prop -> ConnectionState.CONNECTION).orElse(ConnectionState.NONE);
+    /*if(WIRE_BLOCKS.contains(neighbor.getBlock())) { //TODO: Convert to block tag
+      return ConnectionState.CONNECTION;
+    }*/
   }
 
   @SuppressWarnings("deprecation")
@@ -160,19 +158,17 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
   public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
     BlockPos dPos = fromPos.subtract(pos);
     Direction d = Direction.byLong(dPos.getX(), dPos.getY(), dPos.getZ());
-    worldIn.setBlockState(pos, withConnectionState(state, d, makeConnection(state, worldIn, pos, d, fromPos)), 2);
+    getConnection(state, d).filter(ConnectionState::isNotDisabled).ifPresent(val ->
+        worldIn.setBlockState(pos, withConnectionState(state, d, makeConnection(worldIn, pos, d, fromPos)), 2)
+    );
     super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
   }
 
   private BlockState getToggledState(BlockState state, IWorldReader world, BlockPos pos, Direction d) {
-    IProperty<ConnectionState> prop = getConnectionProp(d);
-    ConnectionState val = state.get(prop);
-    if(val == ConnectionState.DISABLED) {
-      state = withConnectionState(state, d, ConnectionState.NONE);
-      return withConnectionState(state, d, makeConnection(state, world, pos, d, pos.offset(d)));
-    } else {
-      return withConnectionState(state, d, ConnectionState.DISABLED);
-    }
+    return getConnection(state, d).map(val -> withConnectionState(state, d, val.isNotDisabled()
+                                                 ? ConnectionState.DISABLED
+                                                 : makeConnection(world, pos, d, pos.offset(d)))
+    ).orElse(state);
   }
 
   @SuppressWarnings("deprecation")
@@ -189,8 +185,8 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
             spawnAsEntity(worldIn, pos, new ItemStack(this));
           }
         } else {
-          Vec3d start = new Vec3d(player.prevPosX, player.prevPosY + player.getEyeHeight(), player.prevPosZ);
-          Vec3d end = start.add(player.getLook(0).scale(player.getAttribute(PlayerEntity.REACH_DISTANCE).getValue()));
+          Vector3d start = new Vector3d(player.prevPosX, player.prevPosY + player.getEyeHeight(), player.prevPosZ);
+          Vector3d end = start.add(player.getLook(0).scale(player.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue()));
           Direction dir = rayTracePart(state, pos, start, end).direction();
           if (dir == null) {
             dir = rayTraceResult.getFace();
@@ -203,19 +199,10 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
     return super.onBlockActivated(state, worldIn, pos, player, hand, rayTraceResult);
   }
 
-  @Override
-  protected VoxelShape getPartialBlockHighlight(BlockState state, IAxialPartInstance<ConnectionState> partInstance) {
-    Direction d = partInstance.direction();
-    if (d == null) {
-      return getBlockShape().getCoreShape();
-    }
-    return getBlockShape().getAxialShape(d, state.get(getConnectionProp(d)));
-  }
-
   @SuppressWarnings("deprecation")
   @Nonnull
   @Override
-  public IFluidState getFluidState(BlockState state) {
+  public FluidState getFluidState(BlockState state) {
     return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
   }
 }

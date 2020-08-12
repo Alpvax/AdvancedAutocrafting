@@ -16,6 +16,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -29,16 +30,17 @@ public class RemotePositionItem extends Item {
    * allows items to add custom lines of information to the mouseover description
    */
   @OnlyIn(Dist.CLIENT)
-  public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-    tooltip.add(BlockPosUtil.getItemPositionText(stack).applyTextStyle(TextFormatting.GRAY));
+  public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, @Nonnull ITooltipFlag flagIn) {
+    tooltip.add(BlockPosUtil.getItemPositionText(stack).func_240699_a_/*.applyTextStyle*/(TextFormatting.GRAY));
   }
 
+  @Nonnull
   @Override
-  public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
+  public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, @Nonnull Hand hand) {
     ItemStack stack = player.getHeldItem(hand);
     BlockPos pos = BlockPosUtil.readPosFromItemStack(stack);
     if(world.isRemote) {
-      DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
+      DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
         if(BlockHighlightRender.manager.contains(pos)) {
           BlockHighlightRender.manager.remove(pos);
         } else {
@@ -50,8 +52,8 @@ public class RemotePositionItem extends Item {
   }
 
   @Override
-  public boolean hasEffect(ItemStack stack) {
-    return DistExecutor.runForDist(() -> () -> isRendering(stack), () -> () -> super.hasEffect(stack));
+  public boolean hasEffect(@Nonnull ItemStack stack) {
+    return DistExecutor.unsafeRunForDist(() -> () -> isRendering(stack), () -> () -> super.hasEffect(stack));
   }
 
   @OnlyIn(Dist.CLIENT)

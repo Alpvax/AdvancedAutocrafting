@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 
 
 public class AABlocks {
-  public static final DeferredRegister<Block> BLOCKS = new DeferredRegister<>(ForgeRegistries.BLOCKS, AdvancedAutocrafting.MODID);
+  public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, AdvancedAutocrafting.MODID);
   public static final DeferredRegister<Item> ITEMS = AAItems.ITEMS;
 
   public static final RegistryObject<Block> CONTROLLER = register("controller", () -> new ControllerBlock(
@@ -50,8 +50,9 @@ public class AABlocks {
     return BLOCKS.register(name, sup);
   }
 
+  @SuppressWarnings("ConstantConditions")
   public static class TileTypes {
-    public static final DeferredRegister<TileEntityType<?>> TILES = new DeferredRegister<>(ForgeRegistries.TILE_ENTITIES, AdvancedAutocrafting.MODID);
+    public static final DeferredRegister<TileEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, AdvancedAutocrafting.MODID);
 
     public static final RegistryObject<TileEntityType<ControllerTileEntity>> CONTROLLER = TILES.register("controller", () ->
         new TileEntityType<>(ControllerTileEntity::new, Sets.newHashSet(AABlocks.CONTROLLER.get()), null)

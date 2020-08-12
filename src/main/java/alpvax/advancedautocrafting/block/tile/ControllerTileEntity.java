@@ -25,9 +25,10 @@ public class ControllerTileEntity extends TileEntity  implements INamedContainer
     super(AABlocks.TileTypes.CONTROLLER.get());
   }
 
+  @Nonnull
   @Override
   public ITextComponent getDisplayName() {
-    return AABlocks.CONTROLLER.get().getNameTextComponent();
+    return AABlocks.CONTROLLER.get().func_235333_g_();//.getNameTextComponent();
   }
 
   @Nullable

@@ -103,8 +103,8 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
   }
 
   @Override
-  public void read(CompoundNBT compound) {
-    super.read(compound);
+  public void func_230337_a_(BlockState state, CompoundNBT compound) {
+    super.func_230337_a_(state, compound);
     inventory.deserializeNBT(compound.getCompound("remoteItems"));
   }
 
@@ -129,10 +129,6 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
   public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
     return super.getCapability(cap);
   }*/
-
-  public boolean canPlayerUse(PlayerEntity playerIn) {
-    return playerIn.getPosition().withinDistance(getPos(), playerIn.getAttribute(PlayerEntity.REACH_DISTANCE).getValue() + 1);
-  }
 
   @Override
   public ITextComponent getDisplayName() {
