@@ -3,20 +3,60 @@ package alpvax.advancedautocrafting.client.gui;
 import alpvax.advancedautocrafting.container.ControllerContainer;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.FourWayBlock;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 public class ControllerScreen extends ContainerScreen<ControllerContainer> {
   //private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(AdvancedAutocrafting.MODID, "textures/gui/container/controller.png");
   private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
 
+  private float rotation = 45F;
+
   public ControllerScreen(ControllerContainer container, PlayerInventory inv, ITextComponent title) {
     super(container, inv, title);
+  }
+
+  public static void drawEntityOnScreen(int posX, int posY, int scale, float horzRotation, Entity p_228187_5_) {
+    RenderSystem.pushMatrix();
+    RenderSystem.translatef((float)posX, (float)posY, 1050.0F);
+    RenderSystem.scalef(1.0F, 1.0F, -1.0F);
+    MatrixStack matrixstack = new MatrixStack();
+    matrixstack.translate(0.0D, 0.0D, 1000.0D);
+    matrixstack.scale((float)scale, (float)scale, (float)scale);
+    Quaternion quaternionz = Vector3f.ZP.rotationDegrees(180.0F);
+    Quaternion quaternionx = Vector3f.XP.rotationDegrees(-20F);
+    Quaternion quaterniony = Vector3f.YP.rotationDegrees(horzRotation);//Added
+    quaternionz.multiply(quaternionx);
+    quaternionz.multiply(quaterniony);//Added
+    matrixstack.rotate(quaternionz);
+    EntityRendererManager entityrenderermanager = Minecraft.getInstance().getRenderManager();
+    quaternionx.conjugate();
+    entityrenderermanager.setCameraOrientation(quaternionx);
+    entityrenderermanager.setRenderShadow(false);
+    IRenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+    RenderSystem.runAsFancy(() -> {
+      entityrenderermanager.renderEntityStatic(p_228187_5_, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, matrixstack, irendertypebuffer$impl, 15728880);
+    });
+    irendertypebuffer$impl.finish();
+    entityrenderermanager.setRenderShadow(true);
+    RenderSystem.popMatrix();
   }
 
   @Override //render
@@ -24,6 +64,7 @@ public class ControllerScreen extends ContainerScreen<ControllerContainer> {
     func_230446_a_(matrixStack);//renderBackground
     super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
     func_230459_a_(matrixStack, mouseX, mouseY);//renderHoveredToolTip
+    rotation = (rotation + 1) % 360F; // 18-sec full rotation
   }
   /*@Override
   public void render(final int mouseX, final int mouseY, final float partialTicks) {
@@ -59,6 +100,24 @@ public class ControllerScreen extends ContainerScreen<ControllerContainer> {
     int j = this.guiTop;
     func_238474_b_(matrixStack, i, j, 0, 0, this.xSize, 3 * 18 + 17);
     func_238474_b_(matrixStack, i, j + 3 * 18 + 17, 0, 126, this.xSize, 96);
+    List<BlockState> states = getContainer().getStates();
+
+    drawEntityOnScreen(i + xSize - 51, j + 75, 10, rotation, makeEntity(
+        Blocks.STONE_BRICKS.getDefaultState()
+    ));
+    drawEntityOnScreen(i + xSize - 10, j + 75, 10, rotation, makeEntity(
+        Blocks.OAK_FENCE.getDefaultState().with(FourWayBlock.NORTH, true)
+    ));
+
+    int k = 0;
+    for (BlockState state : states) {
+      drawEntityOnScreen(i + 20, j + 20 + k, 10, rotation, makeEntity(state));
+      //renderBlock(matrixStack, state);
+      /*drawEntityOnScreen(i+10, j+20 + k, 30, p_230450_3_, p_230450_4_,
+          new FallingBlockEntity(playerInventory.player.world, 0, 0, 0, state)
+      );*/
+      k += 20;
+    }
   }
   /*@Override //TODO: actual screen render
   protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
@@ -69,4 +128,11 @@ public class ControllerScreen extends ContainerScreen<ControllerContainer> {
     this.blit(i, j, 0, 0, this.xSize, 3 * 18 + 17);
     this.blit(i, j + 3 * 18 + 17, 0, 126, this.xSize, 96);
   }*/
+
+  private FallingBlockEntity makeEntity(BlockState state) {
+    Vector3d pos = getMinecraft().player.getPositionVec();
+    FallingBlockEntity entity = new FallingBlockEntity(getMinecraft().world, pos.x, pos.y, pos.z, state);
+    entity.fallTime = Integer.MIN_VALUE;
+    return entity;
+  }
 }

@@ -2,6 +2,7 @@ package alpvax.advancedautocrafting.api.util;
 
 import net.minecraft.dispenser.ILocation;
 import net.minecraft.dispenser.ProxyBlockSource;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
@@ -9,8 +10,11 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.Objects;
 
@@ -38,6 +42,18 @@ public class UniversalPos extends ProxyBlockSource implements Comparable<ILocati
    */
   public UniversalPos offset(Direction d) {
     return new UniversalPos(getWorld(), getBlockPos().offset(d));
+  }
+
+  /**
+   * Convenience method to get a capability from the TileEntity at this postion.
+   * @see TileEntity#getCapability(Capability, Direction).
+   * @return the value from {@link TileEntity#getCapability} or {@link LazyOptional#empty()} if there is no TileEntity at that position.
+   */
+  @Nonnull
+  public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+    TileEntity t = getBlockTileEntity();
+    //noinspection ConstantConditions
+    return t != null ? t.getCapability(cap, side) : LazyOptional.empty();
   }
 
   public ITextComponent singleLineDisplay() {
