@@ -110,7 +110,7 @@ dependencies {
 
 
     compileOnly  "mezz.jei:jei-${mcversion}:${jei_version}:api"
-    runtimeOnly "mezz.jei:jei-${mcversion}:${jei_version}"
+    //runtimeOnly "mezz.jei:jei-${mcversion}:${jei_version}"
 
 }
 
