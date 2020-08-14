@@ -17,7 +17,9 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
@@ -28,10 +30,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ControllerTileEntity extends TileEntity  implements INamedContainerProvider {
-  private final INetworkNode network = new SimpleNetworkNode(this.pos);
+  private INetworkNode network = new SimpleNetworkNode(this.pos);
   private final LazyOptional<INetworkNode> networkCapability = LazyOptional.of(() -> network);
   public ControllerTileEntity() {
     super(AABlocks.TileTypes.CONTROLLER.get());
+  }
+
+  @Override
+  public void setWorldAndPos(World p_226984_1_, BlockPos p_226984_2_) {
+    super.setWorldAndPos(p_226984_1_, p_226984_2_);
+    network = new SimpleNetworkNode(this.pos);
   }
 
   @Override
