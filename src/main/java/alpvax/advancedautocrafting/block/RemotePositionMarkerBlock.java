@@ -1,34 +1,28 @@
 package alpvax.advancedautocrafting.block;
 
+import alpvax.advancedautocrafting.data.BlockPosLootFunction;
+import alpvax.advancedautocrafting.item.AAItems;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.tileentity.ShulkerBoxTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-
-import java.util.List;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.World;
 
 public class RemotePositionMarkerBlock extends Block {
-  public RemotePositionMarkerBlock(Properties properties) {
+  public RemotePositionMarkerBlock(AbstractBlock.Properties properties) {
     super(properties);
   }
 
-  @SuppressWarnings("deprecation")
-  public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
-    TileEntity tileentity = builder.get(LootParameters.BLOCK_ENTITY);
-    if (tileentity instanceof ShulkerBoxTileEntity) {
-      ShulkerBoxTileEntity shulkerboxtileentity = (ShulkerBoxTileEntity)tileentity;
-      builder = builder.withDynamicDrop(new ResourceLocation("position"), (p_220168_1_, p_220168_2_) -> {
-        for(int i = 0; i < shulkerboxtileentity.getSizeInventory(); ++i) {
-          p_220168_2_.accept(shulkerboxtileentity.getStackInSlot(i));
-        }
-
-      });
+  @Override
+  public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
+    if (player.isSneaking() && world instanceof World) {
+      ItemStack stack = new ItemStack(AAItems.REMOTE_POS.get());
+      BlockPosLootFunction.write(stack.getOrCreateTag(), (World) world, pos);
     }
-
-    return super.getDrops(state, builder);
+    return super.getPickBlock(state, target, world, pos, player);
   }
 }

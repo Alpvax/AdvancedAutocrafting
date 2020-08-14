@@ -11,6 +11,7 @@ public class AATranslationKeys {
   public static final Map<String, String> EN_US_MAPPINGS = new HashMap<>();
 
   public static final String ITEM_POS_LORE = register("Bound position: %s", "bound", "position");
+  public static final String ITEM_DIM_LORE = register("Bound dimension: %s", "bound", "dimension");
 
   private static String key(String... parts) {
     return AdvancedAutocrafting.MODID + ":" + String.join(".", parts);

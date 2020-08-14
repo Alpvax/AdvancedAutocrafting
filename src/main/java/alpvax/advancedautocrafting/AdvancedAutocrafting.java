@@ -13,9 +13,6 @@ import alpvax.advancedautocrafting.data.BlockPosLootFunction;
 import alpvax.advancedautocrafting.item.AAItems;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.loot.LootFunctionType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -44,11 +41,7 @@ public class AdvancedAutocrafting {
     modBus.addListener(this::gatherData);
 
     // Loot Table registering
-    Registry.register(
-        Registry.field_239694_aZ_,
-        new ResourceLocation(AdvancedAutocrafting.MODID, "blockpos"),
-        new LootFunctionType(new BlockPosLootFunction.Serializer())
-    );
+    BlockPosLootFunction.register();
     //LootFunctionManager.registerFunction(new BlockPosLootFunction.Serializer());
 
     DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {

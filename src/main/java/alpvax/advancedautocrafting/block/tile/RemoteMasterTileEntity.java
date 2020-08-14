@@ -5,7 +5,7 @@ import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.container.RemoteMasterContainer;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
-import alpvax.advancedautocrafting.util.BlockPosUtil;
+import alpvax.advancedautocrafting.data.BlockPosLootFunction;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -28,14 +28,13 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class RemoteMasterTileEntity extends TileEntity implements INamedContainerProvider {
   public ItemStackHandler inventory = new ItemStackHandler(27) {
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-      return BlockPosUtil.hasPosition(stack);
+      return BlockPosLootFunction.read(stack).valid();
     }
 
     @Override
@@ -60,9 +59,11 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
     return new INetworkNode() {
       @Override
       public NonNullList<INetworkNode> getChildNodes(Direction inbound) {
-        return RemoteMasterTileEntity.this.getItems().stream().map((stack) ->
-            new SimpleNetworkNode(BlockPosUtil.readPosFromItemStack(stack))).collect(Collectors.toCollection(NonNullList::create)
-        );
+        return RemoteMasterTileEntity.this.getItems().stream()
+                   .map(BlockPosLootFunction::read)
+                   .filter(BlockPosLootFunction.WorldPosPair::valid)
+                   .map(p -> new SimpleNetworkNode(p.getPos()))
+                   .collect(Collectors.toCollection(NonNullList::create));
       }
 
       @Override
@@ -85,7 +86,11 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
 
   @Nonnull
   public NonNullList<BlockPos> getRemotePositions() {
-    return getItems().stream().map(BlockPosUtil::readPosFromItemStack).filter(Objects::nonNull).collect(Collectors.toCollection(NonNullList::create));
+    return getItems().stream()
+               .map(BlockPosLootFunction::read)
+               .filter(BlockPosLootFunction.WorldPosPair::valid)
+               .map(BlockPosLootFunction.WorldPosPair::getPos)
+               .collect(Collectors.toCollection(NonNullList::create));
   }
 
   public void dropItems(World worldIn, BlockPos pos, BlockState newState) {
