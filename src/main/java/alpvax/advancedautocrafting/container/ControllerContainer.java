@@ -1,7 +1,6 @@
 package alpvax.advancedautocrafting.container;
 
 import alpvax.advancedautocrafting.block.tile.ControllerTileEntity;
-import net.minecraft.block.BlockState;
 import net.minecraft.dispenser.ProxyBlockSource;
 import net.minecraft.entity.player.PlayerInventory;
 
@@ -23,7 +22,7 @@ public class ControllerContainer extends AbstractTileEntityContainer<ControllerT
                 .collect(Collectors.toList());
   }
 
-  public List<BlockState> getStates() {
-    return nodes.subList(0, Math.min(5, nodes.size())).stream().map(ProxyBlockSource::getBlockState).collect(Collectors.toList());
+  public List<ProxyBlockSource> getBlocks() {
+    return nodes.subList(0, Math.min(5, nodes.size()));
   }
 }
