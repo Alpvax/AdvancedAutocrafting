@@ -1,4 +1,5 @@
 {
+  "advancedautocrafting:bound.dimension": "Bound dimension: %s",
   "advancedautocrafting:bound.position": "Bound position: %s",
   "block.advancedautocrafting.controller": "Autocrafting Controller",
   "block.advancedautocrafting.remote_marker": "Remote Position Marker",
