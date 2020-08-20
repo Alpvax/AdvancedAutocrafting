@@ -1,6 +1,6 @@
 package alpvax.advancedautocrafting.api.util;
 
-import net.minecraft.dispenser.ILocation;
+import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.dispenser.ProxyBlockSource;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -10,6 +10,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -18,15 +19,15 @@ import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.Objects;
 
-public class UniversalPos extends ProxyBlockSource implements Comparable<ILocation> {
-  public static final Comparator<ILocation> COMPARATOR = Comparator.comparing((ILocation loc) -> loc.getWorld().func_234923_W_())
+public class UniversalPos extends ProxyBlockSource implements Comparable<IBlockSource> {
+  public static final Comparator<IBlockSource> COMPARATOR = Comparator.comparing((IBlockSource loc) -> loc.getWorld().func_234923_W_())
                                                                  .thenComparing(loc -> new BlockPos(loc.getX(), loc.getY(), loc.getZ()));
 
   public static UniversalPos from(@Nonnull IWorldPosCallable c) {
     return c.apply(UniversalPos::new).orElseThrow(() -> new NullPointerException("Failed to create UniversalPos from IWorldPosCallable: " + c.toString()));
   }
   public UniversalPos(@Nonnull World world, @Nonnull BlockPos pos) {
-    super(world, pos);
+    super((ServerWorld) world, pos); //TODO: Fix ServerWorld not on Client
   }
 
   public boolean isLoaded() {
@@ -80,7 +81,7 @@ public class UniversalPos extends ProxyBlockSource implements Comparable<ILocati
   }
 
   @Override
-  public int compareTo(@Nonnull ILocation o) {
+  public int compareTo(@Nonnull IBlockSource o) {
     return COMPARATOR.compare(this, o);
   }
 }
