@@ -6,6 +6,7 @@ import alpvax.advancedautocrafting.item.IMultitool;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.DimensionType;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -31,7 +32,7 @@ public class Capabilities {
       {
 
       }
-    }, () -> new SimpleNetworkNode(BlockPos.ZERO));
+    }, () -> new SimpleNetworkNode(BlockPos.ZERO, DimensionType.field_242710_a));
     CapabilityManager.INSTANCE.register(IMultitool.class, new Capability.IStorage<IMultitool>()
     {
       @Override

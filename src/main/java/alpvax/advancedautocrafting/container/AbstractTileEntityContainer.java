@@ -19,8 +19,19 @@ public abstract class AbstractTileEntityContainer<T extends TileEntity> extends 
     @SuppressWarnings("unchecked")
     @Override
     default C create(int windowId, PlayerInventory inv, PacketBuffer data) {
-      return create(windowId, inv, (T)inv.player.world.getTileEntity(data.readBlockPos()));
+      C c = create(windowId, inv, (T)inv.player.world.getTileEntity(data.readBlockPos()));
+      if (c instanceof Extended) {
+        ((Extended<T>) c).readExtendedData(data);
+      }
+      return c;
     }
+  }
+
+  public abstract static class Extended<T extends TileEntity> extends AbstractTileEntityContainer<T>{
+    public Extended(ContainerType<? extends AbstractTileEntityContainer<T>> type, int id, T tile) {
+      super(type, id, tile);
+    }
+    abstract void readExtendedData(PacketBuffer buf);
   }
 
   public static <T extends TileEntity, C extends AbstractTileEntityContainer<T>> Supplier<ContainerType<C>> makeTypeSupplier(

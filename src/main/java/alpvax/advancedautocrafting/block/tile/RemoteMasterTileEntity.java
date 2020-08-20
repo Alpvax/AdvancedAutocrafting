@@ -3,6 +3,7 @@ package alpvax.advancedautocrafting.block.tile;
 import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.container.RemoteMasterContainer;
+import alpvax.advancedautocrafting.container.util.ContainerBlockHolder;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
 import alpvax.advancedautocrafting.data.BlockPosLootFunction;
@@ -62,13 +63,19 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
         return RemoteMasterTileEntity.this.getItems().stream()
                    .map(BlockPosLootFunction::read)
                    .filter(BlockPosLootFunction.WorldPosPair::valid)
-                   .map(p -> new SimpleNetworkNode(p.getPos()))
+                   .map(p -> new SimpleNetworkNode(p.getPos(), p.getWorldID()))
                    .collect(Collectors.toCollection(NonNullList::create));
       }
 
       @Override
       public BlockPos getPos() {
         return RemoteMasterTileEntity.this.pos;
+      }
+
+      @Override
+      public ContainerBlockHolder getProxy() {
+        return new ContainerBlockHolder(RemoteMasterTileEntity.this.pos, RemoteMasterTileEntity.this.world.func_234923_W_().func_240901_a_())
+                   .setBlockState(getBlockState());
       }
     };
   }

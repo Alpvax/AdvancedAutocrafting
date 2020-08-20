@@ -1,28 +1,40 @@
 package alpvax.advancedautocrafting.container;
 
 import alpvax.advancedautocrafting.block.tile.ControllerTileEntity;
-import net.minecraft.dispenser.ProxyBlockSource;
+import alpvax.advancedautocrafting.container.util.BlockHolderMap;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.network.PacketBuffer;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-public class ControllerContainer extends AbstractTileEntityContainer<ControllerTileEntity> {
-  private List<ProxyBlockSource> nodes;
+public class ControllerContainer extends AbstractTileEntityContainer.Extended<ControllerTileEntity> {//implements IBlockHolderContainer {
+  private final BlockHolderMap endpoints = new BlockHolderMap();
 
   public ControllerContainer(int id, PlayerInventory playerInventory, ControllerTileEntity tile) {
     super(AAContainerTypes.CONTROLLER.get(), id, tile);
-    updateNodes();
+    updateEndpoints();
   }
 
-  public void updateNodes() {
-    //noinspection ConstantConditions
-    nodes = getTileEntity().updateAdjacentNetwork().stream()
-                .map(n -> new ProxyBlockSource(getTileEntity().getWorld(), n.getPos()))
-                .collect(Collectors.toList());
+  @Override
+  void readExtendedData(PacketBuffer buf) {
+    endpoints.readFrom(buf, false);
   }
 
-  public List<ProxyBlockSource> getBlocks() {
-    return nodes.subList(0, Math.min(5, nodes.size()));
+  private void updateEndpoints() {
+    ControllerTileEntity tile = getTileEntity();
+    if (!tile.getWorld().isRemote) {
+      endpoints.clear();
+      tile.getNodePositions().forEach(endpoints::put);/*p ->
+          endpoints.getOrCreate(p.getWorld().func_234923_W_().func_240901_a_(), p.getBlockPos()).setBlockState(p.getBlockState())
+      );*/
+    }
   }
+
+  public BlockHolderMap getBlocks() {
+    return endpoints;
+  }
+
+  /*@Override
+  public void detectAndSendChanges() {
+    super.detectAndSendChanges();
+
+  }*/
 }

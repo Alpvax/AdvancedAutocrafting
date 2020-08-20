@@ -52,7 +52,10 @@ public class ControllerBlock extends Block {
     final TileEntity tileEntity = worldIn.getTileEntity(pos);
     if (tileEntity instanceof ControllerTileEntity) {
       if (!worldIn.isRemote) {
-        NetworkHooks.openGui((ServerPlayerEntity) player, (ControllerTileEntity) tileEntity, pos);
+        NetworkHooks.openGui((ServerPlayerEntity) player, (ControllerTileEntity) tileEntity, (buf) -> {
+          buf.writeBlockPos(pos);
+          ((ControllerTileEntity) tileEntity).writeExtended(buf);//TODO?
+        });
       }
       return ActionResultType.SUCCESS;
     }

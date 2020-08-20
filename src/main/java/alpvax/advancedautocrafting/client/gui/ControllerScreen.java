@@ -1,6 +1,7 @@
 package alpvax.advancedautocrafting.client.gui;
 
 import alpvax.advancedautocrafting.container.ControllerContainer;
+import alpvax.advancedautocrafting.container.util.ContainerBlockHolder;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -9,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.dispenser.ProxyBlockSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -94,8 +94,8 @@ public class ControllerScreen extends ContainerScreen<ControllerContainer> {
 
   @Override //drawGuiContainerForegroundLayer
   protected void func_230451_b_(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY) {
-    field_230712_o_.func_238422_b_(matrixStack, field_230704_d_, (float)this.field_238742_p_, (float)this.field_238743_q_, 0xFFFFFF);//4210752);
-    field_230712_o_.func_238422_b_(matrixStack, this.playerInventory.getDisplayName(), (float)this.field_238744_r_, (float)this.field_238745_s_, 0xFFFFFF);//4210752);
+    field_230712_o_.func_243246_a(matrixStack, field_230704_d_, (float)this.field_238742_p_, (float)this.field_238743_q_, 0xFFFFFF);//4210752);
+    field_230712_o_.func_243246_a(matrixStack, this.playerInventory.getDisplayName(), (float)this.field_238744_r_, (float)this.field_238745_s_, 0xFFFFFF);//4210752);
 
     for (BlockGUIRenderer block : blocks) {
       if (block.renderBlockToolTip(matrixStack, mouseX, mouseY)) {
@@ -133,32 +133,29 @@ public class ControllerScreen extends ContainerScreen<ControllerContainer> {
 
 
   public class BlockGUIRenderer {
-    private final ProxyBlockSource source;
-    private BlockState state = null;
+    private final ContainerBlockHolder holder;
+    //private BlockState state = null;
     private FallingBlockEntity entity;
     private ITextComponent name;
     private float scale = 10F;
     private int x;
     private int y;
-    public BlockGUIRenderer(ProxyBlockSource source) {
-      this.source = source;
+    public BlockGUIRenderer(ContainerBlockHolder holder) {
+      this.holder = holder;
+      holder.addListener(h -> this.update());
     }
 
-    public BlockGUIRenderer setPositionAndScale(int x, int y, float scale) {
+    public void setPositionAndScale(int x, int y, float scale) {
       this.x = x;
       this.y = y;
       this.scale = scale;
-      return this;
     }
 
     private void update() {
-      BlockState s = source.getBlockState();
-      if (s != state) {
-        state = s;
-        entity = makeEntity(s);
-        ItemStack stack = new ItemStack(s.getBlock());
-        name = new StringTextComponent("").func_230529_a_(stack.getDisplayName()).func_240699_a_(stack.getRarity().color);
-      }
+      BlockState s = holder.getBlockState();
+      entity = makeEntity(s);
+      ItemStack stack = new ItemStack(s.getBlock());
+      name = new StringTextComponent("").func_230529_a_(stack.getDisplayName()).func_240699_a_(stack.getRarity().color);
     }
 
     public boolean isHovered(int mouseX, int mouseY) {
@@ -176,15 +173,15 @@ public class ControllerScreen extends ContainerScreen<ControllerContainer> {
     public boolean renderBlockToolTip(MatrixStack matrixStack, int mouseX, int mouseY) {
       if (isHovered(mouseX, mouseY)) {
         Minecraft mc = getMinecraft();
-        BlockPos pos = source.getBlockPos();
+        BlockPos pos = holder.getPos();
         List<ITextComponent> tooltip = Lists.newArrayList(
             name,
             new StringTextComponent(String.format("Position: {%d, %d, %d}", pos.getX(), pos.getY(), pos.getZ())).func_240699_a_(TextFormatting.GRAY)
         );
-        if (source.getWorld() != mc.world || func_231173_s_()) { //hasShiftDown
-          tooltip.add(new StringTextComponent("Dimension: " + source.getWorld().func_234923_W_().func_240901_a_().toString()).func_240699_a_(TextFormatting.GRAY));
+        if (func_231173_s_() || !holder.isClientWorld()) { //hasShiftDown
+          tooltip.add(new StringTextComponent("Dimension: " + holder.getWorldID().toString()).func_240699_a_(TextFormatting.GRAY));
         }
-        renderToolTip(matrixStack, tooltip, mouseX - guiLeft, mouseY - guiTop, field_230712_o_);
+        renderToolTip(matrixStack, Lists.transform(tooltip, ITextComponent::func_241878_f), mouseX - guiLeft, mouseY - guiTop, field_230712_o_);
         return true;
       }
       return false;
