@@ -34,12 +34,12 @@ public class ControllerScreen extends ContainerScreen<ControllerContainer> {
 
   @Override //drawGuiContainerForegroundLayer
   protected void func_230451_b_(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY) {
-    field_230712_o_.func_238422_b_(matrixStack, field_230704_d_, (float)this.field_238742_p_, (float)this.field_238743_q_, 4210752);
-    field_230712_o_.func_238422_b_(matrixStack, this.playerInventory.getDisplayName(), (float)this.field_238744_r_, (float)this.field_238745_s_, 4210752);
+    field_230712_o_.func_238422_b_(matrixStack, field_230704_d_.func_241878_f(), (float)this.field_238742_p_, (float)this.field_238743_q_, 4210752);
+    field_230712_o_.func_238422_b_(matrixStack, this.playerInventory.getDisplayName().func_241878_f(), (float)this.field_238744_r_, (float)this.field_238745_s_, 4210752);
 
     //XXX
     //TODO: actual screen render
-    field_230712_o_.func_238422_b_(matrixStack, new StringTextComponent("[WIP]AN ACTUAL SCREEN TO COME!"), 30, ySize / 2F, 0xff0000);
+    field_230712_o_.func_238422_b_(matrixStack, new StringTextComponent("[WIP]AN ACTUAL SCREEN TO COME!").func_241878_f(), 30, ySize / 2F, 0xff0000);
   }
   /*@Override
   protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {

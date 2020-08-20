@@ -1,7 +1,6 @@
 package alpvax.advancedautocrafting.block;
 
 import alpvax.advancedautocrafting.block.tile.RemoteMasterTileEntity;
-import alpvax.advancedautocrafting.util.BlockPosUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -73,7 +72,7 @@ public class RemoteMasterBlock extends Block {
         BlockState state = ((BlockItem) stack.getItem()).getBlock().getDefaultState();
         tile.getRemotePositions().forEach((p) -> worldIn.setBlockState(p, state));
         return false;
-      } else if(BlockPosUtil.hasPosition(stack)) {
+      } else if(tile.inventory.isItemValid(0, stack)) {
         tile.addItem(stack.copy());
         stack.setCount(0);
         return false;

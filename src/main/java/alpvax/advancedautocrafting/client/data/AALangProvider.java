@@ -8,6 +8,8 @@ import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.data.LanguageProvider;
 import net.minecraftforge.fml.RegistryObject;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +39,11 @@ public class AALangProvider extends LanguageProvider {
   }
 
   private void add(ItemGroup group, String name) {
-    add(group.getTranslationKey(), name);
+    //add(group.getTranslationKey(), name);
+    ITextComponent t = group.func_242392_c();
+    if (t instanceof TranslationTextComponent) {
+      add(((TranslationTextComponent) t).getKey(), name);
+    }
   }
 
   private void addBlock(RegistryObject<Block> block) {
