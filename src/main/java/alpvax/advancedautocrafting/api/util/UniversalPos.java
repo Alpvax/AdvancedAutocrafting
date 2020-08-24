@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.Objects;
 
-public class UniversalPos extends ProxyBlockSource implements Comparable<IBlockSource> {
+class UniversalPos extends ProxyBlockSource implements Comparable<IBlockSource> {
   public static final Comparator<IBlockSource> COMPARATOR = Comparator.comparing((IBlockSource loc) -> loc.getWorld().func_234923_W_())
                                                                  .thenComparing(loc -> new BlockPos(loc.getX(), loc.getY(), loc.getZ()));
 

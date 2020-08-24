@@ -1,7 +1,7 @@
 package alpvax.advancedautocrafting.block.tile;
 
 import alpvax.advancedautocrafting.Capabilities;
-import alpvax.advancedautocrafting.api.util.UniversalPos;
+import alpvax.advancedautocrafting.api.util.WorldUtil;
 import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.container.ControllerContainer;
 import alpvax.advancedautocrafting.container.util.ContainerBlockHolder;
@@ -90,8 +90,7 @@ public class ControllerTileEntity extends TileEntity  implements INamedContainer
     if (world != null && !world.isRemote) {
       nodes.add(network);
       for (Direction d : Direction.values()) {
-        UniversalPos p = new UniversalPos(world, pos.offset(d));
-        p.getCapability(Capabilities.NODE_CAPABILITY, d.getOpposite()).ifPresent(n -> {
+        WorldUtil.getInstance().getBlockCapability(Capabilities.NODE_CAPABILITY, d.getOpposite(), world, pos.offset(d)).ifPresent(n -> {
           nodes.add(n);
           //Maximum depth of 2
           nodes.addAll(n.getChildNodes(d.getOpposite()));
