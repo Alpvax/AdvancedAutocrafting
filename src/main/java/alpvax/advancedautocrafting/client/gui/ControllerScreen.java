@@ -5,11 +5,18 @@ import alpvax.advancedautocrafting.container.util.ContainerBlockHolder;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -21,6 +28,8 @@ import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.IBlockDisplayReader;
+import net.minecraftforge.client.model.data.EmptyModelData;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -120,7 +129,8 @@ public class ControllerScreen extends ContainerScreen<ControllerContainer> {
     func_238474_b_(matrixStack, i, j + 3 * 18 + 17, 0, 126, this.xSize, 96); //blit
      */
     for (BlockGUIRenderer block : blocks) {
-      block.renderBlock(rotation);
+      //block.renderBlock(rotation);
+      block.renderBlock(matrixStack, rotation);
     }
   }
 
@@ -168,6 +178,88 @@ public class ControllerScreen extends ContainerScreen<ControllerContainer> {
     }
     public void renderBlock(float rotation) {
       drawEntityOnScreen(x + 1F + scale * 1.414F / 2F, y + scale * 1.054F, scale, rotation, entity);
+    }
+    public void renderBlock1(MatrixStack stack, float rotation) {
+      Quaternion q = Vector3f.XP.rotationDegrees(-20F);
+      q.multiply(Vector3f.YP.rotationDegrees(rotation));
+      stack.push();
+      //stack.translate(-3, -(y - guiTop -18 + 2) / 35F, 0);
+      stack.translate(0, 0, -2);
+      stack.scale(-0.125F, 0.125F, -0.125F);
+      //stack.translate(0, -(y - guiTop -18) / 35F, 0);
+      stack.translate(-3, -(y - guiTop -18 + 2) / 35F, 0);
+      /*stack.translate(0.5, 0, 0.5);
+      stack.rotate(Vector3f.YP.rotationDegrees(rotation));
+      stack.translate(-0.5, 0, -0.5);*/
+      stack.push();
+      stack.translate(0.5, 0, 0.5);
+      stack.rotate(q);
+      stack.translate(-0.5, 0, -0.5);
+      Minecraft mc = ControllerScreen.this.getMinecraft();
+      mc.getBlockRendererDispatcher().renderBlock(
+          holder.getBlockState(),
+          stack,
+          mc.getRenderTypeBuffers().getBufferSource(),
+          /*15728880,//*/
+          LightTexture.packLight(15, 15),//*/
+          OverlayTexture.NO_OVERLAY,
+          EmptyModelData.INSTANCE
+      );
+      stack.pop();
+      stack.pop();
+    }
+    public void renderBlock(MatrixStack stack, float rotation) {
+      Quaternion q = Vector3f.XP.rotationDegrees(-20F);
+      q.multiply(Vector3f.YP.rotationDegrees(rotation));
+      BlockState state = holder.getBlockState();
+      Minecraft mc = ControllerScreen.this.getMinecraft();
+      BlockRendererDispatcher dispatcher = mc.getBlockRendererDispatcher();
+      IRenderTypeBuffer buffer = mc.getRenderTypeBuffers().getBufferSource();
+      int combinedLight = 15728880;//LightTexture.packLight(15, 15);
+      stack.push();
+      stack.translate(0, 0, -2);
+      stack.scale(-0.125F, 0.125F, -0.125F);
+      stack.translate(0.5, 0, 0.5);
+      stack.rotate(q);
+      BlockRenderType blockrendertype = state.getRenderType();
+      switch(blockrendertype) {
+        case MODEL:
+          IBakedModel ibakedmodel = dispatcher.getModelForState(state);
+          int i = mc.getBlockColors().getColor(state, (IBlockDisplayReader)null, (BlockPos)null, 0);
+          float f = (float)(i >> 16 & 255) / 255.0F;
+          float f1 = (float)(i >> 8 & 255) / 255.0F;
+          float f2 = (float)(i & 255) / 255.0F;
+          for (net.minecraft.client.renderer.RenderType type : net.minecraft.client.renderer.RenderType.getBlockRenderTypes()) {
+            if (RenderTypeLookup.canRenderInLayer(state, type)) {
+              net.minecraftforge.client.ForgeHooksClient.setRenderLayer(type);
+              dispatcher.getBlockModelRenderer().renderModel(
+                  stack.getLast(),
+                  //buffer.getBuffer(RenderTypeLookup.func_239220_a_(state, false)),
+                  buffer.getBuffer(type),
+                  state,
+                  ibakedmodel,
+                  f, f1, f2,
+                  combinedLight,
+                  OverlayTexture.NO_OVERLAY,
+                  EmptyModelData.INSTANCE
+              );
+            }
+          }
+          net.minecraftforge.client.ForgeHooksClient.setRenderLayer(null);
+          break;
+        case ENTITYBLOCK_ANIMATED:
+          ItemStack item = new ItemStack(state.getBlock());
+          item.getItem().getItemStackTileEntityRenderer().func_239207_a_(
+              item,
+              ItemCameraTransforms.TransformType.NONE,
+              stack,
+              buffer,
+              combinedLight,
+              OverlayTexture.NO_OVERLAY
+          );
+          break;
+      }
+      stack.pop();
     }
 
     public boolean renderBlockToolTip(MatrixStack matrixStack, int mouseX, int mouseY) {
