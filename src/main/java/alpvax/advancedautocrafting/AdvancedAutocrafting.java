@@ -11,6 +11,7 @@ import alpvax.advancedautocrafting.data.AALootTableProvider;
 import alpvax.advancedautocrafting.data.AARecipeProvider;
 import alpvax.advancedautocrafting.data.BlockPosLootFunction;
 import alpvax.advancedautocrafting.item.AAItems;
+import alpvax.advancedautocrafting.network.AAPacketManager;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.loot.LootFunctionType;
@@ -66,7 +67,7 @@ public class AdvancedAutocrafting {
   }
 
   private void setup(final FMLCommonSetupEvent event) {
-    //PacketManager.init();
+    AAPacketManager.registerPackets();
 
     Capabilities.register();
   }
