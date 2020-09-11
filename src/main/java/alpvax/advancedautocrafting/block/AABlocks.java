@@ -3,6 +3,7 @@ package alpvax.advancedautocrafting.block;
 import alpvax.advancedautocrafting.AdvancedAutocrafting;
 import alpvax.advancedautocrafting.block.tile.ControllerTileEntity;
 import alpvax.advancedautocrafting.block.tile.RemoteMasterTileEntity;
+import alpvax.advancedautocrafting.block.tile.WireTileEntity;
 import alpvax.advancedautocrafting.item.AAItems;
 import com.google.common.collect.Sets;
 import net.minecraft.block.Block;
@@ -32,7 +33,7 @@ public class AABlocks {
   public static final RegistryObject<Block> REMOTE_MASTER = register("remote_master", () -> new RemoteMasterBlock(
       Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(6.0F, 30F)
   ));
-  public static final RegistryObject<WireBlock> WIRE = register("wire", () -> new WireBlock(
+  public static final RegistryObject<WireBlockV2> WIRE = register("wire", () -> new WireBlockV2(
       Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(2.0F, 30F)
   ));
 
@@ -59,6 +60,9 @@ public class AABlocks {
     );
     public static final RegistryObject<TileEntityType<RemoteMasterTileEntity>> REMOTE_MASTER = TILES.register("remote_master", () ->
         new TileEntityType<>(RemoteMasterTileEntity::new, Sets.newHashSet(AABlocks.REMOTE_MASTER.get()), null)
+    );
+    public static final RegistryObject<TileEntityType<WireTileEntity>> WIRE = TILES.register("wire", () ->
+        new TileEntityType<>(WireTileEntity::new, Sets.newHashSet(AABlocks.WIRE.get()), null)
     );
   }
 }

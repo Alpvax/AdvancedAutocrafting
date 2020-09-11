@@ -4,6 +4,7 @@ import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.client.data.AABlockstateProvider;
 import alpvax.advancedautocrafting.client.data.AAItemModelProvider;
 import alpvax.advancedautocrafting.client.data.AALangProvider;
+import alpvax.advancedautocrafting.client.data.model.WireModelLoader;
 import alpvax.advancedautocrafting.client.gui.ControllerScreen;
 import alpvax.advancedautocrafting.client.gui.RemoteMasterScreen;
 import alpvax.advancedautocrafting.container.AAContainerTypes;
@@ -14,7 +15,10 @@ import alpvax.advancedautocrafting.item.AAItems;
 import alpvax.advancedautocrafting.network.AAPacketManager;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -47,6 +51,7 @@ public class AdvancedAutocrafting {
     DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
       // Client setup
       modBus.addListener(this::setupClient);
+      modBus.addListener(this::onRegisterModel);
     });
 
     MinecraftForge.EVENT_BUS.addListener(this::onServerStarting);
@@ -71,6 +76,13 @@ public class AdvancedAutocrafting {
     //ClientRegistry.bindTileEntitySpecialRenderer(DrinkMixerTileEntity.class, new DrinkMixerRenderer());
     ScreenManager.registerFactory(AAContainerTypes.REMOTE_MASTER.get(), RemoteMasterScreen::new);
     ScreenManager.registerFactory(AAContainerTypes.CONTROLLER.get(), ControllerScreen::new);
+  }
+
+  /*
+   * Only on Client
+   */
+  private void onRegisterModel(ModelRegistryEvent event) {
+    ModelLoaderRegistry.registerLoader(new ResourceLocation(AdvancedAutocrafting.MODID, "wire_loader"), new WireModelLoader());
   }
 
   private void onServerStarting(final FMLServerStartingEvent event) {

@@ -20,7 +20,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
@@ -31,40 +30,10 @@ import net.minecraftforge.common.ForgeMod;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Locale;
 
 import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements IWaterLoggable {
-  public enum ConnectionState implements IStringSerializable {
-    NONE,
-    CONNECTION,
-    INTERFACE,
-    DISABLED;
-
-    private static final ConnectionState[] VALUES = values();
-    private final String name;
-
-    ConnectionState() {
-      name = name().toLowerCase(Locale.ENGLISH);
-    }
-
-    public boolean isNotDisabled() {
-      return this != DISABLED;
-    }
-
-    @Nonnull
-    @Override //getName
-    public String func_176610_l() {
-      return name;
-    }
-
-    @Override
-    public String toString() {
-      return name;
-    }
-  }
-
+public class WireBlock extends AxialBlock<ConnectionState> implements IWaterLoggable {
   private static final float CORE_RADIUS = 3/16F;
   public static final AxialBlockShape<ConnectionState> WIRE_SHAPE = AxialBlockShape.builder("base_wire", ConnectionState.class)
       .withCore(CORE_RADIUS)

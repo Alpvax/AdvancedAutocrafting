@@ -31,7 +31,7 @@ public class AABlockstateProvider extends BlockStateProvider {
     simpleBlock(CONTROLLER);
     simpleBlock(REMOTE_MARKER);
     simpleBlock(REMOTE_MASTER);
-    axisBlock(WIRE);
+    //axisBlock(WIRE);
   }
 
   private void simpleBlock(Supplier<? extends Block> sup) {
