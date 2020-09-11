@@ -8,8 +8,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 
 import javax.annotation.Nullable;
@@ -88,7 +86,9 @@ public class AxialPart<T extends Comparable<T>> {
    * @param modelBuilder generally `models().getBuilder("model_name")`
    * @return an ElementBuilder which can be further customised in the BlockStateProvider
    */
-  @OnlyIn(Dist.CLIENT)
+  /*
+   * Only on Client
+   */
   public BlockModelBuilder.ElementBuilder makeModelElement(BlockModelBuilder modelBuilder) {
     float r = radius * 16;
     BlockModelBuilder.ElementBuilder builder = modelBuilder

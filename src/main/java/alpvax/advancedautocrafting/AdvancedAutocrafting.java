@@ -15,7 +15,6 @@ import alpvax.advancedautocrafting.network.AAPacketManager;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -65,7 +64,9 @@ public class AdvancedAutocrafting {
     Capabilities.register();
   }
 
-  @OnlyIn(Dist.CLIENT)
+  /*
+   * Only on Client
+   */
   private void setupClient(final FMLClientSetupEvent event) {
     //ClientRegistry.bindTileEntitySpecialRenderer(DrinkMixerTileEntity.class, new DrinkMixerRenderer());
     ScreenManager.registerFactory(AAContainerTypes.REMOTE_MASTER.get(), RemoteMasterScreen::new);

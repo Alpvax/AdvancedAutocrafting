@@ -15,7 +15,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
 
 import javax.annotation.Nonnull;
@@ -31,7 +30,9 @@ public class RemotePositionItem extends Item {
   /**
    * allows items to add custom lines of information to the mouseover description
    */
-  @OnlyIn(Dist.CLIENT)
+  /*
+   * Only on Client
+   */
   public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, @Nonnull List<ITextComponent> tooltip, @Nonnull ITooltipFlag flagIn) {
     BlockPosLootFunction.WorldPosPair data = BlockPosLootFunction.read(stack);
     if (data.valid()) {
@@ -68,7 +69,9 @@ public class RemotePositionItem extends Item {
     return DistExecutor.unsafeRunForDist(() -> () -> isRendering(stack), () -> () -> super.hasEffect(stack));
   }
 
-  @OnlyIn(Dist.CLIENT)
+  /*
+   * Only on Client
+   */
   private boolean isRendering(ItemStack stack) {
     BlockPosLootFunction.WorldPosPair pair = BlockPosLootFunction.read(stack);
     return pair.valid() && BlockHighlightRender.manager.contains(pair.getPos());
