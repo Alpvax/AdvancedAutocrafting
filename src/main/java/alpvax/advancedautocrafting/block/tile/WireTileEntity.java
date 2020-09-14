@@ -12,6 +12,8 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.common.util.Constants;
@@ -48,7 +50,10 @@ public class WireTileEntity extends TileEntity {
     BlockState blockState = getBlockState();
     //requestModelDataUpdate();//XXX?
     //noinspection ConstantConditions
-    getWorld().notifyBlockUpdate(getPos(), blockState, blockState, Constants.BlockFlags.DEFAULT_AND_RERENDER);
+    if (!world.isRemote) {
+      SUpdateTileEntityPacket updatePacket = getUpdatePacket();
+      ((ServerWorld) world).getChunkProvider().chunkManager.getTrackingPlayers(new ChunkPos(this.pos), false).forEach(player -> player.connection.sendPacket(updatePacket));
+    }
   }
 
   public ConnectionState setConnectionDisabled(Direction d, boolean disabled) {
@@ -140,6 +145,7 @@ public class WireTileEntity extends TileEntity {
   public void handleUpdateTag(BlockState state, CompoundNBT tag) {
     super.handleUpdateTag(state, tag);
     requestModelDataUpdate();
+    getWorld().notifyBlockUpdate(pos, state, state, Constants.BlockFlags.RERENDER_MAIN_THREAD);
   }
 
   @Override
@@ -166,7 +172,7 @@ public class WireTileEntity extends TileEntity {
     return compound;
   }
 
-  @Nullable
+  @Nonnull
   public SUpdateTileEntityPacket getUpdatePacket() {
     return new SUpdateTileEntityPacket(this.pos, 0, this.getUpdateTag());
   }
