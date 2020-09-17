@@ -3,7 +3,7 @@ package alpvax.advancedautocrafting.block.tile;
 import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.block.ConnectionState;
-import alpvax.advancedautocrafting.client.data.model.WireBakedModel;
+import alpvax.advancedautocrafting.client.data.model.BakedWireModel;
 import com.google.common.collect.Maps;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
@@ -127,7 +127,7 @@ public class WireTileEntity extends TileEntity {
   @Override
   public IModelData getModelData() {
     ModelDataMap.Builder b = new ModelDataMap.Builder();
-    connections.forEach((d, s) -> b.withInitial(WireBakedModel.DIRECTION_DATA.get(d), s.func_176610_l()));
+    connections.forEach((d, s) -> b.withInitial(BakedWireModel.DIRECTION_DATA.get(d), s.func_176610_l()));
     return b.build();
   }
 
@@ -155,7 +155,7 @@ public class WireTileEntity extends TileEntity {
     connections.entrySet().forEach(e -> {
       String dir = e.getKey().func_176610_l();
       if (tag.contains(dir, Constants.NBT.TAG_STRING)) {
-        e.setValue(ConnectionState.get(tag.getString(dir)));
+        ConnectionState.get(tag.getString(dir)).ifPresent(e::setValue);
       }
     });
   }

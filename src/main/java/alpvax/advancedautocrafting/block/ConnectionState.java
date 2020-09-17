@@ -4,6 +4,7 @@ import net.minecraft.util.IStringSerializable;
 
 import javax.annotation.Nonnull;
 import java.util.Locale;
+import java.util.Optional;
 
 public enum ConnectionState implements IStringSerializable {
   NONE,
@@ -33,7 +34,12 @@ public enum ConnectionState implements IStringSerializable {
     return name;
   }
 
-  public static ConnectionState get(String name) {
-    return valueOf(name.toUpperCase());
+  public static Optional<ConnectionState> get(String name) {
+    for (ConnectionState s : VALUES) {
+      if (name.equals(s.func_176610_l()) || name.equalsIgnoreCase(s.name())) {
+        return Optional.of(s);
+      }
+    }
+    return Optional.empty();
   }
 }

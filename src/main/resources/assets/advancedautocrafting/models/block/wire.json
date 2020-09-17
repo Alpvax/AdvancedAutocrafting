@@ -1,19 +1,27 @@
 {
   "loader": "advancedautocrafting:wire_loader",
+  "textures": {
+    "core": "advancedautocrafting:block/wire",
+    "arm": "#core",
+    "disabled": "#core",
+    "interface": "#core",
+    "particle": "#core"
+  },
   "core": {
-    "parent": "advancedautocrafting:block/part/base_wire_core",
-    "textures": {
-      "texture": "advancedautocrafting:block/wire",
-      "particle": "#texture"
+    "radius": 3,
+    "facedefaults": {
+      "texture": "#core",
+      "uv": [0.0, 0.0, 16.0, 16.0]
     }
   },
   "parts": {
     "arm": {
-      "model": {
-        "parent": "advancedautocrafting:block/part/base_wire_arm",
-        "textures": {
-          "texture": "advancedautocrafting:block/wire"
-        }
+      "radius": 2,
+      "start": 0,
+      "end": 5,
+      "facedata": {
+        "cull": ["north"],
+        "skip": ["south"]
       },
       "when": [
         "connection",
@@ -21,10 +29,13 @@
       ]
     },
     "disabled": {
-      "model": {
-        "parent": "advancedautocrafting:block/part/base_wire_disabled",
-        "textures": {
-          "texture": "advancedautocrafting:block/wire"
+      "radius": 2.5,
+      "start": 4,
+      "end": 5,
+      "facedata": {
+        "skip": ["south"],
+        "uv": {
+          "north": [0.0, 0.0, 16.0, 16.0]
         }
       },
       "when": [
@@ -32,10 +43,13 @@
       ]
     },
     "interface": {
-      "model": {
-        "parent": "advancedautocrafting:block/part/base_wire_interface",
-        "textures": {
-          "texture": "advancedautocrafting:block/wire"
+      "radius": 6,
+      "start": 0,
+      "end": 1,
+      "facedata": {
+        "cull": ["north"],
+        "uv": {
+          "south": [0.0, 0.0, 16.0, 16.0]
         }
       },
       "when": [

@@ -1,11 +1,11 @@
 {
   "loader": "advancedautocrafting:wire_loader",
+  "textures": {
+    "texture": "advancedautocrafting:block/wire",
+    "particle": "#texture"
+  }
   "core": {
     "radius": 3,
-    "textures": {
-      "texture": "advancedautocrafting:block/wire",
-      "particle": "#texture"
-    },
     "faces": {
       "down": {
         "texture": "#texture",

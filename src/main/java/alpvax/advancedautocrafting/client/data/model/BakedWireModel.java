@@ -1,6 +1,8 @@
 package alpvax.advancedautocrafting.client.data.model;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
@@ -18,14 +20,13 @@ import net.minecraftforge.client.model.data.ModelProperty;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-public class WireBakedModel implements IDynamicBakedModel {
+public class BakedWireModel implements IDynamicBakedModel {
   public static final EnumMap<Direction, ModelProperty<String>> DIRECTION_DATA =
       Util.make(new EnumMap<>(Direction.class), map -> {
         for (Direction d : Direction.values()) {
@@ -33,17 +34,14 @@ public class WireBakedModel implements IDynamicBakedModel {
         }
       });
 
-  private final IBakedModel coreModel;
-  private final ImmutableMap<Direction, ImmutableMap<IBakedModel, Predicate<String>>> bakedParts;
+  private final ImmutableMap<Direction, ImmutableMultimap<String, IBakedModel>> bakedParts;
   private final boolean isAmbientOcclusion;
   private final boolean isGui3d;
   private final boolean isSideLit;
   private final TextureAtlasSprite particle;
   private final ItemOverrideList overrides;
   private final IModelTransform transforms;
-
-  public WireBakedModel(boolean isGui3d, boolean isSideLit, boolean isAmbientOcclusion, TextureAtlasSprite particle, IBakedModel coreModel, ImmutableMap<Direction, ImmutableMap<IBakedModel, Predicate<String>>> bakedParts, IModelTransform combinedTransform, ItemOverrideList overrides) {
-    this.coreModel = coreModel;
+  public BakedWireModel(boolean isGui3d, boolean isSideLit, boolean isAmbientOcclusion, TextureAtlasSprite particle, ImmutableMap<Direction, ImmutableMultimap<String, IBakedModel>> bakedParts, IModelTransform combinedTransform, ItemOverrideList overrides) {
     this.bakedParts = bakedParts;
     this.isAmbientOcclusion = isAmbientOcclusion;
     this.isGui3d = isGui3d;
@@ -56,19 +54,13 @@ public class WireBakedModel implements IDynamicBakedModel {
   @Nonnull
   @Override
   public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-    List<BakedQuad> quads = new ArrayList<>(coreModel.getQuads(state, side, rand, extraData));
-    quads.addAll(coreModel.getQuads(state, side, rand, extraData));
-    bakedParts.forEach((dir, parts) -> {
-      Optional.ofNullable(extraData.getData(DIRECTION_DATA.get(dir))).ifPresent(valid -> {
-        parts.forEach((model, predicate) -> {
-          //if (valid.stream().anyMatch(predicate)) {
-          if (predicate.test(valid)) {
-            quads.addAll(model.getQuads(state, side, rand, extraData));
-          }
-        });
-      });
-    });
-    return quads;
+    return bakedParts.entrySet().stream().flatMap(e ->
+      Optional.ofNullable(extraData.getData(DIRECTION_DATA.get(e.getKey())))
+          .map(e.getValue()::get)
+          .orElse(ImmutableSet.of())
+          .stream()
+          .flatMap(model -> model.getQuads(state, side, rand, extraData).stream())
+    ).collect(Collectors.toList());
   }
 
   /*@Nonnull
