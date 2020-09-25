@@ -2,9 +2,14 @@ package alpvax.advancedautocrafting.block;
 
 import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.block.tile.WireTileEntity;
+import alpvax.advancedautocrafting.block.wire.WireConnectionsOptional;
+import alpvax.advancedautocrafting.block.wire.WireShape;
+import alpvax.advancedautocrafting.item.AAItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -15,17 +20,23 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeMod;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
 public class WireBlockV2 extends Block {
+  private WireShape<ConnectionState> shape = new WireShape.Builder<ConnectionState>(true)
+                                                 .withCore(3F)
+                                                 .withPart(ConnectionState.DISABLED, 2.5F, 4F, 5F)
+                                                 .withPart(ConnectionState.INTERFACE, 6F, 0F, 1F)
+                                                 .withPartDef("arm", 2F, 0F, 5F)
+                                                 .includePart(ConnectionState.CONNECTION, "arm")
+                                                 .includePart(ConnectionState.INTERFACE, "arm")
+                                                 .build();
 
   public WireBlockV2(Properties properties) {
     super(properties);
@@ -91,12 +102,7 @@ public class WireBlockV2 extends Block {
             spawnAsEntity(worldIn, pos, new ItemStack(this));
           }
         } else {
-          Vector3d start = new Vector3d(player.prevPosX, player.prevPosY + player.getEyeHeight(), player.prevPosZ);
-          Vector3d end = start.add(player.getLook(0).scale(player.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue()));
-          Direction dir = null;//TODO: rayTracePart(state, pos, start, end).direction();
-          if (dir == null) {
-            dir = rayTraceResult.getFace();
-          }
+          Direction dir = rayTracePart(worldIn, pos, () -> player).getDirection().orElse(rayTraceResult.getFace());
           WireTileEntity tile = AABlocks.TileTypes.WIRE.get().func_226986_a_(worldIn, pos);
           if (tile != null) {
             tile.toggleDisabled(dir);
@@ -135,25 +141,18 @@ public class WireBlockV2 extends Block {
   @Nonnull
   @Override
   public VoxelShape getShape(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos, @Nonnull ISelectionContext context) {
-    /*TODO: implement shape
-    if(context instanceof EntitySelectionContext) {
+    return rayTracePart(worldIn, pos, () -> {
       Entity e = context.getEntity();
-      if (e != null) {
-        if (context.hasItem(AAItems.MULTITOOL.get())
-                || (e instanceof LivingEntity && ((LivingEntity)e).getActiveItemStack().getCapability(Capabilities.MULTITOOL_CAPABILITY).isPresent())
-        ) {
-          Vector3d start = new Vector3d(e.prevPosX, e.prevPosY + e.getEyeHeight(), e.prevPosZ);
-          Vector3d end = start.add(e.getLook(0).scale(ForgeMod.REACH_DISTANCE.get().clampValue(Double.MAX_VALUE)));
-          //TODO: return getPartialBlockHighlight(state, rayTracePart(state, pos, start, end));
-        }
+      if (context.hasItem(AAItems.MULTITOOL.get()) || (e instanceof LivingEntity && ((LivingEntity) e).getActiveItemStack().getCapability(Capabilities.MULTITOOL_CAPABILITY).isPresent())
+      ) {
+        return e;
       }
-    }
-    Map<Direction, T> values = Maps.newEnumMap(Direction.class);
-    directionToPropertyMap.forEach((d, prop) -> values.put(d, state.get(prop)));
-    return shape.getCombinedShape(values);
-     */
-    double f = 5D/16D;
-    double t = 11D/16D;
-    return VoxelShapes.create(f,f,f,t,t,t);
+      return null;
+    }).getShapeOrMap(shape::getComplete).orElseGet(shape::getCore);
   }
+
+  protected WireConnectionsOptional rayTracePart(@Nonnull IBlockReader worldIn, @Nonnull BlockPos pos, Supplier<Entity> e) {
+    return new WireConnectionsOptional(worldIn, pos).partialRayTrace(shape, e);
+  }
+
 }
