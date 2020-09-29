@@ -47,7 +47,7 @@ public class WireShape<T extends IStringSerializable> {
                                                ray.getHitVec().squareDistanceTo(start),
                                                ray.getFace()
                                            )).orElse(Pair.of(Double.MAX_VALUE, null));
-    Triple<Double, Direction, VoxelShape> closest = values.entrySet().stream()
+    return values.entrySet().stream()
         .map(e -> Pair.of(e.getKey(), getFor(e.getValue(), e.getKey())))
         .filter(e -> !e.getRight().isEmpty())
         .map(e -> Triple.of(
@@ -57,11 +57,8 @@ public class WireShape<T extends IStringSerializable> {
         ))
         .sorted()
         .findFirst()
-        .orElseThrow(() -> new IllegalStateException("Should be impossible!"));
-    if (closest.getLeft() < coreData.getLeft()) {
-      return Pair.of(closest.getRight(), closest.getMiddle());
-    }
-    return Pair.of(core, coreData.getRight());
+        .map(closest -> closest.getLeft() < coreData.getLeft() ? Pair.of(closest.getRight(), closest.getMiddle()) : null)
+        .orElseGet(() -> Pair.of(core, coreData.getRight()));
   }
 
   public static class Builder<T extends IStringSerializable> {
