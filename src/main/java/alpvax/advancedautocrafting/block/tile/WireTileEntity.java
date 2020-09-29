@@ -47,8 +47,6 @@ public class WireTileEntity extends TileEntity {
   private void setConnection(Direction d, ConnectionState state) {
     connections.put(d, state);
     markDirty();
-    BlockState blockState = getBlockState();
-    //requestModelDataUpdate();//XXX?
     //noinspection ConstantConditions
     if (!world.isRemote) {
       SUpdateTileEntityPacket updatePacket = getUpdatePacket();
@@ -114,7 +112,10 @@ public class WireTileEntity extends TileEntity {
     if (neighbour != null) {
       Direction opp = d.getOpposite();
       if (neighbour.getType() == AABlocks.TileTypes.WIRE.get()) {
-        ((WireTileEntity) neighbour).setConnection(opp, thisState.isNotDisabled() ? ConnectionState.CONNECTION : ConnectionState.NONE);
+        WireTileEntity wire = ((WireTileEntity) neighbour);
+        if (wire.getConnection(opp) != ConnectionState.DISABLED) {
+          wire.setConnection(opp, thisState.isNotDisabled() ? ConnectionState.CONNECTION : ConnectionState.NONE);
+        }
       } else {
         neighbour.getCapability(Capabilities.NODE_CAPABILITY, d.getOpposite()).ifPresent(node -> {
           //node.connectToWire(opp)//TODO: implement
@@ -145,6 +146,7 @@ public class WireTileEntity extends TileEntity {
   public void handleUpdateTag(BlockState state, CompoundNBT tag) {
     super.handleUpdateTag(state, tag);
     requestModelDataUpdate();
+    //noinspection ConstantConditions
     getWorld().notifyBlockUpdate(pos, state, state, Constants.BlockFlags.RERENDER_MAIN_THREAD);
   }
 
