@@ -22,14 +22,18 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Random;
 import java.util.function.Supplier;
 
 public class WireBlockV2 extends Block {
-  private WireShape<ConnectionState> shape = new WireShape.Builder<ConnectionState>(true)
+  private final WireShape<ConnectionState> shape = new WireShape.Builder<ConnectionState>(true)
                                                  .withCore(3F)
                                                  .withPart(ConnectionState.DISABLED, 2.5F, 4F, 5F)
                                                  .withPart(ConnectionState.INTERFACE, 6F, 0F, 1F)
@@ -53,6 +57,24 @@ public class WireBlockV2 extends Block {
     return new WireTileEntity();
   }
 
+  @SuppressWarnings("deprecation")
+  @Override
+  public void onBlockAdded(@Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull BlockState oldState, boolean isMoving) {
+    super.onBlockAdded(state, worldIn, pos, oldState, isMoving);
+    worldIn.getPendingBlockTicks().scheduleTick(pos, state.getBlock(), 1);
+  }
+
+  @SuppressWarnings("deprecation")
+  @Override
+  public void tick(@Nonnull BlockState state, @Nonnull ServerWorld worldIn, @Nonnull BlockPos pos, @Nonnull Random rand) {
+    super.tick(state, worldIn, pos, rand);
+    WireTileEntity tile = AABlocks.TileTypes.WIRE.get().func_226986_a_(worldIn, pos);
+    if (tile != null) {
+      for (Direction d : Direction.values()) {
+        tile.updateConnection(d, worldIn.getTileEntity(pos.offset(d)));
+      }
+    }
+  }
 
   /*TODO:WATERLOGGED
   @Override
@@ -65,8 +87,9 @@ public class WireBlockV2 extends Block {
   }
   */
 
-  /*@Override
-  public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+  /*@SuppressWarnings("deprecation")
+  @Override
+  public void onReplaced(@Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
     for (Direction d : Direction.values()) {
       BlockPos p = pos.offset(d);
       AABlocks.TileTypes.WIRE.get().func_226986_a_(worldIn, pos).updateNeighbourConnection(d, p, worldIn.getTileEntity(p));
@@ -74,24 +97,34 @@ public class WireBlockV2 extends Block {
     super.onReplaced(state, worldIn, pos, newState, isMoving);
   }*/
 
-  @SuppressWarnings("deprecation")
   @Override
   public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-    if (!worldIn.isRemote()) {
-      BlockPos dPos = fromPos.subtract(pos);
-      Direction d = Direction.byLong(dPos.getX(), dPos.getY(), dPos.getZ());
-      WireTileEntity tile = AABlocks.TileTypes.WIRE.get().func_226986_a_(worldIn, pos);
-      if (tile != null) {
-        tile.updateConnection(d, worldIn.getTileEntity(fromPos));
-      }
-    }
     super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
+  }
+
+  @Override
+  public void onNeighborChange(BlockState state, IWorldReader world, BlockPos pos, BlockPos neighbor) {
+
   }
 
   @SuppressWarnings("deprecation")
   @Nonnull
   @Override
-  public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
+  public BlockState updatePostPlacement(@Nonnull BlockState stateIn, @Nonnull Direction facing, @Nonnull BlockState facingState, @Nonnull IWorld worldIn, @Nonnull BlockPos currentPos, @Nonnull BlockPos facingPos) {
+    //TODO:WATERLOGGED?
+    if (!worldIn.isRemote()) {
+      WireTileEntity tile = AABlocks.TileTypes.WIRE.get().func_226986_a_(worldIn, currentPos);
+      if (tile != null) {
+        tile.updateConnection(facing, worldIn.getTileEntity(facingPos));
+      }
+    }
+    return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+  }
+
+  @SuppressWarnings("deprecation")
+  @Nonnull
+  @Override
+  public ActionResultType onBlockActivated(@Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult rayTraceResult) {
     ItemStack stack = player.getHeldItem(hand);
     if(!stack.isEmpty() && stack.getCapability(Capabilities.MULTITOOL_CAPABILITY).isPresent()) {
       // Multitool
