@@ -54,8 +54,8 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
     }
 
     @Nonnull
-    @Override //getName
-    public String func_176610_l() {
+    @Override
+    public String getString() {
       return name;
     }
 
@@ -109,7 +109,7 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
   @Nullable
   @Override
   protected Property<ConnectionState> buildPropertyForDirection(Direction d) {
-    return EnumProperty.create(d.func_176610_l(), ConnectionState.class);
+    return EnumProperty.create(d.getString(), ConnectionState.class);
   }
 
   @Nonnull
@@ -146,7 +146,7 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
     }
     BlockState neighbor = world.getBlockState(neighborPos);
     return getConnectionProp(dir.getOpposite())
-               .filter(prop -> neighbor.func_235901_b_/*has*/(prop) && neighbor.get(prop).isNotDisabled())
+               .filter(prop -> neighbor.hasProperty(prop) && neighbor.get(prop).isNotDisabled())
                .map(prop -> ConnectionState.CONNECTION).orElse(ConnectionState.NONE);
     /*if(WIRE_BLOCKS.contains(neighbor.getBlock())) { //TODO: Convert to block tag
       return ConnectionState.CONNECTION;

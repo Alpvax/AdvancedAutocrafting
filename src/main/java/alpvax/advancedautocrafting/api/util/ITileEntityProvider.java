@@ -30,7 +30,7 @@ public interface ITileEntityProvider<W extends IBlockReader> {
    */
   @Nullable
   default <T extends TileEntity> T getTileEntity(TileEntityType<T> type) {
-    return type.func_226986_a_(getWorld(), getPos());
+    return type.getIfExists(getWorld(), getPos());
   }
 
   /**
