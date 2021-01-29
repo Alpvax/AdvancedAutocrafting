@@ -28,7 +28,7 @@ public class ControllerTileEntity extends TileEntity  implements INamedContainer
   @Nonnull
   @Override
   public ITextComponent getDisplayName() {
-    return AABlocks.CONTROLLER.get().func_235333_g_();//.getNameTextComponent();
+    return AABlocks.CONTROLLER.get().getTranslatedName();
   }
 
   @Nullable

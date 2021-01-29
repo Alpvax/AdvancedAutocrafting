@@ -84,7 +84,7 @@ public class WireShape<T extends IStringSerializable> {
       return this;
     }
     public Builder<T> withPart(T value, float radius, float start, float end) {
-      String name = value.func_176610_l();
+      String name = value.getString();
       parts.put(name, new Values(radius, start, end));
       valueMap.put(value, name);
       return this;

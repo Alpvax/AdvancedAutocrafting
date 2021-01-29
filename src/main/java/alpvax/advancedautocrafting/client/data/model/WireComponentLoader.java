@@ -97,7 +97,7 @@ public abstract class WireComponentLoader<T extends WireLoaderContext> {
         loopJsonDirections(faceData, "tintindex", JsonElement::getAsInt, loaderContext::setTintIndex);
         loopJsonDirections(faceData, "texture", JsonElement::getAsString, loaderContext::setTexture);
         loopJsonDirections(faceData, "uv", JsonElement::getAsJsonArray,
-            (d, jarr) -> loaderContext.setUV(d, loadUVArray(context, jarr, d.func_176610_l(), loaderContext))
+            (d, jarr) -> loaderContext.setUV(d, loadUVArray(context, jarr, d.getString(), loaderContext))
         );
       }
     }
@@ -169,7 +169,7 @@ public abstract class WireComponentLoader<T extends WireLoaderContext> {
         WireModelBuilder.parseTextures(json),
         JSONUtils.getBoolean(json, "ambientocclusion", true),
         json.has("gui_light")
-            ? BlockModel.GuiLight.func_230179_a_(JSONUtils.getString(json, "gui_light"))
+            ? BlockModel.GuiLight.getLightFromName(JSONUtils.getString(json, "gui_light"))
             : null,
         json.has("display")
             ? JSONUtils.deserializeClass(json, "display", context, ItemCameraTransforms.class)

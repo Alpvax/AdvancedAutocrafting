@@ -94,7 +94,7 @@ public class WireModelBuilder<T extends Enum<T> & IStringSerializable> {
 
   protected void put(SubModel model, Iterable<T> valid) {
     for (T v : valid) {
-      parts.put(v.func_176610_l(), model);
+      parts.put(v.getString(), model);
     }
   }
 
@@ -125,7 +125,7 @@ public class WireModelBuilder<T extends Enum<T> & IStringSerializable> {
     }
 
     public Collection<? extends IModelGeometryPart> getParts(T filter) {
-      return parts.get(filter.func_176610_l());
+      return parts.get(filter.getString());
     }
 
     @Override

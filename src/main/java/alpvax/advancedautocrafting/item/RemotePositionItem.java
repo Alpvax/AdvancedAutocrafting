@@ -36,9 +36,9 @@ public class RemotePositionItem extends Item {
   public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, @Nonnull List<ITextComponent> tooltip, @Nonnull ITooltipFlag flagIn) {
     BlockPosLootFunction.WorldPosPair data = BlockPosLootFunction.read(stack);
     if (data.valid()) {
-      tooltip.add(new TranslationTextComponent(AATranslationKeys.ITEM_POS_LORE, data.getPos()).func_240699_a_/*.applyTextStyle*/(TextFormatting.GRAY));
+      tooltip.add(new TranslationTextComponent(AATranslationKeys.ITEM_POS_LORE, data.getPos()).mergeStyle(TextFormatting.GRAY));
       if (flagIn.isAdvanced() || !data.matchesWorld(worldIn)) {
-        tooltip.add(new TranslationTextComponent(AATranslationKeys.ITEM_DIM_LORE, data.getWorldID()).func_240699_a_/*.applyTextStyle*/(TextFormatting.GRAY));
+        tooltip.add(new TranslationTextComponent(AATranslationKeys.ITEM_DIM_LORE, data.getWorldID()).mergeStyle(TextFormatting.GRAY));
       }
     }
   }

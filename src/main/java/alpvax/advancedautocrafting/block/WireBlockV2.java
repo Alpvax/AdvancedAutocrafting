@@ -68,7 +68,7 @@ public class WireBlockV2 extends Block {
   @Override
   public void tick(@Nonnull BlockState state, @Nonnull ServerWorld worldIn, @Nonnull BlockPos pos, @Nonnull Random rand) {
     super.tick(state, worldIn, pos, rand);
-    WireTileEntity tile = AABlocks.TileTypes.WIRE.get().func_226986_a_(worldIn, pos);
+    WireTileEntity tile = AABlocks.TileTypes.WIRE.get().getIfExists(worldIn, pos);
     if (tile != null) {
       for (Direction d : Direction.values()) {
         tile.updateConnection(d, worldIn.getTileEntity(pos.offset(d)));
@@ -113,7 +113,7 @@ public class WireBlockV2 extends Block {
   public BlockState updatePostPlacement(@Nonnull BlockState stateIn, @Nonnull Direction facing, @Nonnull BlockState facingState, @Nonnull IWorld worldIn, @Nonnull BlockPos currentPos, @Nonnull BlockPos facingPos) {
     //TODO:WATERLOGGED?
     if (!worldIn.isRemote()) {
-      WireTileEntity tile = AABlocks.TileTypes.WIRE.get().func_226986_a_(worldIn, currentPos);
+      WireTileEntity tile = AABlocks.TileTypes.WIRE.get().getIfExists(worldIn, currentPos);
       if (tile != null) {
         tile.updateConnection(facing, worldIn.getTileEntity(facingPos));
       }
@@ -136,7 +136,7 @@ public class WireBlockV2 extends Block {
           }
         } else {
           Direction dir = rayTracePart(worldIn, pos, () -> player).getDirection().orElse(rayTraceResult.getFace());
-          WireTileEntity tile = AABlocks.TileTypes.WIRE.get().func_226986_a_(worldIn, pos);
+          WireTileEntity tile = AABlocks.TileTypes.WIRE.get().getIfExists(worldIn, pos);
           if (tile != null) {
             tile.toggleDisabled(dir);
           }
@@ -153,10 +153,10 @@ public class WireBlockV2 extends Block {
   private String getDebugConnections(World world, BlockPos pos) {//XXX
     String side = "[" + (world.isRemote ? "CLIENT" : "SERVER") + "]";
     StringBuilder sb = new StringBuilder(side);
-    WireTileEntity tile = AABlocks.TileTypes.WIRE.get().func_226986_a_(world, pos);
+    WireTileEntity tile = AABlocks.TileTypes.WIRE.get().getIfExists(world, pos);
     if (tile != null) {
       for (Direction d : Direction.values()) {
-        sb.append("\t").append(d.func_176610_l()).append(": ").append(tile.getConnection(d).func_176610_l()).append("\n");
+        sb.append("\t").append(d.getString()).append(": ").append(tile.getConnection(d).getString()).append("\n");
       }
     }
     return sb.deleteCharAt(sb.length() - 1).toString();

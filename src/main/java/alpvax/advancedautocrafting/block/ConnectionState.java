@@ -24,8 +24,8 @@ public enum ConnectionState implements IStringSerializable {
   }
 
   @Nonnull
-  @Override //getName
-  public String func_176610_l() {
+  @Override
+  public String getString() {
     return name;
   }
 
@@ -36,7 +36,7 @@ public enum ConnectionState implements IStringSerializable {
 
   public static Optional<ConnectionState> get(String name) {
     for (ConnectionState s : VALUES) {
-      if (name.equals(s.func_176610_l()) || name.equalsIgnoreCase(s.name())) {
+      if (name.equals(s.getString()) || name.equalsIgnoreCase(s.name())) {
         return Optional.of(s);
       }
     }

@@ -40,7 +40,7 @@ public class AALangProvider extends LanguageProvider {
 
   private void add(ItemGroup group, String name) {
     //add(group.getTranslationKey(), name);
-    ITextComponent t = group.func_242392_c();
+    ITextComponent t = group.getGroupName();
     if (t instanceof TranslationTextComponent) {
       add(((TranslationTextComponent) t).getKey(), name);
     }

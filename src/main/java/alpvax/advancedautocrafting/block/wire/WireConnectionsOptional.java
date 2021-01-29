@@ -31,7 +31,7 @@ public class WireConnectionsOptional { //<T extends IStringSerializable> {
 
   public WireConnectionsOptional(@Nonnull IBlockReader world, @Nonnull BlockPos pos) {
     this.pos = pos;
-    WireTileEntity t = AABlocks.TileTypes.WIRE.get().func_226986_a_(world, pos);
+    WireTileEntity t = AABlocks.TileTypes.WIRE.get().getIfExists(world, pos);
     if (t != null) {
       connections = new EnumMap<>(Direction.class);
       for (Direction d : Direction.values()) {

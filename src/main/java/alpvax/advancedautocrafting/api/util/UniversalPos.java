@@ -16,7 +16,7 @@ import java.util.Comparator;
 import java.util.Objects;
 
 class UniversalPos extends ProxyBlockSource implements Comparable<IBlockSource> {
-  public static final Comparator<IBlockSource> COMPARATOR = Comparator.comparing((IBlockSource loc) -> loc.getWorld().func_234923_W_())
+  public static final Comparator<IBlockSource> COMPARATOR = Comparator.comparing((IBlockSource loc) -> loc.getWorld().getDimensionKey())
                                                                  .thenComparing(loc -> new BlockPos(loc.getX(), loc.getY(), loc.getZ()));
 
   public static UniversalPos from(@Nonnull IWorldPosCallable c) {
@@ -42,7 +42,7 @@ class UniversalPos extends ProxyBlockSource implements Comparable<IBlockSource> 
   }
 
   public ITextComponent singleLineDisplay() {
-    return new StringTextComponent("Dimension: \"" + getWorld().func_234923_W_().func_240901_a_().toString()
+    return new StringTextComponent("Dimension: \"" + getWorld().getDimensionKey().getLocation().toString()
                                        + "\"; Position: " + getBlockPos() + ";");//TODO: Convert to translation?
   }
 

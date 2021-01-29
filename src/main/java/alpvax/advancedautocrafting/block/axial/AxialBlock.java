@@ -56,7 +56,7 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
   }
   @Nonnull
   public Optional<T> getConnection(BlockState state, Direction d) {
-    return getConnectionProp(d).map(prop -> state.func_235901_b_/*has*/(prop) ? state.get(prop) : null);
+    return getConnectionProp(d).map(prop -> state.hasProperty(prop) ? state.get(prop) : null);
   }
 
   @Override

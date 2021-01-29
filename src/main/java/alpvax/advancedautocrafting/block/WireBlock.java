@@ -20,6 +20,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
@@ -30,6 +31,7 @@ import net.minecraftforge.common.ForgeMod;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Locale;
 
 import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
 
@@ -78,7 +80,7 @@ public class WireBlock extends AxialBlock<ConnectionState> implements IWaterLogg
   @Nullable
   @Override
   protected Property<ConnectionState> buildPropertyForDirection(Direction d) {
-    return EnumProperty.create(d.func_176610_l(), ConnectionState.class);
+    return EnumProperty.create(d.getString(), ConnectionState.class);
   }
 
   @Nonnull
@@ -115,7 +117,7 @@ public class WireBlock extends AxialBlock<ConnectionState> implements IWaterLogg
     }
     BlockState neighbor = world.getBlockState(neighborPos);
     return getConnectionProp(dir.getOpposite())
-               .filter(prop -> neighbor.func_235901_b_/*has*/(prop) && neighbor.get(prop).isNotDisabled())
+               .filter(prop -> neighbor.hasProperty(prop) && neighbor.get(prop).isNotDisabled())
                .map(prop -> ConnectionState.CONNECTION).orElse(ConnectionState.NONE);
     /*if(WIRE_BLOCKS.contains(neighbor.getBlock())) { //TODO: Convert to block tag
       return ConnectionState.CONNECTION;

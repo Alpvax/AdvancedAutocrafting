@@ -128,7 +128,7 @@ public class WireTileEntity extends TileEntity {
   @Override
   public IModelData getModelData() {
     ModelDataMap.Builder b = new ModelDataMap.Builder();
-    connections.forEach((d, s) -> b.withInitial(BakedWireModel.DIRECTION_DATA.get(d), s.func_176610_l()));
+    connections.forEach((d, s) -> b.withInitial(BakedWireModel.DIRECTION_DATA.get(d), s.getString()));
     return b.build();
   }
 
@@ -137,7 +137,7 @@ public class WireTileEntity extends TileEntity {
   public CompoundNBT getUpdateTag() {
     CompoundNBT nbt = super.getUpdateTag();
     CompoundNBT tag = new CompoundNBT();
-    connections.forEach((d, s) -> tag.putString(d.func_176610_l(), s.func_176610_l()));
+    connections.forEach((d, s) -> tag.putString(d.getString(), s.getString()));
     nbt.put("connections", tag);
     return nbt;
   }
@@ -151,11 +151,11 @@ public class WireTileEntity extends TileEntity {
   }
 
   @Override
-  public void func_230337_a_(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
-    super.func_230337_a_(state, nbt);
+  public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
+    super.read(state, nbt);
     CompoundNBT tag = nbt.getCompound("connections");
     connections.entrySet().forEach(e -> {
-      String dir = e.getKey().func_176610_l();
+      String dir = e.getKey().getString();
       if (tag.contains(dir, Constants.NBT.TAG_STRING)) {
         ConnectionState.get(tag.getString(dir)).ifPresent(e::setValue);
       }
@@ -168,7 +168,7 @@ public class WireTileEntity extends TileEntity {
     super.write(compound);
 
     CompoundNBT tag = new CompoundNBT();
-    connections.forEach((d, s) -> tag.putString(d.func_176610_l(), s.func_176610_l()));
+    connections.forEach((d, s) -> tag.putString(d.getString(), s.getString()));
     compound.put("connections", tag);
 
     return compound;
