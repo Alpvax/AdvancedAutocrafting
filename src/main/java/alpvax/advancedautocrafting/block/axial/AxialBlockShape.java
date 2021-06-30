@@ -114,7 +114,7 @@ public class AxialBlockShape<T extends Comparable<T>> {
       //coreTexture = texture;
       double min = 0.5 - radius;
       double max = 0.5 + radius;
-      coreShape = VoxelShapes.create(min, min, min, max, max, max);
+      coreShape = VoxelShapes.box(min, min, min, max, max, max);
       return this;
     }
 

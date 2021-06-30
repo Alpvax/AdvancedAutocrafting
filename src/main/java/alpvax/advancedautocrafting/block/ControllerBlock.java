@@ -47,14 +47,14 @@ public class ControllerBlock extends Block {
   @SuppressWarnings("deprecation")
   @Nonnull
   @Override
-  public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
-    final TileEntity tileEntity = worldIn.getTileEntity(pos);
+  public ActionResultType use(@Nonnull BlockState state, World worldIn, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult rayTraceResult) {
+    final TileEntity tileEntity = worldIn.getBlockEntity(pos);
     if (tileEntity instanceof ControllerTileEntity) {
-      if (!worldIn.isRemote) {
+      if (!worldIn.isClientSide) {
         NetworkHooks.openGui((ServerPlayerEntity) player, (ControllerTileEntity) tileEntity, pos);
       }
       return ActionResultType.SUCCESS;
     }
-    return super.onBlockActivated(state, worldIn, pos, player, hand, rayTraceResult);
+    return super.use(state, worldIn, pos, player, hand, rayTraceResult);
   }
 }

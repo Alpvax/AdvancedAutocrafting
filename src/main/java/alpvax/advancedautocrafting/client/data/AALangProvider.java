@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("SameParameterValue")
 public class AALangProvider extends LanguageProvider {
 
   public AALangProvider(DataGenerator gen) {
@@ -39,8 +40,7 @@ public class AALangProvider extends LanguageProvider {
   }
 
   private void add(ItemGroup group, String name) {
-    //add(group.getTranslationKey(), name);
-    ITextComponent t = group.getGroupName();
+    ITextComponent t = group.getDisplayName();
     if (t instanceof TranslationTextComponent) {
       add(((TranslationTextComponent) t).getKey(), name);
     }

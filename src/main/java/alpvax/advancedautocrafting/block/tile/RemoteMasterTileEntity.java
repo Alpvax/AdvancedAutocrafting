@@ -48,8 +48,8 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
       //TODO:network.markNodeDirty();
     }
   };
-  private LazyOptional<IItemHandler> items = LazyOptional.of(() -> inventory);
-  private LazyOptional<INetworkNode> networkCapability = LazyOptional.of(this::makeNetworkNode);
+  private final LazyOptional<IItemHandler> items = LazyOptional.of(() -> inventory);
+  private final LazyOptional<INetworkNode> networkCapability = LazyOptional.of(this::makeNetworkNode);
 
   public RemoteMasterTileEntity() {
     super(AABlocks.TileTypes.REMOTE_MASTER.get());
@@ -57,6 +57,7 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
 
   private INetworkNode makeNetworkNode() {
     return new INetworkNode() {
+      @Nonnull
       @Override
       public NonNullList<INetworkNode> getChildNodes(Direction inbound) {
         return RemoteMasterTileEntity.this.getItems().stream()
@@ -66,9 +67,10 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
                    .collect(Collectors.toCollection(NonNullList::create));
       }
 
+      @Nonnull
       @Override
       public BlockPos getPos() {
-        return RemoteMasterTileEntity.this.pos;
+        return RemoteMasterTileEntity.this.worldPosition;
       }
     };
   }
@@ -94,7 +96,7 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
   }
 
   public void dropItems(World worldIn, BlockPos pos, BlockState newState) {
-    InventoryHelper.dropItems(worldIn, pos, getItems());
+    InventoryHelper.dropContents(worldIn, pos, getItems());
   }
 
   public ItemStack addItem(ItemStack stack) {
@@ -108,15 +110,16 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
   }
 
   @Override
-  public void read(BlockState state, CompoundNBT compound) {
-    super.read(state, compound);
+  public void load(@Nonnull BlockState state, @Nonnull CompoundNBT compound) {
+    super.load(state, compound);
     inventory.deserializeNBT(compound.getCompound("remoteItems"));
   }
 
+  @Nonnull
   @Override
-  public CompoundNBT write(CompoundNBT compound) {
+  public CompoundNBT save(CompoundNBT compound) {
     compound.put("remoteItems", inventory.serializeNBT());
-    return super.write(compound);
+    return super.save(compound);
   }
 
   /*@Override
@@ -135,14 +138,15 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
     return super.getCapability(cap);
   }*/
 
+  @Nonnull
   @Override
   public ITextComponent getDisplayName() {
-    return new TranslationTextComponent(AABlocks.REMOTE_MASTER.get().getTranslationKey());
+    return new TranslationTextComponent(AABlocks.REMOTE_MASTER.get().getDescriptionId());
   }
 
   @Nullable
   @Override
-  public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player) {
+  public Container createMenu(int id, @Nonnull PlayerInventory playerInventory, @Nonnull PlayerEntity player) {
     return new RemoteMasterContainer(id, playerInventory, this);
   }
 

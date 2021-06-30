@@ -16,11 +16,11 @@ import java.util.Comparator;
 import java.util.Objects;
 
 class UniversalPos extends ProxyBlockSource implements Comparable<IBlockSource> {
-  public static final Comparator<IBlockSource> COMPARATOR = Comparator.comparing((IBlockSource loc) -> loc.getWorld().getDimensionKey())
-                                                                 .thenComparing(loc -> new BlockPos(loc.getX(), loc.getY(), loc.getZ()));
+  public static final Comparator<IBlockSource> COMPARATOR = Comparator.comparing((IBlockSource loc) -> loc.getLevel().dimension())
+                                                                 .thenComparing(loc -> new BlockPos(loc.x(), loc.y(), loc.z()));
 
   public static UniversalPos from(@Nonnull IWorldPosCallable c) {
-    return c.apply(UniversalPos::new).orElseThrow(() -> new NullPointerException("Failed to create UniversalPos from IWorldPosCallable: " + c.toString()));
+    return c.evaluate(UniversalPos::new).orElseThrow(() -> new NullPointerException("Failed to create UniversalPos from IWorldPosCallable: " + c.toString()));
   }
   public UniversalPos(@Nonnull World world, @Nonnull BlockPos pos) {
     super((ServerWorld) world, pos); //TODO: Fix ServerWorld not on Client
@@ -30,7 +30,7 @@ class UniversalPos extends ProxyBlockSource implements Comparable<IBlockSource> 
     return this.isLoaded(0);
   }
   public boolean isLoaded(int adjacentBlocks) {
-    return getWorld().isAreaLoaded(getBlockPos(), adjacentBlocks);
+    return getLevel().isAreaLoaded(getPos(), adjacentBlocks);
   }
 
   /**
@@ -38,18 +38,18 @@ class UniversalPos extends ProxyBlockSource implements Comparable<IBlockSource> 
    * @return a new UniversalPos with the same world, and the offset pos
    */
   public UniversalPos offset(Direction d) {
-    return new UniversalPos(getWorld(), getBlockPos().offset(d));
+    return new UniversalPos(getLevel(), getPos().relative(d));
   }
 
   public ITextComponent singleLineDisplay() {
-    return new StringTextComponent("Dimension: \"" + getWorld().getDimensionKey().getLocation().toString()
-                                       + "\"; Position: " + getBlockPos() + ";");//TODO: Convert to translation?
+    return new StringTextComponent("Dimension: \"" + getLevel().dimension().location().toString()
+                                       + "\"; Position: " + getPos() + ";");//TODO: Convert to translation?
   }
 
   @Override
   public int hashCode() {
-    BlockPos pos = getBlockPos();
-    return Objects.hash(getWorld(), new ChunkPos(pos), pos);
+    BlockPos pos = getPos();
+    return Objects.hash(getLevel(), new ChunkPos(pos), pos);
   }
 
   @Override
@@ -59,7 +59,7 @@ class UniversalPos extends ProxyBlockSource implements Comparable<IBlockSource> 
     }
     if (obj instanceof UniversalPos) {
       UniversalPos o = (UniversalPos) obj;
-      return getWorld().equals(o.getWorld()) && getBlockPos().equals(o.getBlockPos());
+      return getLevel().equals(o.getLevel()) && getPos().equals(o.getPos());
     }
     return false;
   }

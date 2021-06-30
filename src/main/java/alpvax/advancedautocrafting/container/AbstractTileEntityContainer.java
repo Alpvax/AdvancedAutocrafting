@@ -19,7 +19,7 @@ public abstract class AbstractTileEntityContainer<T extends TileEntity> extends 
     @SuppressWarnings("unchecked")
     @Override
     default C create(int windowId, PlayerInventory inv, PacketBuffer data) {
-      return create(windowId, inv, (T)inv.player.world.getTileEntity(data.readBlockPos()));
+      return create(windowId, inv, (T)inv.player.level.getBlockEntity(data.readBlockPos()));
     }
   }
 
@@ -41,9 +41,9 @@ public abstract class AbstractTileEntityContainer<T extends TileEntity> extends 
   }
 
   @Override
-  public boolean canInteractWith(PlayerEntity playerIn) {
-    return getTileEntity().getPos().withinDistance(
-        playerIn.getPositionVec(),
+  public boolean stillValid(PlayerEntity playerIn) {
+    return getTileEntity().getBlockPos().closerThan(
+        playerIn.position(),
         playerIn.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue() + 1
     );
   }

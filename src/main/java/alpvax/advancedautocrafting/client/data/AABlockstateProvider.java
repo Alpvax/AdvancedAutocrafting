@@ -52,17 +52,15 @@ public class AABlockstateProvider extends BlockStateProvider {
 
     MultiPartBlockStateBuilder builder = getMultipartBuilder(block).part().modelFile(blockModels.get("core")).addModel().end();
     block.forEachDirection((d, prop) -> {
-      int yrot = d.getAxis().isHorizontal() ? (((int) d.getHorizontalAngle()) + 180) % 360 : 0;
-      int xrot = d.getYOffset() == 0 ? 0 : d.getYOffset() > 0 ? 270 : 90;
-      shape.forEach(part -> {
-        builder.part()
-            .modelFile(blockModels.get(part.name))
-            .rotationY(yrot)
-            .rotationX(xrot)
-            .uvLock(true)
-            .addModel()
-            .condition(prop, part.getAllowedValues());
-      });
+      int yrot = d.getAxis().isHorizontal() ? (((int) d.toYRot()) + 180) % 360 : 0;
+      int xrot = d.getStepY() == 0 ? 0 : d.getStepY() > 0 ? 270 : 90;
+      shape.forEach(part -> builder.part()
+          .modelFile(blockModels.get(part.name))
+          .rotationY(yrot)
+          .rotationX(xrot)
+          .uvLock(true)
+          .addModel()
+          .condition(prop, part.getAllowedValues()));
     });
   }
 }

@@ -69,8 +69,8 @@ public class AdvancedAutocrafting {
    */
   private void setupClient(final FMLClientSetupEvent event) {
     //ClientRegistry.bindTileEntitySpecialRenderer(DrinkMixerTileEntity.class, new DrinkMixerRenderer());
-    ScreenManager.registerFactory(AAContainerTypes.REMOTE_MASTER.get(), RemoteMasterScreen::new);
-    ScreenManager.registerFactory(AAContainerTypes.CONTROLLER.get(), ControllerScreen::new);
+    ScreenManager.register(AAContainerTypes.REMOTE_MASTER.get(), RemoteMasterScreen::new);
+    ScreenManager.register(AAContainerTypes.CONTROLLER.get(), ControllerScreen::new);
   }
 
   private void onServerStarting(final FMLServerStartingEvent event) {

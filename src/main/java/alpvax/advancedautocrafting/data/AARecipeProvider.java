@@ -12,6 +12,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 import static alpvax.advancedautocrafting.block.AABlocks.*;
@@ -23,54 +24,54 @@ public class AARecipeProvider extends RecipeProvider {
   }
 
   @Override
-  protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
-    ICriterionInstance hasIronBlock = hasItem(Tags.Items.STORAGE_BLOCKS_IRON);
-    ICriterionInstance hasPearl = hasItem(Tags.Items.ENDER_PEARLS);
-    ICriterionInstance hasIronBars = hasItem(Items.IRON_BARS);
-    ShapedRecipeBuilder.shapedRecipe(CONTROLLER.get())
-        .patternLine("IGI").patternLine("GBG").patternLine("IGI")
-        .key('I', Tags.Items.INGOTS_IRON)
-        .key('G', Tags.Items.INGOTS_GOLD)
-        .key('B', Tags.Items.STORAGE_BLOCKS_IRON)
-        .addCriterion("has_glass", this.hasItem(Tags.Items.GLASS))
-        .addCriterion("has_iron_block", hasIronBlock)
-        .build(consumer);
-    ShapedRecipeBuilder.shapedRecipe(REMOTE_MARKER.get())
-        .patternLine("IPI").patternLine("PBP").patternLine("IPI")
-        .key('I', Items.IRON_BARS)
-        .key('P', Tags.Items.ENDER_PEARLS)
-        .key('B', Tags.Items.STORAGE_BLOCKS_IRON)
-        .addCriterion("has_iron_bars", hasIronBars)
-        .addCriterion("has_pearl", hasPearl)
-        .addCriterion("has_iron_block", hasIronBlock)
-        .setGroup(REMOTE_MARKER.getId().toString())
-        .build(consumer);
-    ShapelessRecipeBuilder.shapelessRecipe(REMOTE_MARKER.get())
-        .addIngredient(AAItems.REMOTE_POS.get())
-        .addCriterion("has_pos_marker", hasItem(AAItems.REMOTE_POS.get()))
-        .setGroup(REMOTE_MARKER.getId().toString())
-        .build(consumer, new ResourceLocation(AdvancedAutocrafting.MODID, REMOTE_MARKER.getId().getPath() + "_from_marker"));
-    ShapedRecipeBuilder.shapedRecipe(REMOTE_MASTER.get())
-        .patternLine("PGP").patternLine("GBG").patternLine("PGP")
-        .key('P', Tags.Items.ENDER_PEARLS)
-        .key('G', Tags.Items.INGOTS_GOLD)
-        .key('B', Tags.Items.STORAGE_BLOCKS_IRON)
-        .addCriterion("has_pearl", hasPearl)
-        .addCriterion("has_iron_block", hasIronBlock)
-        .build(consumer);
-    ShapedRecipeBuilder.shapedRecipe(WIRE.get(), 16)
-        .patternLine(" I ").patternLine("IBI").patternLine(" I ")
-        .key('I', Items.IRON_BARS)
-        .key('B', Tags.Items.STORAGE_BLOCKS_IRON)
-        .addCriterion("has_iron_bars", hasIronBars)
-        .addCriterion("has_iron_block", hasIronBlock)
-        .build(consumer);
-    ShapedRecipeBuilder.shapedRecipe(AAItems.MULTITOOL.get())
-        .patternLine("IR ").patternLine("RIR").patternLine(" RI")
-        .key('I', Tags.Items.INGOTS_IRON)
-        .key('R', Tags.Items.DYES_RED)
-        .addCriterion("has_iron", hasItem(Tags.Items.INGOTS_IRON))
-        .addCriterion("has_red_dye", hasItem(Tags.Items.DYES_RED))
-        .build(consumer);
+  protected void buildShapelessRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
+    ICriterionInstance hasIronBlock = has(Tags.Items.STORAGE_BLOCKS_IRON);
+    ICriterionInstance hasPearl = has(Tags.Items.ENDER_PEARLS);
+    ICriterionInstance hasIronBars = has(Items.IRON_BARS);
+    ShapedRecipeBuilder.shaped(CONTROLLER.get())
+        .pattern("IGI").pattern("GBG").pattern("IGI")
+        .define('I', Tags.Items.INGOTS_IRON)
+        .define('G', Tags.Items.INGOTS_GOLD)
+        .define('B', Tags.Items.STORAGE_BLOCKS_IRON)
+        .unlockedBy("has_glass", has(Tags.Items.GLASS))
+        .unlockedBy("has_iron_block", hasIronBlock)
+        .save(consumer);
+    ShapedRecipeBuilder.shaped(REMOTE_MARKER.get())
+        .pattern("IPI").pattern("PBP").pattern("IPI")
+        .define('I', Items.IRON_BARS)
+        .define('P', Tags.Items.ENDER_PEARLS)
+        .define('B', Tags.Items.STORAGE_BLOCKS_IRON)
+        .unlockedBy("has_iron_bars", hasIronBars)
+        .unlockedBy("has_pearl", hasPearl)
+        .unlockedBy("has_iron_block", hasIronBlock)
+        .group(REMOTE_MARKER.getId().toString())
+        .save(consumer);
+    ShapelessRecipeBuilder.shapeless(REMOTE_MARKER.get())
+        .requires(AAItems.REMOTE_POS.get())
+        .unlockedBy("has_pos_marker", has(AAItems.REMOTE_POS.get()))
+        .group(REMOTE_MARKER.getId().toString())
+        .save(consumer, new ResourceLocation(AdvancedAutocrafting.MODID, REMOTE_MARKER.getId().getPath() + "_from_marker"));
+    ShapedRecipeBuilder.shaped(REMOTE_MASTER.get())
+        .pattern("PGP").pattern("GBG").pattern("PGP")
+        .define('P', Tags.Items.ENDER_PEARLS)
+        .define('G', Tags.Items.INGOTS_GOLD)
+        .define('B', Tags.Items.STORAGE_BLOCKS_IRON)
+        .unlockedBy("has_pearl", hasPearl)
+        .unlockedBy("has_iron_block", hasIronBlock)
+        .save(consumer);
+    ShapedRecipeBuilder.shaped(WIRE.get(), 16)
+        .pattern(" I ").pattern("IBI").pattern(" I ")
+        .define('I', Items.IRON_BARS)
+        .define('B', Tags.Items.STORAGE_BLOCKS_IRON)
+        .unlockedBy("has_iron_bars", hasIronBars)
+        .unlockedBy("has_iron_block", hasIronBlock)
+        .save(consumer);
+    ShapedRecipeBuilder.shaped(AAItems.MULTITOOL.get())
+        .pattern("IR ").pattern("RIR").pattern(" RI")
+        .define('I', Tags.Items.INGOTS_IRON)
+        .define('R', Tags.Items.DYES_RED)
+        .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
+        .unlockedBy("has_red_dye", has(Tags.Items.DYES_RED))
+        .save(consumer);
   }
 }

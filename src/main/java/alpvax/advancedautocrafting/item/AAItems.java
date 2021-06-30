@@ -18,7 +18,7 @@ public class AAItems {
     /*
      * Only on Client
      */
-    public ItemStack createIcon() {
+    public ItemStack makeIcon() {
       return new ItemStack(AABlocks.CONTROLLER.get());
     }
   });
@@ -29,6 +29,6 @@ public class AAItems {
       new Item.Properties()
   ));
   public static final RegistryObject<MultitoolItem> MULTITOOL = ITEMS.register("multitool", () -> new MultitoolItem(
-      new Item.Properties().group(ITEM_GROUP)
+      new Item.Properties().tab(ITEM_GROUP)
   ));
 }

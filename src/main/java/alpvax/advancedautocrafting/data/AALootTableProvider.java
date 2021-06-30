@@ -17,6 +17,7 @@ import net.minecraft.loot.ValidationTracker;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -29,6 +30,7 @@ public class AALootTableProvider extends LootTableProvider {
   public AALootTableProvider(DataGenerator generator) {
     super(generator);
   }
+  @Nonnull
   @Override
   protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> getTables() {
     return ImmutableList.of(
@@ -37,7 +39,7 @@ public class AALootTableProvider extends LootTableProvider {
   }
 
   @Override
-  protected void validate(Map<ResourceLocation, LootTable> map, ValidationTracker validationtracker) {
+  protected void validate(@Nonnull Map<ResourceLocation, LootTable> map, @Nonnull ValidationTracker validationtracker) {
     // Nothing for now
   }
 
@@ -45,25 +47,26 @@ public class AALootTableProvider extends LootTableProvider {
 
     @Override
     protected void addTables() {
-      dropsSelf(AABlocks.CONTROLLER);
-      dropsSelf(AABlocks.REMOTE_MASTER);
-      registerLootTable(AABlocks.REMOTE_MARKER.get(),
+      dropSelf(AABlocks.CONTROLLER);
+      dropSelf(AABlocks.REMOTE_MASTER);
+      add(AABlocks.REMOTE_MARKER.get(),
           (b) -> withPosition(b, AAItems.REMOTE_POS)/*LootPool.builder().addEntry(
               ItemLootEntry.builder(AAItems.REMOTE_POS.get())
                   .acceptFunction(BlockPosLootFunction.builder())
           )*/
       );
-      dropsSelf(AABlocks.WIRE);
+      dropSelf(AABlocks.WIRE);
     }
 
-    private void dropsSelf(Supplier<? extends Block> block) {
-      registerDropSelfLootTable(block.get());
+    private void dropSelf(Supplier<? extends Block> block) {
+      dropSelf(block.get());
     }
 
     private LootTable.Builder withPosition(Block block, Supplier<? extends IItemProvider> item) {
-      return LootTable.builder().addLootPool(LootPool.builder().addEntry(ItemLootEntry.builder(item.get()).acceptFunction(BlockPosLootFunction.builder())));
+      return LootTable.lootTable().withPool(LootPool.lootPool().add(ItemLootEntry.lootTableItem(item.get()).apply(BlockPosLootFunction.builder())));
     }
 
+    @Nonnull
     @Override
     protected Iterable<Block> getKnownBlocks() {
       return AABlocks.BLOCKS.getEntries().stream().map(Supplier::get).collect(Collectors.toList());

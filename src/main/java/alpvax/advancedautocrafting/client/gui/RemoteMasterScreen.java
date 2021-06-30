@@ -16,30 +16,31 @@ public class RemoteMasterScreen extends ContainerScreen<RemoteMasterContainer> {
 
   public RemoteMasterScreen(final RemoteMasterContainer container, final PlayerInventory inventory, final ITextComponent title) {
     super(container, inventory, title);
-    this.ySize = 114 + 3 * 18;
+    this.imageHeight = 114 + 3 * 18;
   }
 
   @Override
   public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
     renderBackground(matrixStack);
     super.render(matrixStack, mouseX, mouseY, partialTicks);
-    renderHoveredTooltip(matrixStack, mouseX, mouseY);
+    renderTooltip(matrixStack, mouseX, mouseY);
   }
 
   @Override
-  protected void drawGuiContainerForegroundLayer(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY) {
-    font.func_238422_b_(matrixStack, title.func_241878_f(), (float)titleX, (float)titleY, 4210752);
-    font.func_238422_b_(matrixStack, this.playerInventory.getDisplayName().func_241878_f(), (float)playerInventoryTitleX, (float)playerInventoryTitleY, 4210752);
+  protected void renderLabels(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY) {
+    font.draw(matrixStack, title, (float)titleLabelX, (float)titleLabelY, 4210752);
+    font.draw(matrixStack, this.inventory.getDisplayName(), (float)inventoryLabelX, (float)inventoryLabelY, 4210752);
   }
 
   @Override
-  protected void drawGuiContainerBackgroundLayer(@Nonnull MatrixStack matrixStack, float p_230450_2_, int p_230450_3_, int p_230450_4_) {
+  protected void renderBg(@Nonnull MatrixStack matrixStack, float p_230450_2_, int p_230450_3_, int p_230450_4_) {
+    //noinspection deprecation
     RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-    getMinecraft().getTextureManager().bindTexture(BACKGROUND_TEXTURE);
-    int i = this.guiLeft;
-    int j = this.guiTop;
-    blit(matrixStack, i, j, 0, 0, this.xSize, 3 * 18 + 17);
-    blit(matrixStack, i, j + 3 * 18 + 17, 0, 126, this.xSize, 96);
+    getMinecraft().getTextureManager().bind(BACKGROUND_TEXTURE);
+    int i = getGuiLeft();
+    int j = getGuiTop();
+    blit(matrixStack, i, j, 0, 0, imageWidth, 3 * 18 + 17);
+    blit(matrixStack, i, j + 3 * 18 + 17, 0, 126, imageWidth, 96);
   }
   /*@Override
   protected void drawGuiContainerBackgroundLayer(final float partialTicks, final int mouseX, final int mouseY) {

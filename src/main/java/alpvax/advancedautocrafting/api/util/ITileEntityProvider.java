@@ -18,19 +18,19 @@ public interface ITileEntityProvider<W extends IBlockReader> {
   @Nonnull BlockPos getPos();
 
   /**
-   * Convenience redirect to {@link IBlockReader#getTileEntity(BlockPos)}.
+   * Convenience redirect to {@link IBlockReader#getBlockEntity(BlockPos)}.
    * Use if you do not care what type the TE is (or you intend to cast it yourself).
    */
   @Nullable
-  default TileEntity getTileEntity() {
-    return getWorld().getTileEntity(getPos());
+  default TileEntity getBlockEntity() {
+    return getWorld().getBlockEntity(getPos());
   }
   /**
-   * Will return the TileEntity returned by {@link IBlockReader#getTileEntity(BlockPos)}, but only if it matches the provided type.
+   * Will return the TileEntity returned by {@link IBlockReader#getBlockEntity(BlockPos)}, but only if it matches the provided type.
    */
   @Nullable
-  default <T extends TileEntity> T getTileEntity(TileEntityType<T> type) {
-    return type.getIfExists(getWorld(), getPos());
+  default <T extends TileEntity> T getBlockEntity(TileEntityType<T> type) {
+    return type.getBlockEntity(getWorld(), getPos());
   }
 
   /**
@@ -40,12 +40,12 @@ public interface ITileEntityProvider<W extends IBlockReader> {
    */
   @Nonnull
   default <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-    TileEntity t = getTileEntity();
+    TileEntity t = getBlockEntity();
     return t != null ? t.getCapability(cap, side) : LazyOptional.empty();
   }
 
   static ITileEntityProvider<World> from(IWorldPosCallable callable) {
-    return callable.apply((w, p) ->
+    return callable.evaluate((w, p) ->
         w == null || p != null ? null : new ITileEntityProvider<World>() {
           @Nonnull
           @Override

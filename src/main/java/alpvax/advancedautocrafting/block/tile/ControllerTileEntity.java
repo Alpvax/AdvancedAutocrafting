@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ControllerTileEntity extends TileEntity  implements INamedContainerProvider {
-  private INetworkNode network = new SimpleNetworkNode(this.pos);
+  private INetworkNode network = new SimpleNetworkNode(this.worldPosition);
   private LazyOptional<INetworkNode> networkCapability = LazyOptional.of(() -> network);
   public ControllerTileEntity() {
     super(AABlocks.TileTypes.CONTROLLER.get());
@@ -28,7 +28,7 @@ public class ControllerTileEntity extends TileEntity  implements INamedContainer
   @Nonnull
   @Override
   public ITextComponent getDisplayName() {
-    return AABlocks.CONTROLLER.get().getTranslatedName();
+    return AABlocks.CONTROLLER.get().getName();
   }
 
   @Nullable

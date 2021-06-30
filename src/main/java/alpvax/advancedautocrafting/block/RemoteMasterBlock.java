@@ -3,7 +3,6 @@ package alpvax.advancedautocrafting.block;
 import alpvax.advancedautocrafting.block.tile.RemoteMasterTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -15,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
@@ -37,40 +37,43 @@ public class RemoteMasterBlock extends Block {
   }
 
   @SuppressWarnings("deprecation")
-  public void onReplaced(BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, BlockState newState, boolean isMoving) {
+  @Override
+  public void onRemove(BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, BlockState newState, boolean isMoving) {
     if (state.getBlock() != newState.getBlock() && !isMoving) {
-      TileEntity tileentity = worldIn.getTileEntity(pos);
+      TileEntity tileentity = worldIn.getBlockEntity(pos);
       if (tileentity instanceof RemoteMasterTileEntity) {
         ((RemoteMasterTileEntity)tileentity).dropItems(worldIn, pos, newState);
-        worldIn.updateComparatorOutputLevel(pos, this);
+        worldIn.updateNeighbourForOutputSignal(pos, this);
       }
 
-      super.onReplaced(state, worldIn, pos, newState, isMoving);
+      //noinspection ConstantConditions
+      super.onRemove(state, worldIn, pos, newState, isMoving);
     }
   }
 
   @Nonnull
   @SuppressWarnings("deprecation")
   @Override
-  public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
-    if (worldIn.isRemote) {
-      return ActionResultType.SUCCESS;
-    } else {
-      final TileEntity tileEntity = worldIn.getTileEntity(pos);
+  public ActionResultType use(@Nonnull BlockState state, World worldIn, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult rayTraceResult) {
+    if (!worldIn.isClientSide) {
+      final TileEntity tileEntity = worldIn.getBlockEntity(pos);
       if (tileEntity instanceof RemoteMasterTileEntity && this.interactWith(worldIn, pos, player, hand))
-        NetworkHooks.openGui((ServerPlayerEntity)player, (RemoteMasterTileEntity)tileEntity, pos);
-      return ActionResultType.SUCCESS;
+        NetworkHooks.openGui((ServerPlayerEntity) player, (RemoteMasterTileEntity) tileEntity, pos);
     }
+    return ActionResultType.SUCCESS;
   }
 
   //TODO: Make this do something useful?
   private boolean interactWith(World worldIn, BlockPos pos, PlayerEntity player, Hand hand) {
-    RemoteMasterTileEntity tile = (RemoteMasterTileEntity)worldIn.getTileEntity(pos);
-    ItemStack stack = player.getHeldItem(hand);
+    RemoteMasterTileEntity tile = AABlocks.TileTypes.REMOTE_MASTER.get().getBlockEntity(worldIn, pos);
+    if (tile == null) {
+      return false;
+    }
+    ItemStack stack = player.getItemInHand(hand);
     if(!stack.isEmpty()) {
       if(stack.getItem() instanceof BlockItem) {
-        BlockState state = ((BlockItem) stack.getItem()).getBlock().getDefaultState();
-        tile.getRemotePositions().forEach((p) -> worldIn.setBlockState(p, state));
+        BlockState state = ((BlockItem) stack.getItem()).getBlock().defaultBlockState();
+        tile.getRemotePositions().forEach((p) -> worldIn.setBlock(p, state, Constants.BlockFlags.DEFAULT));
         return false;
       } else if(tile.inventory.isItemValid(0, stack)) {
         tile.addItem(stack.copy());
@@ -79,7 +82,7 @@ public class RemoteMasterBlock extends Block {
       }
       return true;
     } else {
-      tile.getRemotePositions().forEach((p) -> worldIn.setBlockState(p, Blocks.AIR.getDefaultState()));
+      tile.getRemotePositions().forEach((p) -> worldIn.removeBlock(p, false));
       return false;
     }
   }

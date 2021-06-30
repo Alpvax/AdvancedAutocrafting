@@ -8,6 +8,8 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 
+import javax.annotation.Nonnull;
+
 public class RemoteMasterContainer extends AbstractTileEntityContainer<RemoteMasterTileEntity> {
   public RemoteMasterContainer(final int id, final PlayerInventory playerInventory, final RemoteMasterTileEntity tile) {
     super(AAContainerTypes.REMOTE_MASTER.get(), id, tile);
@@ -31,24 +33,24 @@ public class RemoteMasterContainer extends AbstractTileEntityContainer<RemoteMas
   }
 
   @Override
-  public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+  public ItemStack quickMoveStack(@Nonnull PlayerEntity playerIn, int index) {
     ItemStack itemstack = ItemStack.EMPTY;
-    Slot slot = this.inventorySlots.get(index);
-    if (slot != null && slot.getHasStack()) {
-      ItemStack itemstack1 = slot.getStack();
+    Slot slot = this.slots.get(index);
+    if (slot != null && slot.hasItem()) {
+      ItemStack itemstack1 = slot.getItem();
       itemstack = itemstack1.copy();
       if (index < 27) {
-        if (!this.mergeItemStack(itemstack1, 27, this.inventorySlots.size(), true)) {
+        if (!this.moveItemStackTo(itemstack1, 27, this.slots.size(), true)) {
           return ItemStack.EMPTY;
         }
-      } else if (!this.mergeItemStack(itemstack1, 0, 27, false)) {
+      } else if (!this.moveItemStackTo(itemstack1, 0, 27, false)) {
         return ItemStack.EMPTY;
       }
 
       if (itemstack1.isEmpty()) {
-        slot.putStack(ItemStack.EMPTY);
+        slot.set(ItemStack.EMPTY);
       } else {
-        slot.onSlotChanged();
+        slot.setChanged();
       }
     }
 

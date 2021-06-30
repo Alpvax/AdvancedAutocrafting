@@ -33,23 +33,24 @@ public class RemotePositionItem extends Item {
   /*
    * Only on Client
    */
-  public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, @Nonnull List<ITextComponent> tooltip, @Nonnull ITooltipFlag flagIn) {
+  @Override
+  public void appendHoverText(@Nonnull ItemStack stack, @Nullable World worldIn, @Nonnull List<ITextComponent> tooltip, @Nonnull ITooltipFlag flagIn) {
     BlockPosLootFunction.WorldPosPair data = BlockPosLootFunction.read(stack);
     if (data.valid()) {
-      tooltip.add(new TranslationTextComponent(AATranslationKeys.ITEM_POS_LORE, data.getPos()).mergeStyle(TextFormatting.GRAY));
+      tooltip.add(new TranslationTextComponent(AATranslationKeys.ITEM_POS_LORE, data.getPos()).withStyle(TextFormatting.GRAY));
       if (flagIn.isAdvanced() || !data.matchesWorld(worldIn)) {
-        tooltip.add(new TranslationTextComponent(AATranslationKeys.ITEM_DIM_LORE, data.getWorldID()).mergeStyle(TextFormatting.GRAY));
+        tooltip.add(new TranslationTextComponent(AATranslationKeys.ITEM_DIM_LORE, data.getWorldID()).withStyle(TextFormatting.GRAY));
       }
     }
   }
 
   @Nonnull
   @Override
-  public ActionResult<ItemStack> onItemRightClick(@Nonnull World world, PlayerEntity player, @Nonnull Hand hand) {
-    ItemStack stack = player.getHeldItem(hand);
+  public ActionResult<ItemStack> use(@Nonnull World world, PlayerEntity player, @Nonnull Hand hand) {
+    ItemStack stack = player.getItemInHand(hand);
     BlockPosLootFunction.WorldPosPair data = BlockPosLootFunction.read(stack);
     if (data.matchesWorld(world)) {
-      if (world.isRemote) {
+      if (world.isClientSide()) {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
           BlockPos pos = data.getPos();
           if (BlockHighlightRender.manager.contains(pos)) {
@@ -58,15 +59,15 @@ public class RemotePositionItem extends Item {
             BlockHighlightRender.manager.add(pos, 69, 120, 18, 160);
           }
         });
-        return ActionResult.resultSuccess(stack);
+        return ActionResult.success(stack);
       }
     }
-    return ActionResult.resultPass(stack);
+    return ActionResult.pass(stack);
   }
 
   @Override
-  public boolean hasEffect(@Nonnull ItemStack stack) {
-    return DistExecutor.unsafeRunForDist(() -> () -> isRendering(stack), () -> () -> super.hasEffect(stack));
+  public boolean isFoil(@Nonnull ItemStack stack) {
+    return DistExecutor.unsafeRunForDist(() -> () -> isRendering(stack), () -> () -> super.isFoil(stack));
   }
 
   /*

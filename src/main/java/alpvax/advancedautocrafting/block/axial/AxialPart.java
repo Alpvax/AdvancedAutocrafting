@@ -74,10 +74,10 @@ public class AxialPart<T extends Comparable<T>> {
 
   private void makeShapes() {
     for (Direction d : ALL_DIRECTIONS) {
-      float[] x = getMinMax(d.getXOffset(), radius, start, end);
-      float[] y = getMinMax(d.getYOffset(), radius, start, end);
-      float[] z = getMinMax(d.getZOffset(), radius, start, end);
-      shapes.put(d, VoxelShapes.create(x[0], y[0], z[0], x[1], y[1], z[1]));
+      float[] x = getMinMax(d.getStepX(), radius, start, end);
+      float[] y = getMinMax(d.getStepY(), radius, start, end);
+      float[] z = getMinMax(d.getStepZ(), radius, start, end);
+      shapes.put(d, VoxelShapes.box(x[0], y[0], z[0], x[1], y[1], z[1]));
     }
   }
 

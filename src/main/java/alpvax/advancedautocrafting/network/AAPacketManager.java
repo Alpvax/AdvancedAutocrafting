@@ -40,7 +40,7 @@ public class AAPacketManager {
   {
     if (!(player instanceof FakePlayer))
     {
-      HANDLER.sendTo(msg, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+      HANDLER.sendTo(msg, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
   }
 }
