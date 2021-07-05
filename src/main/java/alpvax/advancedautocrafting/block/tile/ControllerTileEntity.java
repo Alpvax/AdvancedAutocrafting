@@ -38,10 +38,10 @@ public class ControllerTileEntity extends TileEntity  implements INamedContainer
   }
 
   @Override
-  public void setWorldAndPos(World p_226984_1_, BlockPos p_226984_2_) {
-    super.setWorldAndPos(p_226984_1_, p_226984_2_);
-    if (!world.isRemote) {
-      network = new SimpleNetworkNode(this.pos, world.func_234923_W_().func_240901_a_());
+  public void setLevelAndPosition(@Nonnull World level, @Nonnull BlockPos pos) {
+    super.setLevelAndPosition(level, pos);
+    if (!level.isClientSide) {
+      network = new SimpleNetworkNode(pos, level.dimension().location());
     }
   }
 
@@ -67,12 +67,12 @@ public class ControllerTileEntity extends TileEntity  implements INamedContainer
   @Nonnull
   @Override
   public ITextComponent getDisplayName() {
-    return AABlocks.CONTROLLER.get().func_235333_g_();//.getNameTextComponent();
+    return AABlocks.CONTROLLER.get().getName();
   }
 
   @Nullable
   @Override
-  public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player) {
+  public Container createMenu(int id, @Nonnull PlayerInventory playerInventory, @Nonnull PlayerEntity player) {
     return new ControllerContainer(id, playerInventory, this);
   }
 
@@ -87,28 +87,26 @@ public class ControllerTileEntity extends TileEntity  implements INamedContainer
   private final List<INetworkNode> nodes = new ArrayList<>();
   public  List<INetworkNode> updateAdjacentNetwork() {
     nodes.clear();
-    if (world != null && !world.isRemote) {
+    if (level != null && !level.isClientSide) {
       nodes.add(network);
       for (Direction d : Direction.values()) {
-        WorldUtil.getInstance().getBlockCapability(Capabilities.NODE_CAPABILITY, d.getOpposite(), world, pos.offset(d)).ifPresent(n -> {
+        WorldUtil.getInstance().getBlockCapability(Capabilities.NODE_CAPABILITY, d.getOpposite(), level, worldPosition.relative(d)).ifPresent(n -> {
           nodes.add(n);
           //Maximum depth of 2
           nodes.addAll(n.getChildNodes(d.getOpposite()));
         });
       }
     }
-    markDirty();
+    setChanged();
     return nodes;
   }
 
   public Stream<ContainerBlockHolder> getNodePositions() {
-    return nodes.stream().map(INetworkNode::getProxy).map(h -> {
+    return nodes.stream().map(INetworkNode::getProxy).map(h ->
       h.setBlockState(ServerLifecycleHooks.getCurrentServer()
-                          .getWorld(RegistryKey.func_240903_a_(Registry.field_239699_ae_, h.getWorldID()))
+                          .getLevel(RegistryKey.create(Registry.DIMENSION_REGISTRY, h.getWorldID()))
                           .getBlockState(h.getPos())
-      );
-      return h;
-    });
+      ));
   }
 
   public void writeExtended(PacketBuffer buf) {

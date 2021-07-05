@@ -8,9 +8,9 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ExistingFileHelper;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.MultiPartBlockStateBuilder;
+import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,17 +52,15 @@ public class AABlockstateProvider extends BlockStateProvider {
 
     MultiPartBlockStateBuilder builder = getMultipartBuilder(block).part().modelFile(blockModels.get("core")).addModel().end();
     block.forEachDirection((d, prop) -> {
-      int yrot = d.getAxis().isHorizontal() ? (((int) d.getHorizontalAngle()) + 180) % 360 : 0;
-      int xrot = d.getYOffset() == 0 ? 0 : d.getYOffset() > 0 ? 270 : 90;
-      shape.forEach(part -> {
-        builder.part()
-            .modelFile(blockModels.get(part.name))
-            .rotationY(yrot)
-            .rotationX(xrot)
-            .uvLock(true)
-            .addModel()
-            .condition(prop, part.getAllowedValues());
-      });
+      int yrot = d.getAxis().isHorizontal() ? (((int) d.toYRot()) + 180) % 360 : 0;
+      int xrot = d.getStepY() == 0 ? 0 : d.getStepY() > 0 ? 270 : 90;
+      shape.forEach(part -> builder.part()
+          .modelFile(blockModels.get(part.name))
+          .rotationY(yrot)
+          .rotationX(xrot)
+          .uvLock(true)
+          .addModel()
+          .condition(prop, part.getAllowedValues()));
     });
   }
 }

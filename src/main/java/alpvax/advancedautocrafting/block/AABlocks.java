@@ -24,20 +24,20 @@ public class AABlocks {
   public static final DeferredRegister<Item> ITEMS = AAItems.ITEMS;
 
   public static final RegistryObject<Block> CONTROLLER = register("controller", () -> new ControllerBlock(
-      Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(6.0F, 30F)
+      Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(6.0F, 30F)
   ));
   public static final RegistryObject<Block> REMOTE_MARKER = register("remote_marker", () -> new RemotePositionMarkerBlock(
-      Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(1.0F, 30F)
+      Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(1.0F, 30F)
   ));
   public static final RegistryObject<Block> REMOTE_MASTER = register("remote_master", () -> new RemoteMasterBlock(
-      Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(6.0F, 30F)
+      Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(6.0F, 30F)
   ));
   public static final RegistryObject<WireBlock> WIRE = register("wire", () -> new WireBlock(
-      Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(2.0F, 30F)
+      Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(2.0F, 30F)
   ));
 
   private static <T extends Block> RegistryObject<T> register(String name, Supplier<? extends T> block) {
-    return register(name, block, (b) -> () -> new BlockItem(b.get(), new Item.Properties().group(AAItems.ITEM_GROUP)));
+    return register(name, block, (b) -> () -> new BlockItem(b.get(), new Item.Properties().tab(AAItems.ITEM_GROUP)));
   }
 
   private static <T extends Block> RegistryObject<T> register(String name, Supplier<? extends T> block, Function<RegistryObject<T>, Supplier<? extends Item>> itemCreator) {

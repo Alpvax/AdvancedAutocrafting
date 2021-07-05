@@ -19,7 +19,7 @@ public class RemotePositionMarkerBlock extends Block {
 
   @Override
   public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
-    if (player.isSneaking() && world instanceof World) {
+    if (player.isCrouching() && world instanceof World) {
       ItemStack stack = new ItemStack(AAItems.REMOTE_POS.get());
       BlockPosLootFunction.write(stack.getOrCreateTag(), (World) world, pos);
     }

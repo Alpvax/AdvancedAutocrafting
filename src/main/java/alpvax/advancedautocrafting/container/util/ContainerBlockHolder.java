@@ -18,8 +18,8 @@ import java.util.function.Consumer;
 public class ContainerBlockHolder {
   private final BlockPos pos;
   private final ResourceLocation dimension;
-  private BlockState state = Blocks.AIR.getDefaultState();
-  private List<Consumer<ContainerBlockHolder>> listeners = new ArrayList<>();
+  private BlockState state = Blocks.AIR.defaultBlockState();
+  private final List<Consumer<ContainerBlockHolder>> listeners = new ArrayList<>();
 
   public ContainerBlockHolder(BlockPos pos, ResourceLocation dimension) {
     this.pos = pos;
@@ -56,7 +56,7 @@ public class ContainerBlockHolder {
   public boolean isClientWorld() {
     if (FMLEnvironment.dist == Dist.CLIENT) {
       Minecraft mc = Minecraft.getInstance();
-      return mc.world != null && mc.world.func_234923_W_().func_240901_a_().equals(getWorldID());
+      return mc.level != null && mc.level.dimension().location().equals(getWorldID());
     }
     return false;
   }
@@ -66,13 +66,13 @@ public class ContainerBlockHolder {
         buf.readBlockPos(),
         buf.readResourceLocation()
     );
-    h.setBlockState(Block.getStateById(buf.readVarInt()));
+    h.setBlockState(Block.stateById(buf.readVarInt()));
     return h;
   }
 
   public static void writeTo(ContainerBlockHolder instance, PacketBuffer buf) {
     buf.writeBlockPos(instance.getPos());
     buf.writeResourceLocation(instance.getWorldID());
-    buf.writeVarInt(Block.getStateId(instance.state));
+    buf.writeVarInt(Block.getId(instance.state));
   }
 }

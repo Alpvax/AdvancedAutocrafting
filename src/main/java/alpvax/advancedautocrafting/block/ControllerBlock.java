@@ -48,10 +48,10 @@ public class ControllerBlock extends Block {
   @SuppressWarnings("deprecation")
   @Nonnull
   @Override
-  public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
-    final TileEntity tileEntity = worldIn.getTileEntity(pos);
+  public ActionResultType use(@Nonnull BlockState state, World worldIn, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult rayTraceResult) {
+    final TileEntity tileEntity = worldIn.getBlockEntity(pos);
     if (tileEntity instanceof ControllerTileEntity) {
-      if (!worldIn.isRemote) {
+      if (!worldIn.isClientSide) {
         NetworkHooks.openGui((ServerPlayerEntity) player, (ControllerTileEntity) tileEntity, (buf) -> {
           buf.writeBlockPos(pos);
           ((ControllerTileEntity) tileEntity).writeExtended(buf);//TODO?
@@ -59,13 +59,13 @@ public class ControllerBlock extends Block {
       }
       return ActionResultType.SUCCESS;
     }
-    return super.onBlockActivated(state, worldIn, pos, player, hand, rayTraceResult);
+    return super.use(state, worldIn, pos, player, hand, rayTraceResult);
   }
 
   @SuppressWarnings("deprecation")
   @Override
-  public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+  public void neighborChanged(@Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull Block blockIn, @Nonnull BlockPos fromPos, boolean isMoving) {
     super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
-    ((ControllerTileEntity) worldIn.getTileEntity(pos)).updateAdjacentNetwork();
+    ((ControllerTileEntity) worldIn.getBlockEntity(pos)).updateAdjacentNetwork();
   }
 }

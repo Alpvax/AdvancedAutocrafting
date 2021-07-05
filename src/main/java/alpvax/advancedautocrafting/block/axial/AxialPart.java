@@ -8,8 +8,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 
 import javax.annotation.Nullable;
@@ -76,10 +74,10 @@ public class AxialPart<T extends Comparable<T>> {
 
   private void makeShapes() {
     for (Direction d : ALL_DIRECTIONS) {
-      float[] x = getMinMax(d.getXOffset(), radius, start, end);
-      float[] y = getMinMax(d.getYOffset(), radius, start, end);
-      float[] z = getMinMax(d.getZOffset(), radius, start, end);
-      shapes.put(d, VoxelShapes.create(x[0], y[0], z[0], x[1], y[1], z[1]));
+      float[] x = getMinMax(d.getStepX(), radius, start, end);
+      float[] y = getMinMax(d.getStepY(), radius, start, end);
+      float[] z = getMinMax(d.getStepZ(), radius, start, end);
+      shapes.put(d, VoxelShapes.box(x[0], y[0], z[0], x[1], y[1], z[1]));
     }
   }
 
@@ -88,7 +86,9 @@ public class AxialPart<T extends Comparable<T>> {
    * @param modelBuilder generally `models().getBuilder("model_name")`
    * @return an ElementBuilder which can be further customised in the BlockStateProvider
    */
-  @OnlyIn(Dist.CLIENT)
+  /*
+   * Only on Client
+   */
   public BlockModelBuilder.ElementBuilder makeModelElement(BlockModelBuilder modelBuilder) {
     float r = radius * 16;
     BlockModelBuilder.ElementBuilder builder = modelBuilder

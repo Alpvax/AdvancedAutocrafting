@@ -39,7 +39,7 @@ public class BlockPosLootFunction extends LootFunction {
   }
   public static void write(CompoundNBT nbt, World world, BlockPos pos) {
     CompoundNBT tag = new CompoundNBT();
-    tag.putString("dimension", world.func_234923_W_().func_240901_a_().toString());
+    tag.putString("dimension", world.dimension().location().toString());
     tag.put("position", NBTUtil.writeBlockPos(pos));
     nbt.put(NBT_KEY, tag);
   }
@@ -51,29 +51,29 @@ public class BlockPosLootFunction extends LootFunction {
   private static LootFunctionType TYPE;
   public static void register() {
     TYPE = Registry.register(
-        Registry.field_239694_aZ_,
+        Registry.LOOT_FUNCTION_TYPE,
         new ResourceLocation(AdvancedAutocrafting.MODID, "blockpos"),
         new LootFunctionType(new BlockPosLootFunction.Serializer())
     );
   }
 
   public static LootFunction.Builder<?> builder() {
-    return builder(BlockPosLootFunction::new);
+    return simpleBuilder(BlockPosLootFunction::new);
   }
 
   @Nonnull
   @Override
-  protected ItemStack doApply(ItemStack stack, LootContext context) {
-    Vector3d pos = context.get(LootParameters.field_237457_g_);
+  protected ItemStack run(@Nonnull ItemStack stack, LootContext context) {
+    Vector3d pos = context.getParamOrNull(LootParameters.ORIGIN);
     if (pos != null) {
-      write(stack.getOrCreateTag(), context.getWorld(), new BlockPos(pos));
+      write(stack.getOrCreateTag(), context.getLevel(), new BlockPos(pos));
     }
     return stack;
   }
 
   @Nonnull
   @Override
-  public LootFunctionType func_230425_b_() {
+  public LootFunctionType getType() {
     return TYPE;
   }
 
@@ -102,7 +102,7 @@ public class BlockPosLootFunction extends LootFunction {
       return valid() ? dimension : null;
     }
     public boolean matchesWorld(World world) {
-      return valid() && dimension.equals(world.func_234923_W_().func_240901_a_());
+      return valid() && dimension.equals(world.dimension().location());
     }
     private static final WorldPosPair NONE = new WorldPosPair(null, null) {
       @Override public boolean valid() { return false; }

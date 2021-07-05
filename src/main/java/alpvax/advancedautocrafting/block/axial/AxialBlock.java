@@ -36,14 +36,14 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
   public AxialBlock(Properties properties, AxialBlockShape<T> shape) {
     super(properties);
     this.shape = shape;
-    BlockState state = getDefaultState();
+    BlockState state = getStateDefinition().any();
     for (Direction d : ALL_DIRECTIONS) {
       Property<T> prop = directionToPropertyMap.get(d);
       if (prop != null) {
-        state = state.with(prop, getDefaultPropertyValue(d));
+        state = state.setValue(prop, getDefaultPropertyValue(d));
       }
     }
-    setDefaultState(state);
+    registerDefaultState(state);
   }
 
   public void forEachDirection(BiConsumer<Direction, Property<T>> consumer) {
@@ -56,11 +56,11 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
   }
   @Nonnull
   public Optional<T> getConnection(BlockState state, Direction d) {
-    return getConnectionProp(d).map(prop -> state.func_235901_b_/*has*/(prop) ? state.get(prop) : null);
+    return getConnectionProp(d).map(prop -> state.hasProperty(prop) ? state.getValue(prop) : null);
   }
 
   @Override
-  protected void fillStateContainer(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
+  protected void createBlockStateDefinition(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
     directionToPropertyMap = Util.make(Maps.newEnumMap(Direction.class), (map) -> {
       for (Direction d : ALL_DIRECTIONS) {
         Property<T> prop = buildPropertyForDirection(d);
@@ -89,32 +89,32 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
     if(context instanceof EntitySelectionContext) {
       Entity e = context.getEntity();
       if (e != null) {
-        if (context.hasItem(AAItems.MULTITOOL.get())
-                || (e instanceof LivingEntity && ((LivingEntity)e).getActiveItemStack().getCapability(Capabilities.MULTITOOL_CAPABILITY).isPresent())
+        if (context.isHoldingItem(AAItems.MULTITOOL.get())
+                || (e instanceof LivingEntity && ((LivingEntity)e).getUseItem().getCapability(Capabilities.MULTITOOL_CAPABILITY).isPresent())
         ) {
-          Vector3d start = new Vector3d(e.prevPosX, e.prevPosY + e.getEyeHeight(), e.prevPosZ);
-          Vector3d end = start.add(e.getLook(0).scale(ForgeMod.REACH_DISTANCE.get().clampValue(Double.MAX_VALUE)));
+          Vector3d start = new Vector3d(e.xOld, e.yOld + e.getEyeHeight(), e.zOld);
+          Vector3d end = start.add(e.getViewVector(0).scale(ForgeMod.REACH_DISTANCE.get().sanitizeValue(Double.MAX_VALUE)));
           return getPartialBlockHighlight(state, rayTracePart(state, pos, start, end));
         }
       }
     }
     Map<Direction, T> values = Maps.newEnumMap(Direction.class);
-    directionToPropertyMap.forEach((d, prop) -> values.put(d, state.get(prop)));
+    directionToPropertyMap.forEach((d, prop) -> values.put(d, state.getValue(prop)));
     return shape.getCombinedShape(values);
   }
 
   public IAxialPartInstance<T> rayTracePart(BlockState state, BlockPos pos, Vector3d start, Vector3d end) {
     Direction dir = null;
     AxialPart<T> part = null;
-    BlockRayTraceResult ray = shape.getCoreShape().rayTrace(start, end, pos);
-    double dSquared = ray == null ? Double.MAX_VALUE : ray.getHitVec().squareDistanceTo(start);
+    BlockRayTraceResult ray = shape.getCoreShape().clip(start, end, pos);
+    double dSquared = ray == null ? Double.MAX_VALUE : ray.getLocation().distanceToSqr(start);
     for (Direction d : ALL_DIRECTIONS) {
       Optional<Property<T>> prop = getConnectionProp(d);
       if (prop.isPresent()) {
-        for (AxialPart<T> p : shape.validParts(state.get(prop.get())).collect(Collectors.toList())) {
-          ray = p.getShape(d).rayTrace(start, end, pos);
+        for (AxialPart<T> p : shape.validParts(state.getValue(prop.get())).collect(Collectors.toList())) {
+          ray = p.getShape(d).clip(start, end, pos);
           if (ray != null) {
-            double d2 = ray.getHitVec().squareDistanceTo(start);
+            double d2 = ray.getLocation().distanceToSqr(start);
             if (d2 < dSquared) {
               dSquared = d2;
               dir = d;

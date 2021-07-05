@@ -20,7 +20,7 @@ public class ControllerContainer extends AbstractTileEntityContainer.Extended<Co
 
   private void updateEndpoints() {
     ControllerTileEntity tile = getTileEntity();
-    if (!tile.getWorld().isRemote) {
+    if (!tile.getLevel().isClientSide) {
       endpoints.clear();
       tile.getNodePositions().forEach(endpoints::put);/*p ->
           endpoints.getOrCreate(p.getWorld().func_234923_W_().func_240901_a_(), p.getBlockPos()).setBlockState(p.getBlockState())

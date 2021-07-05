@@ -38,7 +38,7 @@ public interface IAxialPartInstance<T extends Comparable<T>> {
       this.radius = radius;
       float min = 0.5F - radius;
       float max = 0.5F + radius;
-      shape = VoxelShapes.create(min, min, min, max, max, max);
+      shape = VoxelShapes.box(min, min, min, max, max, max);
     }
 
     public static <T extends Comparable<T>> IAxialPartInstance<T> from(AxialBlockShape<T> blockShape) {

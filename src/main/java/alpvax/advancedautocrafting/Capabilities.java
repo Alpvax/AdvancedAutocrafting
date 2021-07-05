@@ -32,7 +32,7 @@ public class Capabilities {
       {
 
       }
-    }, () -> new SimpleNetworkNode(BlockPos.ZERO, DimensionType.field_242710_a));
+    }, () -> new SimpleNetworkNode(BlockPos.ZERO, DimensionType.OVERWORLD_LOCATION.location()));
     CapabilityManager.INSTANCE.register(IMultitool.class, new Capability.IStorage<IMultitool>()
     {
       @Override

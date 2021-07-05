@@ -20,12 +20,12 @@ public class WorldUtil {
 
   /**
    * Retrieve a TileEntity of type T from the world.
-   * Wrapper around {@linkplain IBlockReader#getTileEntity}.
+   * Wrapper around {@linkplain IBlockReader#getBlockEntity}.
    * Uses unchecked class cast, so may throw a ClassCastException.
    */
   @SuppressWarnings("unchecked")
   public <T extends TileEntity> Optional<T> getTileEntity(IBlockReader world, BlockPos pos) {
-    return Optional.ofNullable((T) world.getTileEntity(pos));
+    return Optional.ofNullable((T) world.getBlockEntity(pos));
   }
 
   /**
@@ -33,14 +33,14 @@ public class WorldUtil {
    * Will return {@linkplain Optional#empty()} if tileEntity is the incorrect type.
    */
   public <T extends TileEntity> Optional<T> getTileEntity(IBlockReader world, BlockPos pos, TileEntityType<T> type) {
-    return Optional.ofNullable(type.func_226986_a_(world, pos));
+    return Optional.ofNullable(type.getBlockEntity(world, pos));
   }
   /**
    * Retrieve a TileEntity of type T from the world.
    * Will return {@linkplain Optional#empty()} if tileEntity is not a subclass of the given class.
    */
   public <T extends TileEntity> Optional<T> getTileEntity(IBlockReader world, BlockPos pos, Class<T> tileClass) {
-    return Optional.ofNullable(world.getTileEntity(pos)).map(t -> tileClass.isInstance(t) ? tileClass.cast(t) : null);
+    return Optional.ofNullable(world.getBlockEntity(pos)).map(t -> tileClass.isInstance(t) ? tileClass.cast(t) : null);
   }
 
   /**

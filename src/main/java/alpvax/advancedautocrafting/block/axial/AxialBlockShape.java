@@ -3,8 +3,6 @@ package alpvax.advancedautocrafting.block.axial;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.BlockModelProvider;
 import net.minecraftforge.client.model.generators.ModelFile;
@@ -30,7 +28,9 @@ public class AxialBlockShape<T extends Comparable<T>> {
 
   protected Map<String, AxialPart<T>> parts = new HashMap<>();
 
-  @OnlyIn(Dist.CLIENT)
+  /*
+   * Only on Client
+   */
   private Map<String, ModelFile> models;
 
   public VoxelShape getCombinedShape(Map<Direction, T> propertyValues) {
@@ -55,7 +55,9 @@ public class AxialBlockShape<T extends Comparable<T>> {
     );
   }
 
-  @OnlyIn(Dist.CLIENT)
+  /*
+   * Only on Client
+   */
   public ModelFile buildCorePart(
       BlockModelBuilder modelBuilder,
       BiConsumer<Direction, BlockModelBuilder.ElementBuilder.FaceBuilder> faceMapper
@@ -73,7 +75,9 @@ public class AxialBlockShape<T extends Comparable<T>> {
         .end();
   }
 
-  @OnlyIn(Dist.CLIENT)
+  /*
+   * Only on Client
+   */
   public Map<String, ModelFile> buildBlockModelParts(String path, BlockModelProvider modelProvider) {
     if(models == null) {
       models = new HashMap<>();
@@ -110,7 +114,7 @@ public class AxialBlockShape<T extends Comparable<T>> {
       //coreTexture = texture;
       double min = 0.5 - radius;
       double max = 0.5 + radius;
-      coreShape = VoxelShapes.create(min, min, min, max, max, max);
+      coreShape = VoxelShapes.box(min, min, min, max, max, max);
       return this;
     }
 

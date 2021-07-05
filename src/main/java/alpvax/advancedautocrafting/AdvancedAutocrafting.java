@@ -11,10 +11,10 @@ import alpvax.advancedautocrafting.data.AALootTableProvider;
 import alpvax.advancedautocrafting.data.AARecipeProvider;
 import alpvax.advancedautocrafting.data.BlockPosLootFunction;
 import alpvax.advancedautocrafting.item.AAItems;
+import alpvax.advancedautocrafting.network.AAPacketManager;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -59,16 +59,18 @@ public class AdvancedAutocrafting {
   }
 
   private void setup(final FMLCommonSetupEvent event) {
-    //PacketManager.init();
+    AAPacketManager.registerPackets();
 
     Capabilities.register();
   }
 
-  @OnlyIn(Dist.CLIENT)
+  /*
+   * Only on Client
+   */
   private void setupClient(final FMLClientSetupEvent event) {
     //ClientRegistry.bindTileEntitySpecialRenderer(DrinkMixerTileEntity.class, new DrinkMixerRenderer());
-    ScreenManager.registerFactory(AAContainerTypes.REMOTE_MASTER.get(), RemoteMasterScreen::new);
-    ScreenManager.registerFactory(AAContainerTypes.CONTROLLER.get(), ControllerScreen::new);
+    ScreenManager.register(AAContainerTypes.REMOTE_MASTER.get(), RemoteMasterScreen::new);
+    ScreenManager.register(AAContainerTypes.CONTROLLER.get(), ControllerScreen::new);
   }
 
   private void onServerStarting(final FMLServerStartingEvent event) {
@@ -81,7 +83,6 @@ public class AdvancedAutocrafting {
 
     if (event.includeClient()) {
       gen.addProvider(new AABlockstateProvider(gen, event.getExistingFileHelper()));
-      //TODO: Generate item models when supported by forge:
       gen.addProvider(new AAItemModelProvider(gen, event.getExistingFileHelper()));
       gen.addProvider(new AALangProvider(gen));
     }
