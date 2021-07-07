@@ -2,6 +2,7 @@ package alpvax.advancedautocrafting;
 
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
+import alpvax.advancedautocrafting.craftnetwork.chunk.INetworkSegmentProvider;
 import alpvax.advancedautocrafting.item.IMultitool;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -16,6 +17,9 @@ public class Capabilities {
 
   @CapabilityInject(IMultitool.class)
   public static Capability<IMultitool> MULTITOOL_CAPABILITY = null;
+
+  @CapabilityInject(INetworkSegmentProvider.class)
+  public static Capability<INetworkSegmentProvider> CHUNK_NET_CAPABILITY = null;
 
   public static void register() {
     CapabilityManager.INSTANCE.register(INetworkNode.class, new Capability.IStorage<INetworkNode>()
@@ -46,5 +50,19 @@ public class Capabilities {
 
       }
     }, () -> new IMultitool() {});
+    CapabilityManager.INSTANCE.register(INetworkSegmentProvider.class, new Capability.IStorage<INetworkSegmentProvider>()
+    {
+      @Override
+      public INBT writeNBT(Capability<INetworkSegmentProvider> capability, INetworkSegmentProvider instance, Direction side)
+      {
+        return null;
+      }
+
+      @Override
+      public void readNBT(Capability<INetworkSegmentProvider> capability, INetworkSegmentProvider instance, Direction side, INBT base)
+      {
+
+      }
+    }, () -> null);//ChunkNetwork::new);
   }
 }

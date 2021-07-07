@@ -7,6 +7,7 @@ import alpvax.advancedautocrafting.client.data.AALangProvider;
 import alpvax.advancedautocrafting.client.gui.ControllerScreen;
 import alpvax.advancedautocrafting.client.gui.RemoteMasterScreen;
 import alpvax.advancedautocrafting.container.AAContainerTypes;
+import alpvax.advancedautocrafting.craftnetwork.chunk.ChunkNetProvider;
 import alpvax.advancedautocrafting.data.AALootTableProvider;
 import alpvax.advancedautocrafting.data.AARecipeProvider;
 import alpvax.advancedautocrafting.data.BlockPosLootFunction;
@@ -14,8 +15,11 @@ import alpvax.advancedautocrafting.item.AAItems;
 import alpvax.advancedautocrafting.network.AAPacketManager;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -56,6 +60,8 @@ public class AdvancedAutocrafting {
     AABlocks.TileTypes.TILES.register(modBus);
     AAItems.ITEMS.register(modBus);
     AAContainerTypes.CONTAINER_TYPES.register(modBus);
+
+    MinecraftForge.EVENT_BUS.addGenericListener(Chunk.class, this::attachChunkCapability);
   }
 
   private void setup(final FMLCommonSetupEvent event) {
@@ -94,5 +100,9 @@ public class AdvancedAutocrafting {
       gen.addProvider(new AARecipeProvider(gen));
       gen.addProvider(new AALootTableProvider(gen));
     }
+  }
+
+  private void attachChunkCapability(AttachCapabilitiesEvent<Chunk> event) {
+    event.addCapability(new ResourceLocation(MODID, "chunk_network_capability"), new ChunkNetProvider(event.getObject()));
   }
 }
