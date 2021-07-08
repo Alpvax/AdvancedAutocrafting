@@ -7,7 +7,6 @@ import com.google.common.collect.Maps;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.chunk.Chunk;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,25 +25,25 @@ public class ChunkNetwork implements INetworkSegmentProvider {
     Direction.Plane.HORIZONTAL.stream().forEach(d -> sides.put(d, new ChunkBorder(d, pos)));
   }
 
-  protected Chunk getChunk() {
-    return null;
+  public void addNode(@Nonnull BlockPos blockPos, @Nullable INetworkNode node) {
+    updateSides(blockPos, true);
+    NetworkSegment.addNode(segments, blockPos, node);
   }
 
-  public void addNode(@Nonnull BlockPos blockPos, @Nullable INetworkNode node) {
+  private void updateSides(@Nonnull BlockPos blockPos, boolean existing) {
     Preconditions.checkArgument(new ChunkPos(blockPos).equals(pos), "Cannot add node @ %s to chunk %s (not the same chunk)", blockPos, pos);
     int x = blockPos.getX() & 15;
     int z = blockPos.getZ() & 15;
     if (x == 0) {
-      sides.get(Direction.WEST);//TODO: .setNode(node)
+      sides.get(Direction.WEST).setNode(blockPos, existing);
     } else if (x == 15) {
-      sides.get(Direction.EAST);//TODO: .setNode(node)
+      sides.get(Direction.EAST).setNode(blockPos, existing);
     }
     if (z == 0) {
-      sides.get(Direction.NORTH);//TODO: .setNode(node)
+      sides.get(Direction.NORTH).setNode(blockPos, existing);
     } else if (z == 15) {
-      sides.get(Direction.SOUTH);//TODO: .setNode(node)
+      sides.get(Direction.SOUTH).setNode(blockPos, existing);
     }
-    //TODO: Add node
   }
 
   @Override
@@ -60,6 +59,9 @@ public class ChunkNetwork implements INetworkSegmentProvider {
     return availableSegments();
   }
 
+  /**
+   * Edge of a chunk in the horizontal plane. (One for each cardinal dirction).
+   */
   private static class ChunkBorder {
     private final Direction side;
     private final int planePosition;
@@ -75,17 +77,28 @@ public class ChunkNetwork implements INetworkSegmentProvider {
       return planePosition == side.getAxis().choose(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    private BlockPos getInPlane(int axis1, int axis2) {
+    /**
+     * Convert 2d position into BlockPos
+     * @param column x-coordinate for North & South, z-coordinate for East & West
+     * @param height height of the blockpos
+     * @return a blockpos which is guaranteed to be in the plane
+     */
+    private BlockPos getInPlane(int column, int height) {
       switch (side.getAxis()) {
-        case X:
-          return new BlockPos(planePosition, axis1, axis2);
-        case Y:
-          return new BlockPos(axis1, planePosition, axis2);
-        case Z:
-          return new BlockPos(axis1, axis2, planePosition);
+        case X: // Plane YZ
+          return new BlockPos(planePosition, height, column);
+        /* Horizontal planes not supported
+        case Y: // Plane XZ
+          return new BlockPos(axis1, planePosition, axis2);*/
+        case Z: // Plane XY
+          return new BlockPos(column, height, planePosition);
         default:
           throw new NullPointerException(side.getAxis().getName());
       }
+    }
+
+    public boolean setNode(BlockPos pos, boolean existing) {
+      return (existing && nodePositions.add(pos)) || nodePositions.remove(pos);
     }
 
     /*public Optional<ChunkBorder> getBordering(BlockPos pos) {

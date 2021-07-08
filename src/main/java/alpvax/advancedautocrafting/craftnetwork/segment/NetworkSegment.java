@@ -2,18 +2,23 @@ package alpvax.advancedautocrafting.craftnetwork.segment;
 
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import com.google.common.base.Preconditions;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class NetworkSegment {
+  private static final Direction[] ALL_DIRECTIONS = Direction.values();
+
   private final Set<BlockPos> connectedNodes = new HashSet<>();
   private final Map<BlockPos, SegmentNode> nodes = new HashMap<>();
 
@@ -36,6 +41,10 @@ public class NetworkSegment {
 
   public boolean contains(@Nonnull BlockPos pos) {
     return connectedNodes.contains(pos);
+  }
+
+  public boolean isEmpty() {
+    return connectedNodes.isEmpty();
   }
 
   public void add(@Nonnull BlockPos pos, @Nullable INetworkNode node) {
@@ -82,10 +91,9 @@ public class NetworkSegment {
       result.put(pos, null);
     } else {
       dist ++;
-      //TODO: Optimise: Only check 6 surrounding positions instead of (up to) all nodes in segment.
-      Set<BlockPos> toProcess = connectedNodes.stream()
-            .filter(p -> pos.distManhattan(p) < 2)
-            .collect(Collectors.toSet());
+      Set<BlockPos> toProcess = surroundingPositions(pos)
+                                    .filter(connectedNodes::contains)
+                                    .collect(Collectors.toSet());
       while (toProcess.size() > 0) {
         final int distance = dist;
         toProcess = toProcess.stream().flatMap(p -> {
@@ -94,8 +102,8 @@ public class NetworkSegment {
             return null;
           } else {
             result.put(p, null);
-            //TODO: Optimise: ^^
-            return connectedNodes.stream().filter(p1 -> !result.containsKey(p1) && p.distManhattan(p1) < 2);
+            return surroundingPositions(p)
+                .filter(p1 -> !result.containsKey(p1) && connectedNodes.contains(p1));
           }
         }).collect(Collectors.toSet());
         dist ++;
@@ -116,7 +124,9 @@ public class NetworkSegment {
     Iterator<NetworkSegment> i = segments.iterator();
     while (i.hasNext()) {
       NetworkSegment seg = i.next();
-      if (seg.isAdjacent(pos)) {
+      if (seg.isEmpty()) {
+        i.remove();
+      } else if (seg.isAdjacent(pos)) {
         combine.add(seg);
         i.remove();
       }
@@ -135,5 +145,19 @@ public class NetworkSegment {
       mergedSegment.nodes.remove(pos); // Remove wire-only node from segment nodes
     }
     return segments;
+  }
+
+  /**
+   * MODIFIES segments IN PLACE!!!
+   * @param segments the segments to check for ajacency (should all be nearby, probably all in the same chunk)
+   * @return the segments parameter, for convenience
+   */
+  public static Set<NetworkSegment> reduce(Set<NetworkSegment> segments) {
+    segments.removeIf(NetworkSegment::isEmpty);
+    return segments;
+  }
+
+  private static Stream<BlockPos> surroundingPositions(@Nonnull BlockPos startPos) {
+    return Arrays.stream(ALL_DIRECTIONS).map(startPos::relative);
   }
 }

@@ -1,6 +1,7 @@
 package alpvax.advancedautocrafting.craftnetwork.chunk;
 
 import alpvax.advancedautocrafting.Capabilities;
+import alpvax.advancedautocrafting.craftnetwork.segment.NetworkSegment;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.world.chunk.Chunk;
@@ -12,6 +13,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Set;
 
 public class ChunkNetProvider implements ICapabilitySerializable<CompoundNBT> {
   private final ChunkNetwork network;
@@ -24,7 +26,7 @@ public class ChunkNetProvider implements ICapabilitySerializable<CompoundNBT> {
     network = new ChunkNetwork(chunk.getPos());
     internal = LazyOptional.of(() -> network);
     Direction.Plane.HORIZONTAL.stream()
-        .forEach(d -> sides.put(d, LazyOptional.of(() -> new INetworkSegmentProvider.Wrapped(network.segmentsForSide(d)))));
+        .forEach(side -> sides.put(side, LazyOptional.of(() -> new SidedAccessor(side))));
   }
 
   @Nonnull
@@ -41,5 +43,17 @@ public class ChunkNetProvider implements ICapabilitySerializable<CompoundNBT> {
   @Override
   public void deserializeNBT(CompoundNBT nbt) {
     //TODO: Implement serialisation
+  }
+
+  private class SidedAccessor implements INetworkSegmentProvider {
+    private Direction side;
+    private SidedAccessor(Direction side) {
+      this.side = side;
+    }
+
+    @Override
+    public Set<NetworkSegment> availableSegments() {
+      return network.segmentsForSide(side);
+    }
   }
 }
