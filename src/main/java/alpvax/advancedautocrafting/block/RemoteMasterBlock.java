@@ -1,71 +1,66 @@
 package alpvax.advancedautocrafting.block;
 
 import alpvax.advancedautocrafting.block.tile.RemoteMasterTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class RemoteMasterBlock extends Block {
+public class RemoteMasterBlock extends Block implements EntityBlock {
   public RemoteMasterBlock(Properties properties) {
     super(properties);
   }
 
-  @Override
-  public boolean hasTileEntity(BlockState state) {
-    return true;
-  }
-
   @Nullable
   @Override
-  public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-    return new RemoteMasterTileEntity();
+  public BlockEntity newBlockEntity(@Nonnull BlockPos pos, @Nonnull BlockState state) {
+    return new RemoteMasterTileEntity(pos, state);
   }
 
   @SuppressWarnings("deprecation")
   @Override
-  public void onRemove(BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, BlockState newState, boolean isMoving) {
+  public void onRemove(BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, BlockState newState, boolean isMoving) {
     if (state.getBlock() != newState.getBlock() && !isMoving) {
-      TileEntity tileentity = worldIn.getBlockEntity(pos);
-      if (tileentity instanceof RemoteMasterTileEntity) {
-        ((RemoteMasterTileEntity)tileentity).dropItems(worldIn, pos, newState);
-        worldIn.updateNeighbourForOutputSignal(pos, this);
-      }
+      level.getBlockEntity(pos, AABlocks.TileTypes.REMOTE_MASTER.get()).ifPresent(tile -> {
+        tile.dropItems(level, pos, newState);
+        level.updateNeighbourForOutputSignal(pos, this);
+      });
 
       //noinspection ConstantConditions
-      super.onRemove(state, worldIn, pos, newState, isMoving);
+      super.onRemove(state, level, pos, newState, isMoving);
     }
   }
 
   @Nonnull
   @SuppressWarnings("deprecation")
   @Override
-  public ActionResultType use(@Nonnull BlockState state, World worldIn, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult rayTraceResult) {
-    if (!worldIn.isClientSide) {
-      final TileEntity tileEntity = worldIn.getBlockEntity(pos);
-      if (tileEntity instanceof RemoteMasterTileEntity && this.interactWith(worldIn, pos, player, hand))
-        NetworkHooks.openGui((ServerPlayerEntity) player, (RemoteMasterTileEntity) tileEntity, pos);
+  public InteractionResult use(@Nonnull BlockState state, Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult rayTraceResult) {
+    if (!level.isClientSide) {
+      level.getBlockEntity(pos, AABlocks.TileTypes.REMOTE_MASTER.get()).ifPresent(tile -> {
+        if (this.interactWith(level, pos, player, hand))
+          NetworkHooks.openGui((ServerPlayer) player, tile, pos);
+      });
     }
-    return ActionResultType.SUCCESS;
+    return InteractionResult.SUCCESS;
   }
 
   //TODO: Make this do something useful?
-  private boolean interactWith(World worldIn, BlockPos pos, PlayerEntity player, Hand hand) {
-    RemoteMasterTileEntity tile = AABlocks.TileTypes.REMOTE_MASTER.get().getBlockEntity(worldIn, pos);
+  private boolean interactWith(Level level, BlockPos pos, Player player, InteractionHand hand) {
+    RemoteMasterTileEntity tile = AABlocks.TileTypes.REMOTE_MASTER.get().getBlockEntity(level, pos);
     if (tile == null) {
       return false;
     }
@@ -73,7 +68,7 @@ public class RemoteMasterBlock extends Block {
     if(!stack.isEmpty()) {
       if(stack.getItem() instanceof BlockItem) {
         BlockState state = ((BlockItem) stack.getItem()).getBlock().defaultBlockState();
-        tile.getRemotePositions().forEach((p) -> worldIn.setBlock(p, state, Constants.BlockFlags.DEFAULT));
+        tile.getRemotePositions().forEach((p) -> level.setBlock(p, state, Constants.BlockFlags.DEFAULT));
         return false;
       } else if(tile.inventory.isItemValid(0, stack)) {
         tile.addItem(stack.copy());
@@ -82,7 +77,7 @@ public class RemoteMasterBlock extends Block {
       }
       return true;
     } else {
-      tile.getRemotePositions().forEach((p) -> worldIn.removeBlock(p, false));
+      tile.getRemotePositions().forEach((p) -> level.removeBlock(p, false));
       return false;
     }
   }

@@ -6,21 +6,21 @@ import alpvax.advancedautocrafting.container.RemoteMasterContainer;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
 import alpvax.advancedautocrafting.data.BlockPosLootFunction;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.Containers;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.stream.Collectors;
 
-public class RemoteMasterTileEntity extends TileEntity implements INamedContainerProvider {
+public class RemoteMasterTileEntity extends BlockEntity implements MenuProvider {
   public ItemStackHandler inventory = new ItemStackHandler(27) {
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
@@ -51,8 +51,8 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
   private final LazyOptional<IItemHandler> items = LazyOptional.of(() -> inventory);
   private final LazyOptional<INetworkNode> networkCapability = LazyOptional.of(this::makeNetworkNode);
 
-  public RemoteMasterTileEntity() {
-    super(AABlocks.TileTypes.REMOTE_MASTER.get());
+  public RemoteMasterTileEntity(BlockPos pos, BlockState state) {
+    super(AABlocks.TileTypes.REMOTE_MASTER.get(), pos, state);
   }
 
   private INetworkNode makeNetworkNode() {
@@ -95,8 +95,8 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
                .collect(Collectors.toCollection(NonNullList::create));
   }
 
-  public void dropItems(World worldIn, BlockPos pos, BlockState newState) {
-    InventoryHelper.dropContents(worldIn, pos, getItems());
+  public void dropItems(Level level, BlockPos pos, BlockState newState) {
+    Containers.dropContents(level, pos, getItems());
   }
 
   public ItemStack addItem(ItemStack stack) {
@@ -110,14 +110,14 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
   }
 
   @Override
-  public void load(@Nonnull BlockState state, @Nonnull CompoundNBT compound) {
-    super.load(state, compound);
+  public void load(@Nonnull CompoundTag compound) {
+    super.load(compound);
     inventory.deserializeNBT(compound.getCompound("remoteItems"));
   }
 
   @Nonnull
   @Override
-  public CompoundNBT save(CompoundNBT compound) {
+  public CompoundTag save(CompoundTag compound) {
     compound.put("remoteItems", inventory.serializeNBT());
     return super.save(compound);
   }
@@ -140,13 +140,13 @@ public class RemoteMasterTileEntity extends TileEntity implements INamedContaine
 
   @Nonnull
   @Override
-  public ITextComponent getDisplayName() {
-    return new TranslationTextComponent(AABlocks.REMOTE_MASTER.get().getDescriptionId());
+  public Component getDisplayName() {
+    return new TranslatableComponent(AABlocks.REMOTE_MASTER.get().getDescriptionId());
   }
 
   @Nullable
   @Override
-  public Container createMenu(int id, @Nonnull PlayerInventory playerInventory, @Nonnull PlayerEntity player) {
+  public AbstractContainerMenu createMenu(int id, @Nonnull Inventory playerInventory, @Nonnull Player player) {
     return new RemoteMasterContainer(id, playerInventory, this);
   }
 

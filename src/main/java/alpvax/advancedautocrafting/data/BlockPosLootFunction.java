@@ -3,23 +3,24 @@ package alpvax.advancedautocrafting.data;
 import alpvax.advancedautocrafting.AdvancedAutocrafting;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootFunction;
-import net.minecraft.loot.LootFunctionType;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nonnull;
 
-public class BlockPosLootFunction extends LootFunction {
+public class BlockPosLootFunction extends LootItemConditionalFunction {
   private static final String NBT_KEY = AdvancedAutocrafting.MODID + ":position";
 
   @Nonnull
@@ -28,43 +29,43 @@ public class BlockPosLootFunction extends LootFunction {
   }
 
   @Nonnull
-  public static WorldPosPair read(CompoundNBT nbt) {
+  public static WorldPosPair read(CompoundTag nbt) {
     if (nbt != null) {
-      CompoundNBT tag = nbt.getCompound(NBT_KEY);
+      CompoundTag tag = nbt.getCompound(NBT_KEY);
       if (!tag.isEmpty()) {
-        return new WorldPosPair(new ResourceLocation(tag.getString("dimension")), NBTUtil.readBlockPos(tag.getCompound("position")));
+        return new WorldPosPair(new ResourceLocation(tag.getString("dimension")), NbtUtils.readBlockPos(tag.getCompound("position")));
       }
     }
     return WorldPosPair.NONE;
   }
-  public static void write(CompoundNBT nbt, World world, BlockPos pos) {
-    CompoundNBT tag = new CompoundNBT();
-    tag.putString("dimension", world.dimension().location().toString());
-    tag.put("position", NBTUtil.writeBlockPos(pos));
+  public static void write(CompoundTag nbt, Level level, BlockPos pos) {
+    CompoundTag tag = new CompoundTag();
+    tag.putString("dimension", level.dimension().location().toString());
+    tag.put("position", NbtUtils.writeBlockPos(pos));
     nbt.put(NBT_KEY, tag);
   }
 
-  protected BlockPosLootFunction(ILootCondition[] conditionsIn) {
+  protected BlockPosLootFunction(LootItemCondition[] conditionsIn) {
     super(conditionsIn);
   }
 
-  private static LootFunctionType TYPE;
+  private static LootItemFunctionType TYPE;
   public static void register() {
     TYPE = Registry.register(
         Registry.LOOT_FUNCTION_TYPE,
         new ResourceLocation(AdvancedAutocrafting.MODID, "blockpos"),
-        new LootFunctionType(new BlockPosLootFunction.Serializer())
+        new LootItemFunctionType(new Serializer())
     );
   }
 
-  public static LootFunction.Builder<?> builder() {
+  public static LootItemFunction.Builder builder() {
     return simpleBuilder(BlockPosLootFunction::new);
   }
 
   @Nonnull
   @Override
   protected ItemStack run(@Nonnull ItemStack stack, LootContext context) {
-    Vector3d pos = context.getParamOrNull(LootParameters.ORIGIN);
+    Vec3 pos = context.getParamOrNull(LootContextParams.ORIGIN);
     if (pos != null) {
       write(stack.getOrCreateTag(), context.getLevel(), new BlockPos(pos));
     }
@@ -73,14 +74,14 @@ public class BlockPosLootFunction extends LootFunction {
 
   @Nonnull
   @Override
-  public LootFunctionType getType() {
+  public LootItemFunctionType getType() {
     return TYPE;
   }
 
-  public static class Serializer extends LootFunction.Serializer<BlockPosLootFunction> {
+  public static class Serializer extends LootItemConditionalFunction.Serializer<BlockPosLootFunction> {
     @Nonnull
     @Override
-    public BlockPosLootFunction deserialize(@Nonnull JsonObject object, @Nonnull JsonDeserializationContext deserializationContext, @Nonnull ILootCondition[] conditionsIn) {
+    public BlockPosLootFunction deserialize(@Nonnull JsonObject object, @Nonnull JsonDeserializationContext deserializationContext, @Nonnull LootItemCondition[] conditionsIn) {
       return new BlockPosLootFunction(conditionsIn);
     }
   }
@@ -101,8 +102,8 @@ public class BlockPosLootFunction extends LootFunction {
     public ResourceLocation getWorldID() {
       return valid() ? dimension : null;
     }
-    public boolean matchesWorld(World world) {
-      return valid() && dimension.equals(world.dimension().location());
+    public boolean matchesLevel(Level level) {
+      return valid() && dimension.equals(level.dimension().location());
     }
     private static final WorldPosPair NONE = new WorldPosPair(null, null) {
       @Override public boolean valid() { return false; }

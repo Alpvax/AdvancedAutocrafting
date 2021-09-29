@@ -4,28 +4,27 @@ import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.block.axial.AxialBlock;
 import alpvax.advancedautocrafting.block.axial.AxialBlockShape;
 import alpvax.advancedautocrafting.block.axial.AxialPart;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.IWaterLoggable;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.Property;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.util.Constants;
 
@@ -33,10 +32,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Locale;
 
-import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements IWaterLoggable {
-  public enum ConnectionState implements IStringSerializable {
+public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements SimpleWaterloggedBlock {
+  public enum ConnectionState implements StringRepresentable {
     NONE,
     CONNECTION,
     INTERFACE,
@@ -101,7 +100,7 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
   }
 
   @Override
-  protected void createBlockStateDefinition(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
+  protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
     super.createBlockStateDefinition(builder);
     builder.add(WATERLOGGED);
   }
@@ -119,7 +118,7 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
   }
 
   @Override
-  public BlockState getStateForPlacement(BlockItemUseContext context) {
+  public BlockState getStateForPlacement(BlockPlaceContext context) {
     return this.makeConnections(context.getLevel(), context.getClickedPos());
   }
 
@@ -127,11 +126,11 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
     return getConnectionProp(dir).map(prop -> bState.setValue(prop, cState)).orElse(bState);
   }
 
-  public BlockState makeConnections(IBlockReader world, BlockPos thisPos) {
+  public BlockState makeConnections(LevelReader level, BlockPos thisPos) {
     BlockState state = defaultBlockState();
     for(Direction d : ALL_DIRECTIONS) {
       BlockPos pos = thisPos.relative(d);
-      state = withConnectionState(state, d, makeConnection(world, thisPos, d, pos));
+      state = withConnectionState(state, d, makeConnection(level, thisPos, d, pos));
     }
     return state;
   }
@@ -139,12 +138,12 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
   /**
    * Do not call if state is DISABLED
    */
-  public ConnectionState makeConnection(IBlockReader world, BlockPos thisPos, Direction dir, BlockPos neighborPos) {
-    TileEntity tile = world.getBlockEntity(neighborPos);
+  public ConnectionState makeConnection(LevelReader level, BlockPos thisPos, Direction dir, BlockPos neighborPos) {
+    BlockEntity tile = level.getBlockEntity(neighborPos);
     if(tile != null && tile.getCapability(Capabilities.NODE_CAPABILITY).isPresent()) {
       return ConnectionState.INTERFACE;
     }
-    BlockState neighbor = world.getBlockState(neighborPos);
+    BlockState neighbor = level.getBlockState(neighborPos);
     return getConnectionProp(dir.getOpposite())
                .filter(prop -> neighbor.hasProperty(prop) && neighbor.getValue(prop).isNotDisabled())
                .map(prop -> ConnectionState.CONNECTION).orElse(ConnectionState.NONE);
@@ -155,48 +154,48 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
 
   @SuppressWarnings("deprecation")
   @Override
-  public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+  public void neighborChanged(BlockState state, Level level, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
     BlockPos dPos = fromPos.subtract(pos);
     Direction d = Direction.fromNormal(dPos.getX(), dPos.getY(), dPos.getZ());
     getConnection(state, d).filter(ConnectionState::isNotDisabled).ifPresent(val ->
-        worldIn.setBlock(pos, withConnectionState(state, d, makeConnection(worldIn, pos, d, fromPos)), 2)
+        level.setBlock(pos, withConnectionState(state, d, makeConnection(level, pos, d, fromPos)), 2)
     );
-    super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
+    super.neighborChanged(state, level, pos, blockIn, fromPos, isMoving);
   }
 
-  private BlockState getToggledState(BlockState state, IWorldReader world, BlockPos pos, Direction d) {
+  private BlockState getToggledState(BlockState state, LevelReader level, BlockPos pos, Direction d) {
     return getConnection(state, d).map(val -> withConnectionState(state, d, val.isNotDisabled()
                                                  ? ConnectionState.DISABLED
-                                                 : makeConnection(world, pos, d, pos.relative(d)))
+                                                 : makeConnection(level, pos, d, pos.relative(d)))
     ).orElse(state);
   }
 
   @SuppressWarnings("deprecation")
   @Nonnull
   @Override
-  public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
+  public InteractionResult use(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult rayTraceResult) {
     ItemStack stack = player.getItemInHand(hand);
     if(!stack.isEmpty() && stack.getCapability(Capabilities.MULTITOOL_CAPABILITY).isPresent()) {
       // Multitool
-      if (!worldIn.isClientSide) {
+      if (!level.isClientSide) {
         if (player.isCrouching()) {
-          worldIn.removeBlock(pos, false);
+          level.removeBlock(pos, false);
           if (!player.isCreative()) {
-            popResource(worldIn, pos, new ItemStack(this));
+            popResource(level, pos, new ItemStack(this));
           }
         } else {
-          Vector3d start = new Vector3d(player.xOld, player.yOld + player.getEyeHeight(), player.zOld);
-          Vector3d end = start.add(player.getViewVector(0).scale(player.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue()));
+          Vec3 start = new Vec3(player.xOld, player.yOld + player.getEyeHeight(), player.zOld);
+          Vec3 end = start.add(player.getViewVector(0).scale(player.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue()));
           Direction dir = rayTracePart(state, pos, start, end).direction();
           if (dir == null) {
             dir = rayTraceResult.getDirection();
           }
-          worldIn.setBlock(pos, getToggledState(state, worldIn, pos, dir), Constants.BlockFlags.DEFAULT);
+          level.setBlock(pos, getToggledState(state, level, pos, dir), Constants.BlockFlags.DEFAULT);
         }
       }
-      return ActionResultType.SUCCESS;
+      return InteractionResult.SUCCESS;
     }
-    return super.use(state, worldIn, pos, player, hand, rayTraceResult);
+    return super.use(state, level, pos, player, hand, rayTraceResult);
   }
 
   @SuppressWarnings("deprecation")

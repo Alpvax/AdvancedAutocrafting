@@ -2,16 +2,16 @@ package alpvax.advancedautocrafting.container;
 
 
 import alpvax.advancedautocrafting.block.tile.RemoteMasterTileEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
 public class RemoteMasterContainer extends AbstractTileEntityContainer<RemoteMasterTileEntity> {
-  public RemoteMasterContainer(final int id, final PlayerInventory playerInventory, final RemoteMasterTileEntity tile) {
+  public RemoteMasterContainer(final int id, final Inventory playerInventory, final RemoteMasterTileEntity tile) {
     super(AAContainerTypes.REMOTE_MASTER.get(), id, tile);
 
     for(int j = 0; j < 3; ++j) {
@@ -33,7 +33,7 @@ public class RemoteMasterContainer extends AbstractTileEntityContainer<RemoteMas
   }
 
   @Override
-  public ItemStack quickMoveStack(@Nonnull PlayerEntity playerIn, int index) {
+  public ItemStack quickMoveStack(@Nonnull Player playerIn, int index) {
     ItemStack itemstack = ItemStack.EMPTY;
     Slot slot = this.slots.get(index);
     if (slot != null && slot.hasItem()) {

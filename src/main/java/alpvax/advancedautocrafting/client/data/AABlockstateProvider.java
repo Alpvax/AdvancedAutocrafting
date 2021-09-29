@@ -3,10 +3,9 @@ package alpvax.advancedautocrafting.client.data;
 import alpvax.advancedautocrafting.AdvancedAutocrafting;
 import alpvax.advancedautocrafting.block.axial.AxialBlock;
 import alpvax.advancedautocrafting.block.axial.AxialBlockShape;
-import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.MultiPartBlockStateBuilder;
@@ -20,8 +19,6 @@ import java.util.function.Supplier;
 import static alpvax.advancedautocrafting.block.AABlocks.*;
 
 public class AABlockstateProvider extends BlockStateProvider {
-  private static final Direction[] ALL_DIRECTIONS = Direction.values();
-
   public AABlockstateProvider(DataGenerator gen, ExistingFileHelper exFileHelper) {
     super(gen, AdvancedAutocrafting.MODID, exFileHelper);
   }
@@ -41,6 +38,7 @@ public class AABlockstateProvider extends BlockStateProvider {
   private <T extends Comparable<T>> void axisBlock(Supplier<? extends AxialBlock<T>> sup) {
     AxialBlock<T> block = sup.get();
     ResourceLocation blockName = block.getRegistryName();
+    //noinspection ConstantConditions
     axisBlock(block, (partName, baseModel) -> models().singleTexture(blockName.toString() + "_" + partName, baseModel.getUncheckedLocation(), blockTexture(block)));
   }
 

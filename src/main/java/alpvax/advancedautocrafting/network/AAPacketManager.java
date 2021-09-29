@@ -1,12 +1,12 @@
 package alpvax.advancedautocrafting.network;
 
 import alpvax.advancedautocrafting.AdvancedAutocrafting;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.fmllegacy.network.NetworkDirection;
+import net.minecraftforge.fmllegacy.network.NetworkRegistry;
+import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
 
 public class AAPacketManager {
   private static final String PROTOCOL_VERSION = "1";
@@ -36,7 +36,7 @@ public class AAPacketManager {
    * Send a packet to a specific player.<br>
    * Must be called Server side.
    */
-  public static <T> void sendTo(T msg, ServerPlayerEntity player)
+  public static <T> void sendTo(T msg, ServerPlayer player)
   {
     if (!(player instanceof FakePlayer))
     {

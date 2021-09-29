@@ -2,27 +2,26 @@ package alpvax.advancedautocrafting.block;
 
 import alpvax.advancedautocrafting.data.BlockPosLootFunction;
 import alpvax.advancedautocrafting.item.AAItems;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.HitResult;
 
 public class RemotePositionMarkerBlock extends Block {
-  public RemotePositionMarkerBlock(AbstractBlock.Properties properties) {
+  public RemotePositionMarkerBlock(Properties properties) {
     super(properties);
   }
 
   @Override
-  public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
-    if (player.isCrouching() && world instanceof World) {
+  public ItemStack getPickBlock(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+    if (player.isCrouching() && level instanceof Level l) {
       ItemStack stack = new ItemStack(AAItems.REMOTE_POS.get());
-      BlockPosLootFunction.write(stack.getOrCreateTag(), (World) world, pos);
+      BlockPosLootFunction.write(stack.getOrCreateTag(), l, pos);
     }
-    return super.getPickBlock(state, target, world, pos, player);
+    return super.getPickBlock(state, target, level, pos, player);
   }
 }

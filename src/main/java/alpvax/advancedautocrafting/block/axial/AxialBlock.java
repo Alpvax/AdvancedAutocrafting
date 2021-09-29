@@ -3,21 +3,21 @@ package alpvax.advancedautocrafting.block.axial;
 import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.item.AAItems;
 import com.google.common.collect.Maps;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.state.Property;
-import net.minecraft.state.StateContainer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.EntitySelectionContext;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.EntityCollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.ForgeMod;
 
 import javax.annotation.Nonnull;
@@ -60,7 +60,7 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
   }
 
   @Override
-  protected void createBlockStateDefinition(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
+  protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
     directionToPropertyMap = Util.make(Maps.newEnumMap(Direction.class), (map) -> {
       for (Direction d : ALL_DIRECTIONS) {
         Property<T> prop = buildPropertyForDirection(d);
@@ -85,15 +85,16 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
   @SuppressWarnings("deprecation")
   @Nonnull
   @Override
-  public VoxelShape getShape(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos, @Nonnull ISelectionContext context) {
-    if(context instanceof EntitySelectionContext) {
-      Entity e = context.getEntity();
-      if (e != null) {
+  public VoxelShape getShape(@Nonnull BlockState state, @Nonnull BlockGetter worldIn, @Nonnull BlockPos pos, @Nonnull CollisionContext context) {
+    if(context instanceof EntityCollisionContext ctx) {
+      Optional<Entity> opt = ctx.getEntity();
+      if (opt.isPresent()) {
+        Entity e = opt.get();
         if (context.isHoldingItem(AAItems.MULTITOOL.get())
                 || (e instanceof LivingEntity && ((LivingEntity)e).getUseItem().getCapability(Capabilities.MULTITOOL_CAPABILITY).isPresent())
         ) {
-          Vector3d start = new Vector3d(e.xOld, e.yOld + e.getEyeHeight(), e.zOld);
-          Vector3d end = start.add(e.getViewVector(0).scale(ForgeMod.REACH_DISTANCE.get().sanitizeValue(Double.MAX_VALUE)));
+          Vec3 start = new Vec3(e.xOld, e.yOld + e.getEyeHeight(), e.zOld);
+          Vec3 end = start.add(e.getViewVector(0).scale(ForgeMod.REACH_DISTANCE.get().sanitizeValue(Double.MAX_VALUE)));
           return getPartialBlockHighlight(state, rayTracePart(state, pos, start, end));
         }
       }
@@ -103,10 +104,10 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
     return shape.getCombinedShape(values);
   }
 
-  public IAxialPartInstance<T> rayTracePart(BlockState state, BlockPos pos, Vector3d start, Vector3d end) {
+  public IAxialPartInstance<T> rayTracePart(BlockState state, BlockPos pos, Vec3 start, Vec3 end) {
     Direction dir = null;
     AxialPart<T> part = null;
-    BlockRayTraceResult ray = shape.getCoreShape().clip(start, end, pos);
+    BlockHitResult ray = shape.getCoreShape().clip(start, end, pos);
     double dSquared = ray == null ? Double.MAX_VALUE : ray.getLocation().distanceToSqr(start);
     for (Direction d : ALL_DIRECTIONS) {
       Optional<Property<T>> prop = getConnectionProp(d);

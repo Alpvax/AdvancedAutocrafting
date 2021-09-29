@@ -1,8 +1,9 @@
 package alpvax.advancedautocrafting.block.axial;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
+
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public interface IAxialPartInstance<T extends Comparable<T>> {
   VoxelShape shape();
@@ -38,7 +39,7 @@ public interface IAxialPartInstance<T extends Comparable<T>> {
       this.radius = radius;
       float min = 0.5F - radius;
       float max = 0.5F + radius;
-      shape = VoxelShapes.box(min, min, min, max, max, max);
+      shape = Shapes.box(min, min, min, max, max, max);
     }
 
     public static <T extends Comparable<T>> IAxialPartInstance<T> from(AxialBlockShape<T> blockShape) {

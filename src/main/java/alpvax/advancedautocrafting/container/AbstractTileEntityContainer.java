@@ -1,29 +1,29 @@
 package alpvax.advancedautocrafting.container;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.extensions.IForgeContainerType;
-import net.minecraftforge.fml.network.IContainerFactory;
+import net.minecraftforge.fmllegacy.network.IContainerFactory;
 
 import java.util.function.Supplier;
 
-public abstract class AbstractTileEntityContainer<T extends TileEntity> extends Container {
-  public interface ITileEntityContainerFactory<T extends TileEntity, C extends AbstractTileEntityContainer<T>> extends IContainerFactory<C> {
-    C create(final int id, final PlayerInventory inv, final T tile);
+public abstract class AbstractTileEntityContainer<T extends BlockEntity> extends AbstractContainerMenu {
+  public interface ITileEntityContainerFactory<T extends BlockEntity, C extends AbstractTileEntityContainer<T>> extends IContainerFactory<C> {
+    C create(final int id, final Inventory inv, final T tile);
 
     @SuppressWarnings("unchecked")
     @Override
-    default C create(int windowId, PlayerInventory inv, PacketBuffer data) {
+    default C create(int windowId, Inventory inv, FriendlyByteBuf data) {
       return create(windowId, inv, (T)inv.player.level.getBlockEntity(data.readBlockPos()));
     }
   }
 
-  public static <T extends TileEntity, C extends AbstractTileEntityContainer<T>> Supplier<ContainerType<C>> makeTypeSupplier(
+  public static <T extends BlockEntity, C extends AbstractTileEntityContainer<T>> Supplier<MenuType<C>> makeTypeSupplier(
       final ITileEntityContainerFactory<T, C> factory
   ) {
     return () -> IForgeContainerType.create(factory);
@@ -31,7 +31,7 @@ public abstract class AbstractTileEntityContainer<T extends TileEntity> extends 
 
   private final T tileentity;
 
-  public AbstractTileEntityContainer(ContainerType<? extends AbstractTileEntityContainer<T>> type, final int id, final T tile) {
+  public AbstractTileEntityContainer(MenuType<? extends AbstractTileEntityContainer<T>> type, final int id, final T tile) {
     super(type, id);
     tileentity = tile;
   }
@@ -41,7 +41,7 @@ public abstract class AbstractTileEntityContainer<T extends TileEntity> extends 
   }
 
   @Override
-  public boolean stillValid(PlayerEntity playerIn) {
+  public boolean stillValid(Player playerIn) {
     return getTileEntity().getBlockPos().closerThan(
         playerIn.position(),
         playerIn.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue() + 1

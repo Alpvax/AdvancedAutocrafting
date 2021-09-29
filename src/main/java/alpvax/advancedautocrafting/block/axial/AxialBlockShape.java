@@ -1,8 +1,8 @@
 package alpvax.advancedautocrafting.block.axial;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.BlockModelProvider;
 import net.minecraftforge.client.model.generators.ModelFile;
@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class AxialBlockShape<T extends Comparable<T>> {
@@ -24,7 +23,7 @@ public class AxialBlockShape<T extends Comparable<T>> {
   /** if > 0, will produce a cube of that radius as the core */
   protected float coreRadius = -1;
   /** the core shape */
-  protected VoxelShape coreShape = VoxelShapes.empty();
+  protected VoxelShape coreShape = Shapes.empty();
 
   protected Map<String, AxialPart<T>> parts = new HashMap<>();
 
@@ -38,7 +37,7 @@ public class AxialBlockShape<T extends Comparable<T>> {
     propertyValues.forEach((d, v) -> {
       shapes.add(getAxialShape(d, v));
     });
-    return VoxelShapes.or(getCoreShape(), shapes.toArray(new VoxelShape[0]));
+    return Shapes.or(getCoreShape(), shapes.toArray(new VoxelShape[0]));
   }
 
   public VoxelShape getCoreShape() {
@@ -46,12 +45,9 @@ public class AxialBlockShape<T extends Comparable<T>> {
   }
 
   public VoxelShape getAxialShape(Direction d, T propertyValue) {
-    return VoxelShapes.or(
-        VoxelShapes.empty(),
-        validParts(propertyValue)
-            .map(p -> p.getShape(d))
-            .collect(Collectors.toList())
-            .toArray(new VoxelShape[0])
+    return Shapes.or(
+        Shapes.empty(),
+        validParts(propertyValue).map(p -> p.getShape(d)).toArray(VoxelShape[]::new)
     );
   }
 
@@ -114,7 +110,7 @@ public class AxialBlockShape<T extends Comparable<T>> {
       //coreTexture = texture;
       double min = 0.5 - radius;
       double max = 0.5 + radius;
-      coreShape = VoxelShapes.box(min, min, min, max, max, max);
+      coreShape = Shapes.box(min, min, min, max, max, max);
       return this;
     }
 

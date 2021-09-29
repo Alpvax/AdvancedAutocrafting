@@ -1,10 +1,10 @@
 package alpvax.advancedautocrafting.item;
 
 import alpvax.advancedautocrafting.block.AABlocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 import static alpvax.advancedautocrafting.AdvancedAutocrafting.MODID;
 
 public class AAItems {
-  public static final ItemGroup ITEM_GROUP = (new ItemGroup(MODID) {
+  public static final CreativeModeTab ITEM_GROUP = (new CreativeModeTab(MODID) {
     @Nonnull
     /*
      * Only on Client

@@ -12,7 +12,7 @@ import alpvax.advancedautocrafting.data.AARecipeProvider;
 import alpvax.advancedautocrafting.data.BlockPosLootFunction;
 import alpvax.advancedautocrafting.item.AAItems;
 import alpvax.advancedautocrafting.network.AAPacketManager;
-import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -21,9 +21,9 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,12 +39,13 @@ public class AdvancedAutocrafting {
     // General mod setup
     modBus.addListener(this::setup);
     modBus.addListener(this::gatherData);
+    modBus.addListener(Capabilities::register);
 
     // Loot Table registering
     BlockPosLootFunction.register();
     //LootFunctionManager.registerFunction(new BlockPosLootFunction.Serializer());
 
-    DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
+    DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
       // Client setup
       modBus.addListener(this::setupClient);
     });
@@ -60,8 +61,6 @@ public class AdvancedAutocrafting {
 
   private void setup(final FMLCommonSetupEvent event) {
     AAPacketManager.registerPackets();
-
-    Capabilities.register();
   }
 
   /*
@@ -69,8 +68,8 @@ public class AdvancedAutocrafting {
    */
   private void setupClient(final FMLClientSetupEvent event) {
     //ClientRegistry.bindTileEntitySpecialRenderer(DrinkMixerTileEntity.class, new DrinkMixerRenderer());
-    ScreenManager.register(AAContainerTypes.REMOTE_MASTER.get(), RemoteMasterScreen::new);
-    ScreenManager.register(AAContainerTypes.CONTROLLER.get(), ControllerScreen::new);
+    MenuScreens.register(AAContainerTypes.REMOTE_MASTER.get(), RemoteMasterScreen::new);
+    MenuScreens.register(AAContainerTypes.CONTROLLER.get(), ControllerScreen::new);
   }
 
   private void onServerStarting(final FMLServerStartingEvent event) {

@@ -1,7 +1,7 @@
 package alpvax.advancedautocrafting.item;
 
 import alpvax.advancedautocrafting.Capabilities;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -17,13 +17,13 @@ public interface IMultitool {
     private Supplier<IMultitool> multitoolSup;
 
     Provider() {
-      this(() -> Capabilities.MULTITOOL_CAPABILITY.getDefaultInstance());
+      this(() -> new IMultitool() {});
     }
     Provider(Supplier<IMultitool> sup) {
       multitoolSup = sup;
     }
 
-    private LazyOptional<IMultitool> capability = LazyOptional.of(() -> multitoolSup.get());
+    private final LazyOptional<IMultitool> capability = LazyOptional.of(() -> multitoolSup.get());
 
     @Nonnull
     @Override

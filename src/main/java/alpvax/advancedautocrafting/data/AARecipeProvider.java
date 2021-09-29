@@ -2,14 +2,14 @@ package alpvax.advancedautocrafting.data;
 
 import alpvax.advancedautocrafting.AdvancedAutocrafting;
 import alpvax.advancedautocrafting.item.AAItems;
-import net.minecraft.advancements.ICriterionInstance;
+import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.data.RecipeProvider;
-import net.minecraft.data.ShapedRecipeBuilder;
-import net.minecraft.data.ShapelessRecipeBuilder;
-import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nonnull;
@@ -24,10 +24,10 @@ public class AARecipeProvider extends RecipeProvider {
   }
 
   @Override
-  protected void buildShapelessRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
-    ICriterionInstance hasIronBlock = has(Tags.Items.STORAGE_BLOCKS_IRON);
-    ICriterionInstance hasPearl = has(Tags.Items.ENDER_PEARLS);
-    ICriterionInstance hasIronBars = has(Items.IRON_BARS);
+  protected void buildCraftingRecipes(@Nonnull Consumer<FinishedRecipe> consumer) {
+    CriterionTriggerInstance hasIronBlock = has(Tags.Items.STORAGE_BLOCKS_IRON);
+    CriterionTriggerInstance hasPearl = has(Tags.Items.ENDER_PEARLS);
+    CriterionTriggerInstance hasIronBars = has(Items.IRON_BARS);
     ShapedRecipeBuilder.shaped(CONTROLLER.get())
         .pattern("IGI").pattern("GBG").pattern("IGI")
         .define('I', Tags.Items.INGOTS_IRON)

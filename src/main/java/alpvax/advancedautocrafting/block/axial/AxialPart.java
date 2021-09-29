@@ -4,10 +4,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.Util;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 
 import javax.annotation.Nullable;
@@ -77,7 +77,7 @@ public class AxialPart<T extends Comparable<T>> {
       float[] x = getMinMax(d.getStepX(), radius, start, end);
       float[] y = getMinMax(d.getStepY(), radius, start, end);
       float[] z = getMinMax(d.getStepZ(), radius, start, end);
-      shapes.put(d, VoxelShapes.box(x[0], y[0], z[0], x[1], y[1], z[1]));
+      shapes.put(d, Shapes.box(x[0], y[0], z[0], x[1], y[1], z[1]));
     }
   }
 

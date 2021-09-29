@@ -5,13 +5,13 @@ import alpvax.advancedautocrafting.block.tile.ControllerTileEntity;
 import alpvax.advancedautocrafting.block.tile.RemoteMasterTileEntity;
 import alpvax.advancedautocrafting.item.AAItems;
 import com.google.common.collect.Sets;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -52,13 +52,13 @@ public class AABlocks {
 
   @SuppressWarnings("ConstantConditions")
   public static class TileTypes {
-    public static final DeferredRegister<TileEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, AdvancedAutocrafting.MODID);
+    public static final DeferredRegister<BlockEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, AdvancedAutocrafting.MODID);
 
-    public static final RegistryObject<TileEntityType<ControllerTileEntity>> CONTROLLER = TILES.register("controller", () ->
-        new TileEntityType<>(ControllerTileEntity::new, Sets.newHashSet(AABlocks.CONTROLLER.get()), null)
+    public static final RegistryObject<BlockEntityType<ControllerTileEntity>> CONTROLLER = TILES.register("controller", () ->
+        new BlockEntityType<>(ControllerTileEntity::new, Sets.newHashSet(AABlocks.CONTROLLER.get()), null)
     );
-    public static final RegistryObject<TileEntityType<RemoteMasterTileEntity>> REMOTE_MASTER = TILES.register("remote_master", () ->
-        new TileEntityType<>(RemoteMasterTileEntity::new, Sets.newHashSet(AABlocks.REMOTE_MASTER.get()), null)
+    public static final RegistryObject<BlockEntityType<RemoteMasterTileEntity>> REMOTE_MASTER = TILES.register("remote_master", () ->
+        new BlockEntityType<>(RemoteMasterTileEntity::new, Sets.newHashSet(AABlocks.REMOTE_MASTER.get()), null)
     );
   }
 }

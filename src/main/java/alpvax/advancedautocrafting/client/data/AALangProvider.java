@@ -4,14 +4,13 @@ import alpvax.advancedautocrafting.AdvancedAutocrafting;
 import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.client.data.lang.AATranslationKeys;
 import alpvax.advancedautocrafting.item.AAItems;
-import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.LanguageProvider;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -39,10 +38,9 @@ public class AALangProvider extends LanguageProvider {
     AATranslationKeys.EN_US_MAPPINGS.forEach(this::add);
   }
 
-  private void add(ItemGroup group, String name) {
-    ITextComponent t = group.getDisplayName();
-    if (t instanceof TranslationTextComponent) {
-      add(((TranslationTextComponent) t).getKey(), name);
+  private void add(CreativeModeTab tab, String name) {
+    if (tab.getDisplayName() instanceof TranslatableComponent t) {
+      add(t.getKey(), name);
     }
   }
 
