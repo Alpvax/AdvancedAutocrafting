@@ -3,6 +3,7 @@ package alpvax.advancedautocrafting.client.render;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
@@ -30,11 +31,11 @@ public class BlockHighlightRender {
     /** Which directions to render faces in */
     private final boolean[] dirs = new boolean[6];
     /** [x_min, x_max] */
-    private double[] xVert = {-0.5, 0.5};
+    private float[] xVert = {0F, 1F};
     /** [y_min, y_max] */
-    private double[] yVert = {-0.5, 0.5};
+    private float[] yVert = {0F, 1F};
     /** [z_min, z_max] */
-    private double[] zVert = {-0.5, 0.5};
+    private float[] zVert = {0F, 1F};
     protected HighlightData(int red, int green, int blue, int alpha, boolean throughWalls) {
       this.red = red;
       this.blue = blue;
@@ -55,42 +56,42 @@ public class BlockHighlightRender {
       }
       return this;
     }
-    protected void addVertexData(VertexConsumer builder) {
+    protected void addVertexData(VertexConsumer builder, Matrix4f matrix) {
       if(dirs[Direction.DOWN.get3DDataValue()]) {
-        builder.vertex(xVert[0], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[1], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[1], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[0], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[0], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[1], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[1], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[0], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
       }
       if(dirs[Direction.UP.get3DDataValue()]) {
-        builder.vertex(xVert[0], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[0], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[1], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[1], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[0], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[0], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[1], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[1], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
       }
       if (dirs[Direction.NORTH.get3DDataValue()]) {
-        builder.vertex(xVert[0], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[0], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[0], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[0], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[0], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[0], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[0], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[0], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
       }
       if (dirs[Direction.SOUTH.get3DDataValue()]) {
-        builder.vertex(xVert[1], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[1], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[1], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[1], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[1], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[1], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[1], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[1], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
       }
       if (dirs[Direction.WEST.get3DDataValue()]) {
-        builder.vertex(xVert[0], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[1], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[1], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[0], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[0], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[1], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[1], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[0], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
       }
       if (dirs[Direction.EAST.get3DDataValue()]) {
-        builder.vertex(xVert[0], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[0], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[1], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(xVert[1], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[0], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[0], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[1], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
+        builder.vertex(matrix, xVert[1], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
       }
     }
   }
@@ -168,8 +169,8 @@ public class BlockHighlightRender {
       if(pos != null) {
         poseStack.pushPose();
         //RenderSystem.translatef(e.getX() - 0.005F, e.getY() - 0.005F, e.getZ() - 0.005F);
-        poseStack.translate(pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F);
-        data.addVertexData(builder);
+        poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
+        data.addVertexData(builder, poseStack.last().pose());
         poseStack.popPose();
       }
     });
