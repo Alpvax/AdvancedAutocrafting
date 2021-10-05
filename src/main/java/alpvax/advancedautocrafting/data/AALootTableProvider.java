@@ -17,7 +17,6 @@ import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -30,7 +29,6 @@ public class AALootTableProvider extends LootTableProvider {
   public AALootTableProvider(DataGenerator generator) {
     super(generator);
   }
-  @Nonnull
   @Override
   protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
     return ImmutableList.of(
@@ -39,7 +37,7 @@ public class AALootTableProvider extends LootTableProvider {
   }
 
   @Override
-  protected void validate(@Nonnull Map<ResourceLocation, LootTable> map, @Nonnull ValidationContext validationtracker) {
+  protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationtracker) {
     // Nothing for now
   }
 
@@ -66,7 +64,6 @@ public class AALootTableProvider extends LootTableProvider {
       return LootTable.lootTable().withPool(LootPool.lootPool().add(LootItem.lootTableItem(item.get()).apply(BlockPosLootFunction.builder())));
     }
 
-    @Nonnull
     @Override
     protected Iterable<Block> getKnownBlocks() {
       return AABlocks.BLOCKS.getEntries().stream().map(Supplier::get).collect(Collectors.toList());

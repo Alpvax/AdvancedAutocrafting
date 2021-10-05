@@ -17,7 +17,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class RemotePositionItem extends Item {
    * Only on Client
    */
   @Override
-  public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level worldIn, @Nonnull List<Component> tooltip, @Nonnull TooltipFlag flagIn) {
+  public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
     BlockPosLootFunction.WorldPosPair data = BlockPosLootFunction.read(stack);
     if (data.valid()) {
       tooltip.add(new TranslatableComponent(AATranslationKeys.ITEM_POS_LORE, data.getPos()).withStyle(ChatFormatting.GRAY));
@@ -44,9 +43,8 @@ public class RemotePositionItem extends Item {
     }
   }
 
-  @Nonnull
   @Override
-  public InteractionResultHolder<ItemStack> use(@Nonnull Level world, Player player, @Nonnull InteractionHand hand) {
+  public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
     ItemStack stack = player.getItemInHand(hand);
     BlockPosLootFunction.WorldPosPair data = BlockPosLootFunction.read(stack);
     if (data.matchesLevel(world)) {
@@ -66,7 +64,7 @@ public class RemotePositionItem extends Item {
   }
 
   @Override
-  public boolean isFoil(@Nonnull ItemStack stack) {
+  public boolean isFoil(ItemStack stack) {
     return DistExecutor.unsafeRunForDist(() -> () -> isRendering(stack), () -> () -> super.isFoil(stack));
   }
 

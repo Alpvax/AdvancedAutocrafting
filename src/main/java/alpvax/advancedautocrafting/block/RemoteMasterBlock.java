@@ -17,7 +17,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class RemoteMasterBlock extends Block implements EntityBlock {
@@ -27,13 +26,13 @@ public class RemoteMasterBlock extends Block implements EntityBlock {
 
   @Nullable
   @Override
-  public BlockEntity newBlockEntity(@Nonnull BlockPos pos, @Nonnull BlockState state) {
+  public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
     return new RemoteMasterTileEntity(pos, state);
   }
 
   @SuppressWarnings("deprecation")
   @Override
-  public void onRemove(BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, BlockState newState, boolean isMoving) {
+  public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
     if (state.getBlock() != newState.getBlock() && !isMoving) {
       level.getBlockEntity(pos, AABlocks.TileTypes.REMOTE_MASTER.get()).ifPresent(tile -> {
         tile.dropItems(level, pos, newState);
@@ -45,10 +44,9 @@ public class RemoteMasterBlock extends Block implements EntityBlock {
     }
   }
 
-  @Nonnull
   @SuppressWarnings("deprecation")
   @Override
-  public InteractionResult use(@Nonnull BlockState state, Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult rayTraceResult) {
+  public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult rayTraceResult) {
     if (!level.isClientSide) {
       level.getBlockEntity(pos, AABlocks.TileTypes.REMOTE_MASTER.get()).ifPresent(tile -> {
         if (this.interactWith(level, pos, player, hand))

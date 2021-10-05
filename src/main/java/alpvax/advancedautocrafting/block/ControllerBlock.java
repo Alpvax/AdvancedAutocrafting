@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ControllerBlock extends Block implements EntityBlock {
@@ -24,7 +23,7 @@ public class ControllerBlock extends Block implements EntityBlock {
 
   @Nullable
   @Override
-  public BlockEntity newBlockEntity(@Nonnull BlockPos pos, @Nonnull BlockState state) {
+  public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
     return new ControllerTileEntity(pos, state);
   }
 
@@ -41,9 +40,8 @@ public class ControllerBlock extends Block implements EntityBlock {
   }*/
 
   @SuppressWarnings("deprecation")
-  @Nonnull
   @Override
-  public InteractionResult use(@Nonnull BlockState state, Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult rayTraceResult) {
+  public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult rayTraceResult) {
     return level.getBlockEntity(pos, AABlocks.TileTypes.CONTROLLER.get()).map(tile -> {
       if (!level.isClientSide) {
         NetworkHooks.openGui((ServerPlayer) player, tile, pos);

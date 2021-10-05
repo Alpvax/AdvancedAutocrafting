@@ -6,7 +6,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
@@ -25,9 +24,8 @@ public interface IMultitool {
 
     private final LazyOptional<IMultitool> capability = LazyOptional.of(() -> multitoolSup.get());
 
-    @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+    public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
       return cap == Capabilities.MULTITOOL_CAPABILITY ? capability.cast() : LazyOptional.empty();
     }
   }

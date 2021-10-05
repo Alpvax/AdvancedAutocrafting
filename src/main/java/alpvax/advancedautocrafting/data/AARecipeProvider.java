@@ -12,7 +12,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 import static alpvax.advancedautocrafting.block.AABlocks.*;
@@ -24,7 +23,7 @@ public class AARecipeProvider extends RecipeProvider {
   }
 
   @Override
-  protected void buildCraftingRecipes(@Nonnull Consumer<FinishedRecipe> consumer) {
+  protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
     CriterionTriggerInstance hasIronBlock = has(Tags.Items.STORAGE_BLOCKS_IRON);
     CriterionTriggerInstance hasPearl = has(Tags.Items.ENDER_PEARLS);
     CriterionTriggerInstance hasIronBars = has(Items.IRON_BARS);

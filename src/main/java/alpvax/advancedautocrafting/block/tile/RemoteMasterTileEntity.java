@@ -26,14 +26,13 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.stream.Collectors;
 
 public class RemoteMasterTileEntity extends BlockEntity implements MenuProvider {
   public ItemStackHandler inventory = new ItemStackHandler(27) {
     @Override
-    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+    public boolean isItemValid(int slot, ItemStack stack) {
       return BlockPosLootFunction.read(stack).valid();
     }
 
@@ -57,7 +56,6 @@ public class RemoteMasterTileEntity extends BlockEntity implements MenuProvider 
 
   private INetworkNode makeNetworkNode() {
     return new INetworkNode() {
-      @Nonnull
       @Override
       public NonNullList<INetworkNode> getChildNodes(Direction inbound) {
         return RemoteMasterTileEntity.this.getItems().stream()
@@ -67,7 +65,6 @@ public class RemoteMasterTileEntity extends BlockEntity implements MenuProvider 
                    .collect(Collectors.toCollection(NonNullList::create));
       }
 
-      @Nonnull
       @Override
       public BlockPos getPos() {
         return RemoteMasterTileEntity.this.worldPosition;
@@ -86,7 +83,6 @@ public class RemoteMasterTileEntity extends BlockEntity implements MenuProvider 
     return list;
   }
 
-  @Nonnull
   public NonNullList<BlockPos> getRemotePositions() {
     return getItems().stream()
                .map(BlockPosLootFunction::read)
@@ -110,12 +106,11 @@ public class RemoteMasterTileEntity extends BlockEntity implements MenuProvider 
   }
 
   @Override
-  public void load(@Nonnull CompoundTag compound) {
+  public void load(CompoundTag compound) {
     super.load(compound);
     inventory.deserializeNBT(compound.getCompound("remoteItems"));
   }
 
-  @Nonnull
   @Override
   public CompoundTag save(CompoundTag compound) {
     compound.put("remoteItems", inventory.serializeNBT());
@@ -132,13 +127,11 @@ public class RemoteMasterTileEntity extends BlockEntity implements MenuProvider 
 
   }
 
-  @Nonnull
   @Override
-  public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
+  public <T> LazyOptional<T> getCapability(Capability<T> cap) {
     return super.getCapability(cap);
   }*/
 
-  @Nonnull
   @Override
   public Component getDisplayName() {
     return new TranslatableComponent(AABlocks.REMOTE_MASTER.get().getDescriptionId());
@@ -146,13 +139,12 @@ public class RemoteMasterTileEntity extends BlockEntity implements MenuProvider 
 
   @Nullable
   @Override
-  public AbstractContainerMenu createMenu(int id, @Nonnull Inventory playerInventory, @Nonnull Player player) {
+  public AbstractContainerMenu createMenu(int id, Inventory playerInventory, Player player) {
     return new RemoteMasterContainer(id, playerInventory, this);
   }
 
-  @Nonnull
   @Override
-  public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+  public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
     return cap == Capabilities.NODE_CAPABILITY ? networkCapability.cast() : super.getCapability(cap, side);
   }
 }

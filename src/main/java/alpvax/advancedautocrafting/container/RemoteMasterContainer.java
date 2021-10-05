@@ -8,8 +8,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 
-import javax.annotation.Nonnull;
-
 public class RemoteMasterContainer extends AbstractTileEntityContainer<RemoteMasterTileEntity> {
   public RemoteMasterContainer(final int id, final Inventory playerInventory, final RemoteMasterTileEntity tile) {
     super(AAContainerTypes.REMOTE_MASTER.get(), id, tile);
@@ -33,7 +31,7 @@ public class RemoteMasterContainer extends AbstractTileEntityContainer<RemoteMas
   }
 
   @Override
-  public ItemStack quickMoveStack(@Nonnull Player playerIn, int index) {
+  public ItemStack quickMoveStack(Player playerIn, int index) {
     ItemStack itemstack = ItemStack.EMPTY;
     Slot slot = this.slots.get(index);
     if (slot != null && slot.hasItem()) {

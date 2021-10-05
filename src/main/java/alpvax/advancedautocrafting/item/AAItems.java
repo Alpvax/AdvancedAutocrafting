@@ -8,13 +8,10 @@ import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nonnull;
-
 import static alpvax.advancedautocrafting.AdvancedAutocrafting.MODID;
 
 public class AAItems {
   public static final CreativeModeTab ITEM_GROUP = (new CreativeModeTab(MODID) {
-    @Nonnull
     /*
      * Only on Client
      */

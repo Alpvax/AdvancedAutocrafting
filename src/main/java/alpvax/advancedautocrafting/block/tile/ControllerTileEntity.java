@@ -17,7 +17,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ControllerTileEntity extends BlockEntity implements MenuProvider {
@@ -27,7 +26,6 @@ public class ControllerTileEntity extends BlockEntity implements MenuProvider {
     super(AABlocks.TileTypes.CONTROLLER.get(), pos, state);
   }
 
-  @Nonnull
   @Override
   public Component getDisplayName() {
     return AABlocks.CONTROLLER.get().getName();
@@ -39,9 +37,8 @@ public class ControllerTileEntity extends BlockEntity implements MenuProvider {
     return new ControllerContainer(id, playerInventory, this);
   }
 
-  @Nonnull
   @Override
-  public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+  public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
     return cap == Capabilities.NODE_CAPABILITY ? networkCapability.cast() : super.getCapability(cap, side);
   }
 }

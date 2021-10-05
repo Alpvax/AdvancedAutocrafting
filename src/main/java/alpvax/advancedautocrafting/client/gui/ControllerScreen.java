@@ -10,8 +10,6 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-import javax.annotation.Nonnull;
-
 public class ControllerScreen extends AbstractContainerScreen<ControllerContainer> {
   //private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(AdvancedAutocrafting.MODID, "textures/gui/container/controller.png");
   private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
@@ -21,14 +19,14 @@ public class ControllerScreen extends AbstractContainerScreen<ControllerContaine
   }
 
   @Override
-  public void render(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+  public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
     renderBackground(matrixStack);
     super.render(matrixStack, mouseX, mouseY, partialTicks);
     renderTooltip(matrixStack, mouseX, mouseY);
   }
 
   @Override
-  protected void renderLabels(@Nonnull PoseStack matrixStack, int mouseX, int mouseY) {
+  protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
     font.draw(matrixStack, title, (float)titleLabelX, (float)titleLabelY, 4210752);
     font.draw(matrixStack, this.playerInventoryTitle, (float)inventoryLabelX, (float)inventoryLabelY, 4210752);
 
@@ -38,7 +36,7 @@ public class ControllerScreen extends AbstractContainerScreen<ControllerContaine
   }
 
   @Override //TODO: actual screen render
-  protected void renderBg(@Nonnull PoseStack matrixStack, float p_230450_2_, int p_230450_3_, int p_230450_4_) {
+  protected void renderBg(PoseStack matrixStack, float p_230450_2_, int p_230450_3_, int p_230450_4_) {
     RenderSystem.setShader(GameRenderer::getPositionTexShader);
     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);

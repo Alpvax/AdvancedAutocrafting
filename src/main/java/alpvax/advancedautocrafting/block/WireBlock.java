@@ -28,7 +28,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.util.Constants;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Locale;
 
@@ -52,7 +51,6 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
       return this != DISABLED;
     }
 
-    @Nonnull
     @Override
     public String getSerializedName() {
       return name;
@@ -100,7 +98,7 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
   }
 
   @Override
-  protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
+  protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
     super.createBlockStateDefinition(builder);
     builder.add(WATERLOGGED);
   }
@@ -111,7 +109,6 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
     return EnumProperty.create(d.getSerializedName(), ConnectionState.class);
   }
 
-  @Nonnull
   @Override
   protected ConnectionState getDefaultPropertyValue(Direction d) {
     return ConnectionState.NONE;
@@ -171,9 +168,8 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
   }
 
   @SuppressWarnings("deprecation")
-  @Nonnull
   @Override
-  public InteractionResult use(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult rayTraceResult) {
+  public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult rayTraceResult) {
     ItemStack stack = player.getItemInHand(hand);
     if(!stack.isEmpty() && stack.getCapability(Capabilities.MULTITOOL_CAPABILITY).isPresent()) {
       // Multitool
@@ -199,7 +195,6 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
   }
 
   @SuppressWarnings("deprecation")
-  @Nonnull
   @Override
   public FluidState getFluidState(BlockState state) {
     return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);

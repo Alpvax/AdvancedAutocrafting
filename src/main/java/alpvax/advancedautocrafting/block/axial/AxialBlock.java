@@ -20,7 +20,6 @@ import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.ForgeMod;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Optional;
@@ -50,17 +49,15 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
     directionToPropertyMap.forEach(consumer);
   }
 
-  @Nonnull
   public Optional<Property<T>> getConnectionProp(Direction d) {
     return d != null ? Optional.ofNullable(directionToPropertyMap.get(d)) : Optional.empty();
   }
-  @Nonnull
   public Optional<T> getConnection(BlockState state, Direction d) {
     return getConnectionProp(d).map(prop -> state.hasProperty(prop) ? state.getValue(prop) : null);
   }
 
   @Override
-  protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
+  protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
     directionToPropertyMap = Util.make(Maps.newEnumMap(Direction.class), (map) -> {
       for (Direction d : ALL_DIRECTIONS) {
         Property<T> prop = buildPropertyForDirection(d);
@@ -74,8 +71,7 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
 
   @Nullable
   protected abstract Property<T> buildPropertyForDirection(Direction d);
-
-  @Nonnull
+  
   protected abstract T getDefaultPropertyValue(Direction d);
 
   public AxialBlockShape<T> getBlockShape() {
@@ -83,9 +79,8 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
   }
 
   @SuppressWarnings("deprecation")
-  @Nonnull
   @Override
-  public VoxelShape getShape(@Nonnull BlockState state, @Nonnull BlockGetter worldIn, @Nonnull BlockPos pos, @Nonnull CollisionContext context) {
+  public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
     if(context instanceof EntityCollisionContext ctx) {
       Optional<Entity> opt = ctx.getEntity();
       if (opt.isPresent()) {

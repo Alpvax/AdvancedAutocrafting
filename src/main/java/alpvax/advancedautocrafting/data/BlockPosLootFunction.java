@@ -18,17 +18,14 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nonnull;
 
 public class BlockPosLootFunction extends LootItemConditionalFunction {
   private static final String NBT_KEY = AdvancedAutocrafting.MODID + ":position";
 
-  @Nonnull
   public static WorldPosPair read(ItemStack stack) {
     return read(stack.getTag());
   }
 
-  @Nonnull
   public static WorldPosPair read(CompoundTag nbt) {
     if (nbt != null) {
       CompoundTag tag = nbt.getCompound(NBT_KEY);
@@ -62,9 +59,8 @@ public class BlockPosLootFunction extends LootItemConditionalFunction {
     return simpleBuilder(BlockPosLootFunction::new);
   }
 
-  @Nonnull
   @Override
-  protected ItemStack run(@Nonnull ItemStack stack, LootContext context) {
+  protected ItemStack run(ItemStack stack, LootContext context) {
     Vec3 pos = context.getParamOrNull(LootContextParams.ORIGIN);
     if (pos != null) {
       write(stack.getOrCreateTag(), context.getLevel(), new BlockPos(pos));
@@ -72,16 +68,14 @@ public class BlockPosLootFunction extends LootItemConditionalFunction {
     return stack;
   }
 
-  @Nonnull
   @Override
   public LootItemFunctionType getType() {
     return TYPE;
   }
 
   public static class Serializer extends LootItemConditionalFunction.Serializer<BlockPosLootFunction> {
-    @Nonnull
     @Override
-    public BlockPosLootFunction deserialize(@Nonnull JsonObject object, @Nonnull JsonDeserializationContext deserializationContext, @Nonnull LootItemCondition[] conditionsIn) {
+    public BlockPosLootFunction deserialize(JsonObject object, JsonDeserializationContext deserializationContext, LootItemCondition[] conditionsIn) {
       return new BlockPosLootFunction(conditionsIn);
     }
   }
