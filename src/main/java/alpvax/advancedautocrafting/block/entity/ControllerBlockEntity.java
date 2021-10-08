@@ -1,4 +1,4 @@
-package alpvax.advancedautocrafting.block.tile;
+package alpvax.advancedautocrafting.block.entity;
 
 import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.block.AABlocks;
@@ -19,11 +19,11 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
 
-public class ControllerTileEntity extends BlockEntity implements MenuProvider {
+public class ControllerBlockEntity extends BlockEntity implements MenuProvider {
   private INetworkNode network = new SimpleNetworkNode(this.worldPosition);
   private LazyOptional<INetworkNode> networkCapability = LazyOptional.of(() -> network);
-  public ControllerTileEntity(BlockPos pos, BlockState state) {
-    super(AABlocks.TileTypes.CONTROLLER.get(), pos, state);
+  public ControllerBlockEntity(BlockPos pos, BlockState state) {
+    super(AABlocks.Entities.CONTROLLER.get(), pos, state);
   }
 
   @Override

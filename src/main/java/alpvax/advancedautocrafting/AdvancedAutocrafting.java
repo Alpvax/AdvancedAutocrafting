@@ -54,7 +54,7 @@ public class AdvancedAutocrafting {
 
     // Registry objects
     AABlocks.BLOCKS.register(modBus);
-    AABlocks.TileTypes.TILES.register(modBus);
+    AABlocks.Entities.BLOCK_ENTITIES.register(modBus);
     AAItems.ITEMS.register(modBus);
     AAContainerTypes.CONTAINER_TYPES.register(modBus);
   }

@@ -1,8 +1,8 @@
 package alpvax.advancedautocrafting.block;
 
 import alpvax.advancedautocrafting.AdvancedAutocrafting;
-import alpvax.advancedautocrafting.block.tile.ControllerTileEntity;
-import alpvax.advancedautocrafting.block.tile.RemoteMasterTileEntity;
+import alpvax.advancedautocrafting.block.entity.ControllerBlockEntity;
+import alpvax.advancedautocrafting.block.entity.RemoteMasterBlockEntity;
 import alpvax.advancedautocrafting.item.AAItems;
 import com.google.common.collect.Sets;
 import net.minecraft.world.item.BlockItem;
@@ -51,14 +51,14 @@ public class AABlocks {
   }
 
   @SuppressWarnings("ConstantConditions")
-  public static class TileTypes {
-    public static final DeferredRegister<BlockEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, AdvancedAutocrafting.MODID);
+  public static class Entities {
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, AdvancedAutocrafting.MODID);
 
-    public static final RegistryObject<BlockEntityType<ControllerTileEntity>> CONTROLLER = TILES.register("controller", () ->
-        new BlockEntityType<>(ControllerTileEntity::new, Sets.newHashSet(AABlocks.CONTROLLER.get()), null)
+    public static final RegistryObject<BlockEntityType<ControllerBlockEntity>> CONTROLLER = BLOCK_ENTITIES.register("controller", () ->
+        new BlockEntityType<>(ControllerBlockEntity::new, Sets.newHashSet(AABlocks.CONTROLLER.get()), null)
     );
-    public static final RegistryObject<BlockEntityType<RemoteMasterTileEntity>> REMOTE_MASTER = TILES.register("remote_master", () ->
-        new BlockEntityType<>(RemoteMasterTileEntity::new, Sets.newHashSet(AABlocks.REMOTE_MASTER.get()), null)
+    public static final RegistryObject<BlockEntityType<RemoteMasterBlockEntity>> REMOTE_MASTER = BLOCK_ENTITIES.register("remote_master", () ->
+        new BlockEntityType<>(RemoteMasterBlockEntity::new, Sets.newHashSet(AABlocks.REMOTE_MASTER.get()), null)
     );
   }
 }

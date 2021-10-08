@@ -1,4 +1,4 @@
-package alpvax.advancedautocrafting.block.tile;
+package alpvax.advancedautocrafting.block.entity;
 
 import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.block.AABlocks;
@@ -29,7 +29,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nullable;
 import java.util.stream.Collectors;
 
-public class RemoteMasterTileEntity extends BlockEntity implements MenuProvider {
+public class RemoteMasterBlockEntity extends BlockEntity implements MenuProvider {
   public ItemStackHandler inventory = new ItemStackHandler(27) {
     @Override
     public boolean isItemValid(int slot, ItemStack stack) {
@@ -50,15 +50,15 @@ public class RemoteMasterTileEntity extends BlockEntity implements MenuProvider 
   private final LazyOptional<IItemHandler> items = LazyOptional.of(() -> inventory);
   private final LazyOptional<INetworkNode> networkCapability = LazyOptional.of(this::makeNetworkNode);
 
-  public RemoteMasterTileEntity(BlockPos pos, BlockState state) {
-    super(AABlocks.TileTypes.REMOTE_MASTER.get(), pos, state);
+  public RemoteMasterBlockEntity(BlockPos pos, BlockState state) {
+    super(AABlocks.Entities.REMOTE_MASTER.get(), pos, state);
   }
 
   private INetworkNode makeNetworkNode() {
     return new INetworkNode() {
       @Override
       public NonNullList<INetworkNode> getChildNodes(Direction inbound) {
-        return RemoteMasterTileEntity.this.getItems().stream()
+        return RemoteMasterBlockEntity.this.getItems().stream()
                    .map(BlockPosLootFunction::read)
                    .filter(BlockPosLootFunction.WorldPosPair::valid)
                    .map(p -> new SimpleNetworkNode(p.getPos()))
@@ -67,7 +67,7 @@ public class RemoteMasterTileEntity extends BlockEntity implements MenuProvider 
 
       @Override
       public BlockPos getPos() {
-        return RemoteMasterTileEntity.this.worldPosition;
+        return RemoteMasterBlockEntity.this.worldPosition;
       }
     };
   }

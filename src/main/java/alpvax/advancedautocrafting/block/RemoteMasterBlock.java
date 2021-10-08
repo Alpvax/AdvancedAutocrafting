@@ -1,6 +1,6 @@
 package alpvax.advancedautocrafting.block;
 
-import alpvax.advancedautocrafting.block.tile.RemoteMasterTileEntity;
+import alpvax.advancedautocrafting.block.entity.RemoteMasterBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -27,14 +27,14 @@ public class RemoteMasterBlock extends Block implements EntityBlock {
   @Nullable
   @Override
   public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-    return new RemoteMasterTileEntity(pos, state);
+    return new RemoteMasterBlockEntity(pos, state);
   }
 
   @SuppressWarnings("deprecation")
   @Override
   public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
     if (state.getBlock() != newState.getBlock() && !isMoving) {
-      level.getBlockEntity(pos, AABlocks.TileTypes.REMOTE_MASTER.get()).ifPresent(tile -> {
+      level.getBlockEntity(pos, AABlocks.Entities.REMOTE_MASTER.get()).ifPresent(tile -> {
         tile.dropItems(level, pos, newState);
         level.updateNeighbourForOutputSignal(pos, this);
       });
@@ -48,7 +48,7 @@ public class RemoteMasterBlock extends Block implements EntityBlock {
   @Override
   public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult rayTraceResult) {
     if (!level.isClientSide) {
-      level.getBlockEntity(pos, AABlocks.TileTypes.REMOTE_MASTER.get()).ifPresent(tile -> {
+      level.getBlockEntity(pos, AABlocks.Entities.REMOTE_MASTER.get()).ifPresent(tile -> {
         if (this.interactWith(level, pos, player, hand))
           NetworkHooks.openGui((ServerPlayer) player, tile, pos);
       });
@@ -58,7 +58,7 @@ public class RemoteMasterBlock extends Block implements EntityBlock {
 
   //TODO: Make this do something useful?
   private boolean interactWith(Level level, BlockPos pos, Player player, InteractionHand hand) {
-    RemoteMasterTileEntity tile = AABlocks.TileTypes.REMOTE_MASTER.get().getBlockEntity(level, pos);
+    RemoteMasterBlockEntity tile = AABlocks.Entities.REMOTE_MASTER.get().getBlockEntity(level, pos);
     if (tile == null) {
       return false;
     }

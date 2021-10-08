@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package alpvax.advancedautocrafting.block.tile;
+package alpvax.advancedautocrafting.block.entity;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

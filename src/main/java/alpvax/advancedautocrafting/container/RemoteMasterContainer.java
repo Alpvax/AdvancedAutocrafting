@@ -1,15 +1,15 @@
 package alpvax.advancedautocrafting.container;
 
 
-import alpvax.advancedautocrafting.block.tile.RemoteMasterTileEntity;
+import alpvax.advancedautocrafting.block.entity.RemoteMasterBlockEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class RemoteMasterContainer extends AbstractTileEntityContainer<RemoteMasterTileEntity> {
-  public RemoteMasterContainer(final int id, final Inventory playerInventory, final RemoteMasterTileEntity tile) {
+public class RemoteMasterContainer extends AbstractTileEntityContainer<RemoteMasterBlockEntity> {
+  public RemoteMasterContainer(final int id, final Inventory playerInventory, final RemoteMasterBlockEntity tile) {
     super(AAContainerTypes.REMOTE_MASTER.get(), id, tile);
 
     for(int j = 0; j < 3; ++j) {
