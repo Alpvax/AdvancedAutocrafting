@@ -26,7 +26,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
@@ -186,7 +185,7 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
           if (dir == null) {
             dir = rayTraceResult.getDirection();
           }
-          level.setBlock(pos, getToggledState(state, level, pos, dir), Constants.BlockFlags.DEFAULT);
+          level.setBlock(pos, getToggledState(state, level, pos, dir), Block.UPDATE_ALL);
         }
       }
       return InteractionResult.SUCCESS;

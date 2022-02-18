@@ -14,8 +14,7 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
@@ -66,7 +65,7 @@ public class RemoteMasterBlock extends Block implements EntityBlock {
     if(!stack.isEmpty()) {
       if(stack.getItem() instanceof BlockItem) {
         BlockState state = ((BlockItem) stack.getItem()).getBlock().defaultBlockState();
-        tile.getRemotePositions().forEach((p) -> level.setBlock(p, state, Constants.BlockFlags.DEFAULT));
+        tile.getRemotePositions().forEach((p) -> level.setBlock(p, state, Block.UPDATE_ALL));
         return false;
       } else if(tile.inventory.isItemValid(0, stack)) {
         tile.addItem(stack.copy());

@@ -50,7 +50,7 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
   }
 
   public Optional<Property<T>> getConnectionProp(Direction d) {
-    return d != null ? Optional.ofNullable(directionToPropertyMap.get(d)) : Optional.empty();
+    return Optional.ofNullable(directionToPropertyMap.get(d));
   }
   public Optional<T> getConnection(BlockState state, Direction d) {
     return getConnectionProp(d).map(prop -> state.hasProperty(prop) ? state.getValue(prop) : null);
@@ -82,9 +82,8 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
   @Override
   public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
     if(context instanceof EntityCollisionContext ctx) {
-      Optional<Entity> opt = ctx.getEntity();
-      if (opt.isPresent()) {
-        Entity e = opt.get();
+      Entity e = ctx.getEntity();
+      if (e != null) {
         if (context.isHoldingItem(AAItems.MULTITOOL.get())
                 || (e instanceof LivingEntity && ((LivingEntity)e).getUseItem().getCapability(Capabilities.MULTITOOL_CAPABILITY).isPresent())
         ) {

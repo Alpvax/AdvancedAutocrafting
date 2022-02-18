@@ -17,11 +17,11 @@ public class RemotePositionMarkerBlock extends Block {
   }
 
   @Override
-  public ItemStack getPickBlock(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+  public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
     if (player.isCrouching() && level instanceof Level l) {
       ItemStack stack = new ItemStack(AAItems.REMOTE_POS.get());
       BlockPosLootFunction.write(stack.getOrCreateTag(), l, pos);
     }
-    return super.getPickBlock(state, target, level, pos, player);
+    return super.getCloneItemStack(state, target, level, pos, player);
   }
 }

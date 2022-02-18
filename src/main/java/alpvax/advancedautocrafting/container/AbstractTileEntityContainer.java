@@ -7,9 +7,10 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.extensions.IForgeContainerType;
-import net.minecraftforge.fmllegacy.network.IContainerFactory;
+import net.minecraftforge.common.extensions.IForgeMenuType;
+import net.minecraftforge.network.IContainerFactory;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public abstract class AbstractTileEntityContainer<T extends BlockEntity> extends AbstractContainerMenu {
@@ -19,14 +20,14 @@ public abstract class AbstractTileEntityContainer<T extends BlockEntity> extends
     @SuppressWarnings("unchecked")
     @Override
     default C create(int windowId, Inventory inv, FriendlyByteBuf data) {
-      return create(windowId, inv, (T)inv.player.level.getBlockEntity(data.readBlockPos()));
+      return create(windowId, inv, (T)Objects.requireNonNull(inv.player.level.getBlockEntity(data.readBlockPos())));
     }
   }
 
   public static <T extends BlockEntity, C extends AbstractTileEntityContainer<T>> Supplier<MenuType<C>> makeTypeSupplier(
       final ITileEntityContainerFactory<T, C> factory
   ) {
-    return () -> IForgeContainerType.create(factory);
+    return () -> IForgeMenuType.create(factory);
   }
 
   private final T tileentity;
