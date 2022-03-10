@@ -125,6 +125,17 @@ public class BlockHighlightRender {
       }
       return false;
     }
+    public boolean toggle(BlockPos pos, int red, int green, int blue, int alpha) {
+      return toggle(pos, new HighlightData(red, green, blue, alpha, false));
+    }
+    public boolean toggle(BlockPos pos, HighlightData addData) {
+      if (contains(pos)) {
+        remove(pos);
+        return false;
+      }
+      add(pos, addData);
+      return true;
+    }
     @Nullable
     protected HighlightData get(BlockPos pos) {
       return cache.get(pos);

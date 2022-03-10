@@ -12,12 +12,6 @@ import net.minecraftforge.fml.common.Mod;
 public class ClientEvents {
   @SubscribeEvent
   static void renderWorldLastEvent(RenderLevelLastEvent evt) {
-    /*PlayerEntity player = Minecraft.getInstance().player;
-    Stream<BlockPos> pos = Arrays.stream(Hand.values()).map(player::getHeldItem).map(AAUtil::readPosFromItemStack);
-    Set<BlockPos> set =  pos
-        //.filter(Objects::nonNull)
-        .collect(Collectors.toSet());
-    BlockHighlightRender.render(set, evt.getMatrixStack());*/
     BlockHighlightRender.render(evt.getPoseStack());
   }
 

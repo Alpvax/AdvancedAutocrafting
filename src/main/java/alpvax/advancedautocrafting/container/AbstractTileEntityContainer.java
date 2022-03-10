@@ -44,8 +44,8 @@ public abstract class AbstractTileEntityContainer<T extends BlockEntity> extends
   @Override
   public boolean stillValid(Player playerIn) {
     return getTileEntity().getBlockPos().closerThan(
-        playerIn.position(),
-        playerIn.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue() + 1
+        playerIn.blockPosition(),
+        playerIn.getAttributeValue(ForgeMod.REACH_DISTANCE.get()) + 1
     );
   }
 }

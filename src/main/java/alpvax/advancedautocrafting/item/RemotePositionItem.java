@@ -4,7 +4,6 @@ import alpvax.advancedautocrafting.client.data.lang.AATranslationKeys;
 import alpvax.advancedautocrafting.client.render.BlockHighlightRender;
 import alpvax.advancedautocrafting.data.BlockPosLootFunction;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
@@ -34,11 +33,11 @@ public class RemotePositionItem extends Item {
    */
   @Override
   public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-    BlockPosLootFunction.WorldPosPair data = BlockPosLootFunction.read(stack);
+    BlockPosLootFunction.LevelPosPair data = BlockPosLootFunction.read(stack);
     if (data.valid()) {
       tooltip.add(new TranslatableComponent(AATranslationKeys.ITEM_POS_LORE, data.getPos()).withStyle(ChatFormatting.GRAY));
       if (flagIn.isAdvanced() || !data.matchesLevel(worldIn)) {
-        tooltip.add(new TranslatableComponent(AATranslationKeys.ITEM_DIM_LORE, data.getWorldID()).withStyle(ChatFormatting.GRAY));
+        tooltip.add(new TranslatableComponent(AATranslationKeys.ITEM_DIM_LORE, data.getLevelName()).withStyle(ChatFormatting.GRAY));
       }
     }
   }
@@ -46,17 +45,11 @@ public class RemotePositionItem extends Item {
   @Override
   public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
     ItemStack stack = player.getItemInHand(hand);
-    BlockPosLootFunction.WorldPosPair data = BlockPosLootFunction.read(stack);
+    BlockPosLootFunction.LevelPosPair data = BlockPosLootFunction.read(stack);
     if (data.matchesLevel(world)) {
       if (world.isClientSide()) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-          BlockPos pos = data.getPos();
-          if (BlockHighlightRender.manager.contains(pos)) {
-            BlockHighlightRender.manager.remove(pos);
-          } else {
-            BlockHighlightRender.manager.add(pos, 69, 120, 18, 160);
-          }
-        });
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
+            BlockHighlightRender.manager.toggle(data.getPos(), 69, 120, 18, 160));
         return InteractionResultHolder.consume(stack);
       }
     }
@@ -72,7 +65,7 @@ public class RemotePositionItem extends Item {
    * Only on Client
    */
   private boolean isRendering(ItemStack stack) {
-    BlockPosLootFunction.WorldPosPair pair = BlockPosLootFunction.read(stack);
+    BlockPosLootFunction.LevelPosPair pair = BlockPosLootFunction.read(stack);
     return pair.valid() && BlockHighlightRender.manager.contains(pair.getPos());
   }
 }

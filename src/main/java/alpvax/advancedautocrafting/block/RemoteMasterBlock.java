@@ -37,8 +37,7 @@ public class RemoteMasterBlock extends Block implements EntityBlock {
         tile.dropItems(level, pos, newState);
         level.updateNeighbourForOutputSignal(pos, this);
       });
-
-      //noinspection ConstantConditions
+      //TODO: move out of moving check?
       super.onRemove(state, level, pos, newState, isMoving);
     }
   }

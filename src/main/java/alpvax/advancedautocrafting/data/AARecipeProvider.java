@@ -3,12 +3,15 @@ package alpvax.advancedautocrafting.data;
 import alpvax.advancedautocrafting.AdvancedAutocrafting;
 import alpvax.advancedautocrafting.item.AAItems;
 import net.minecraft.advancements.CriterionTriggerInstance;
+import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
 
@@ -20,6 +23,14 @@ public class AARecipeProvider extends RecipeProvider {
 
   public AARecipeProvider(DataGenerator generator) {
     super(generator);
+  }
+
+  /**
+   * Copied version due to parent function being private
+   * Changed return value to remove unnecessary import
+   */
+  private static CriterionTriggerInstance has(TagKey<Item> p_206407_) {
+    return inventoryTrigger(ItemPredicate.Builder.item().of(p_206407_).build());
   }
 
   @Override

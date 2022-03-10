@@ -12,6 +12,7 @@ import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
+import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
 /**
@@ -23,6 +24,7 @@ public class AAItemModelProvider extends ItemModelProvider {
     super(generator, AdvancedAutocrafting.MODID, existingFileHelper);
   }
 
+  @Nonnull
   @Override
   public String getName() {
     return "Advanced Autocrafting Item Models";
@@ -43,6 +45,7 @@ public class AAItemModelProvider extends ItemModelProvider {
 
 
 
+  @SuppressWarnings("ConstantConditions")
   private String name(Supplier<? extends ItemLike> item) {
     return item.get().asItem().getRegistryName().getPath();
   }

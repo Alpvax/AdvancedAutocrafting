@@ -48,10 +48,7 @@ public class AALootTableProvider extends LootTableProvider {
       dropSelf(AABlocks.CONTROLLER);
       dropSelf(AABlocks.REMOTE_MASTER);
       add(AABlocks.REMOTE_MARKER.get(),
-          (b) -> withPosition(b, AAItems.REMOTE_POS)/*LootPool.builder().addEntry(
-              ItemLootEntry.builder(AAItems.REMOTE_POS.get())
-                  .acceptFunction(BlockPosLootFunction.builder())
-          )*/
+          (b) -> withPosition(b, AAItems.REMOTE_POS)
       );
       dropSelf(AABlocks.WIRE);
     }
@@ -60,6 +57,7 @@ public class AALootTableProvider extends LootTableProvider {
       dropSelf(block.get());
     }
 
+    @SuppressWarnings("SameParameterValue")
     private LootTable.Builder withPosition(Block block, Supplier<? extends ItemLike> item) {
       return LootTable.lootTable().withPool(LootPool.lootPool().add(LootItem.lootTableItem(item.get()).apply(BlockPosLootFunction.builder())));
     }

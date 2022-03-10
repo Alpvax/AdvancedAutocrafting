@@ -26,6 +26,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.stream.Collectors;
 
@@ -60,7 +61,7 @@ public class RemoteMasterBlockEntity extends BlockEntity implements MenuProvider
       public NonNullList<INetworkNode> getChildNodes(Direction inbound) {
         return RemoteMasterBlockEntity.this.getItems().stream()
                    .map(BlockPosLootFunction::read)
-                   .filter(BlockPosLootFunction.WorldPosPair::valid)
+                   .filter(BlockPosLootFunction.LevelPosPair::valid)
                    .map(p -> new SimpleNetworkNode(p.getPos()))
                    .collect(Collectors.toCollection(NonNullList::create));
       }
@@ -86,8 +87,8 @@ public class RemoteMasterBlockEntity extends BlockEntity implements MenuProvider
   public NonNullList<BlockPos> getRemotePositions() {
     return getItems().stream()
                .map(BlockPosLootFunction::read)
-               .filter(BlockPosLootFunction.WorldPosPair::valid)
-               .map(BlockPosLootFunction.WorldPosPair::getPos)
+               .filter(BlockPosLootFunction.LevelPosPair::valid)
+               .map(BlockPosLootFunction.LevelPosPair::getPos)
                .collect(Collectors.toCollection(NonNullList::create));
   }
 
@@ -125,11 +126,6 @@ public class RemoteMasterBlockEntity extends BlockEntity implements MenuProvider
   @Override
   public void handleUpdateTag(CompoundNBT tag) {
 
-  }
-
-  @Override
-  public <T> LazyOptional<T> getCapability(Capability<T> cap) {
-    return super.getCapability(cap);
   }*/
 
   @Override
@@ -143,6 +139,7 @@ public class RemoteMasterBlockEntity extends BlockEntity implements MenuProvider
     return new RemoteMasterContainer(id, playerInventory, this);
   }
 
+  @Nonnull
   @Override
   public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
     return cap == Capabilities.NODE_CAPABILITY ? networkCapability.cast() : super.getCapability(cap, side);

@@ -34,7 +34,7 @@ public class RemoteMasterContainer extends AbstractTileEntityContainer<RemoteMas
   public ItemStack quickMoveStack(Player playerIn, int index) {
     ItemStack itemstack = ItemStack.EMPTY;
     Slot slot = this.slots.get(index);
-    if (slot != null && slot.hasItem()) {
+    if (slot.hasItem()) {
       ItemStack itemstack1 = slot.getItem();
       itemstack = itemstack1.copy();
       if (index < 27) {

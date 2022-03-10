@@ -7,6 +7,6 @@ import net.minecraft.core.NonNullList;
 
 
 public interface INetworkNode {
-  NonNullList<INetworkNode> getChildNodes(Direction inbound);
+  NonNullList<INetworkNode> getChildNodes(Direction inbound); //TODO: remove
   BlockPos getPos();
 }

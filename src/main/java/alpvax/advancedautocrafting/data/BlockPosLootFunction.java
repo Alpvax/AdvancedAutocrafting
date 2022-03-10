@@ -18,26 +18,28 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nullable;
+
 
 public class BlockPosLootFunction extends LootItemConditionalFunction {
   private static final String NBT_KEY = AdvancedAutocrafting.MODID + ":position";
 
-  public static WorldPosPair read(ItemStack stack) {
+  public static LevelPosPair read(ItemStack stack) {
     return read(stack.getTag());
   }
 
-  public static WorldPosPair read(CompoundTag nbt) {
+  public static LevelPosPair read(@Nullable CompoundTag nbt) {
     if (nbt != null) {
       CompoundTag tag = nbt.getCompound(NBT_KEY);
       if (!tag.isEmpty()) {
-        return new WorldPosPair(new ResourceLocation(tag.getString("dimension")), NbtUtils.readBlockPos(tag.getCompound("position")));
+        return new LevelPosPair(new ResourceLocation(tag.getString("level")), NbtUtils.readBlockPos(tag.getCompound("position")));
       }
     }
-    return WorldPosPair.NONE;
+    return LevelPosPair.NONE;
   }
   public static void write(CompoundTag nbt, Level level, BlockPos pos) {
     CompoundTag tag = new CompoundTag();
-    tag.putString("dimension", level.dimension().location().toString());
+    tag.putString("level", level.dimension().location().toString());
     tag.put("position", NbtUtils.writeBlockPos(pos));
     nbt.put(NBT_KEY, tag);
   }
@@ -80,11 +82,11 @@ public class BlockPosLootFunction extends LootItemConditionalFunction {
     }
   }
 
-  public static class WorldPosPair {
-    private final ResourceLocation dimension;
+  public static class LevelPosPair {
+    private final ResourceLocation levelName;
     private final BlockPos pos;
-    public WorldPosPair(ResourceLocation dimension, BlockPos pos) {
-      this.dimension = dimension;
+    public LevelPosPair(ResourceLocation dimension, BlockPos pos) {
+      this.levelName = dimension;
       this.pos = pos;
     }
     public boolean valid() {
@@ -93,13 +95,14 @@ public class BlockPosLootFunction extends LootItemConditionalFunction {
     public BlockPos getPos() {
       return valid() ? pos : BlockPos.ZERO;
     }
-    public ResourceLocation getWorldID() {
-      return valid() ? dimension : null;
+    public ResourceLocation getLevelName() {
+      return levelName;
     }
-    public boolean matchesLevel(Level level) {
-      return valid() && dimension.equals(level.dimension().location());
+    public boolean matchesLevel(@Nullable Level level) {
+      return valid() && level != null && levelName.equals(level.dimension().location());
     }
-    private static final WorldPosPair NONE = new WorldPosPair(null, null) {
+    @SuppressWarnings("ConstantConditions")
+    private static final LevelPosPair NONE = new LevelPosPair(null, null) {
       @Override public boolean valid() { return false; }
     };
   }
