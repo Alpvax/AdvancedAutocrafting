@@ -9,6 +9,8 @@ import alpvax.advancedautocrafting.client.gui.RemoteMasterScreen;
 import alpvax.advancedautocrafting.container.AAContainerTypes;
 import alpvax.advancedautocrafting.data.AALootTableProvider;
 import alpvax.advancedautocrafting.data.AARecipeProvider;
+import alpvax.advancedautocrafting.data.AATags;
+import alpvax.advancedautocrafting.data.AATagsProvider;
 import alpvax.advancedautocrafting.data.BlockPosLootFunction;
 import alpvax.advancedautocrafting.item.AAItems;
 import alpvax.advancedautocrafting.network.AAPacketManager;
@@ -16,6 +18,7 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -57,6 +60,8 @@ public class AdvancedAutocrafting {
     AABlocks.Entities.BLOCK_ENTITIES.register(modBus);
     AAItems.ITEMS.register(modBus);
     AAContainerTypes.CONTAINER_TYPES.register(modBus);
+
+    AATags.init();
   }
 
   private void setup(final FMLCommonSetupEvent event) {
@@ -81,17 +86,15 @@ public class AdvancedAutocrafting {
 
   private void gatherData(GatherDataEvent event) {
     DataGenerator gen = event.getGenerator();
+    ExistingFileHelper efh = event.getExistingFileHelper();
 
     if (event.includeClient()) {
-      gen.addProvider(new AABlockstateProvider(gen, event.getExistingFileHelper()));
-      gen.addProvider(new AAItemModelProvider(gen, event.getExistingFileHelper()));
+      gen.addProvider(new AABlockstateProvider(gen, efh));
+      gen.addProvider(new AAItemModelProvider(gen, efh));
       gen.addProvider(new AALangProvider(gen));
     }
     if (event.includeServer()) {
-      /*
-      gen.addProvider(new TropicraftBlockTagsProvider(gen));
-      gen.addProvider(new TropicraftItemTagsProvider(gen));
-      */
+      AATagsProvider.addProviders(gen, efh);
       gen.addProvider(new AARecipeProvider(gen));
       gen.addProvider(new AALootTableProvider(gen));
     }

@@ -4,6 +4,7 @@ import alpvax.advancedautocrafting.Capabilities;
 import alpvax.advancedautocrafting.block.axial.AxialBlock;
 import alpvax.advancedautocrafting.block.axial.AxialBlockShape;
 import alpvax.advancedautocrafting.block.axial.AxialPart;
+import alpvax.advancedautocrafting.data.AATags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
@@ -170,7 +171,7 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
   @Override
   public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult rayTraceResult) {
     ItemStack stack = player.getItemInHand(hand);
-    if(!stack.isEmpty() && stack.getCapability(Capabilities.MULTITOOL_CAPABILITY).isPresent()) {
+    if(!stack.isEmpty() && stack.is(AATags.Items.MULTITOOL)) {
       // Multitool
       if (!level.isClientSide) {
         if (player.isCrouching()) {
