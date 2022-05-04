@@ -33,70 +33,70 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(AdvancedAutocrafting.MODID)
 public class AdvancedAutocrafting {
-  public static final String MODID = "advancedautocrafting";
+    public static final String MODID = "advancedautocrafting";
 
-  private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
-  public AdvancedAutocrafting() {
-    IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-    // General mod setup
-    modBus.addListener(this::setup);
-    modBus.addListener(this::gatherData);
-    modBus.addListener(Capabilities::register);
+    public AdvancedAutocrafting() {
+        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        // General mod setup
+        modBus.addListener(this::setup);
+        modBus.addListener(this::gatherData);
+        modBus.addListener(Capabilities::register);
 
-    // Loot Table registering
-    BlockPosLootFunction.register();
-    //LootFunctionManager.registerFunction(new BlockPosLootFunction.Serializer());
+        // Loot Table registering
+        BlockPosLootFunction.register();
+        //LootFunctionManager.registerFunction(new BlockPosLootFunction.Serializer());
 
-    DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-      // Client setup
-      modBus.addListener(this::setupClient);
-    });
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            // Client setup
+            modBus.addListener(this::setupClient);
+        });
 
-    MinecraftForge.EVENT_BUS.addListener(this::onServerStarting);
+        MinecraftForge.EVENT_BUS.addListener(this::onServerStarting);
 
-    // Registry objects
-    AABlocks.BLOCKS.register(modBus);
-    AABlocks.Entities.BLOCK_ENTITIES.register(modBus);
-    AAItems.ITEMS.register(modBus);
-    AAContainerTypes.CONTAINER_TYPES.register(modBus);
+        // Registry objects
+        AABlocks.BLOCKS.register(modBus);
+        AABlocks.Entities.BLOCK_ENTITIES.register(modBus);
+        AAItems.ITEMS.register(modBus);
+        AAContainerTypes.CONTAINER_TYPES.register(modBus);
 
-    AATags.init();
-  }
-
-  private void setup(final FMLCommonSetupEvent event) {
-    AAPacketManager.registerPackets();
-  }
-
-  /*
-   * Only on Client
-   */
-  private void setupClient(final FMLClientSetupEvent event) {
-    //ClientRegistry.bindTileEntitySpecialRenderer(DrinkMixerTileEntity.class, new DrinkMixerRenderer());
-    event.enqueueWork(() -> {
-      MenuScreens.register(AAContainerTypes.REMOTE_MASTER.get(), RemoteMasterScreen::new);
-      MenuScreens.register(AAContainerTypes.CONTROLLER.get(), ControllerScreen::new);
-    });
-  }
-
-  private void onServerStarting(final ServerStartingEvent event) {
-    //Register commands
-    //CommandTropicsTeleport.register(event.getServer().getCommandManager().getDispatcher());
-  }
-
-  private void gatherData(GatherDataEvent event) {
-    DataGenerator gen = event.getGenerator();
-    ExistingFileHelper efh = event.getExistingFileHelper();
-
-    if (event.includeClient()) {
-      gen.addProvider(new AABlockstateProvider(gen, efh));
-      gen.addProvider(new AAItemModelProvider(gen, efh));
-      gen.addProvider(new AALangProvider(gen));
+        AATags.init();
     }
-    if (event.includeServer()) {
-      AATagsProvider.addProviders(gen, efh);
-      gen.addProvider(new AARecipeProvider(gen));
-      gen.addProvider(new AALootTableProvider(gen));
+
+    private void setup(final FMLCommonSetupEvent event) {
+        AAPacketManager.registerPackets();
     }
-  }
+
+    /*
+     * Only on Client
+     */
+    private void setupClient(final FMLClientSetupEvent event) {
+        //ClientRegistry.bindTileEntitySpecialRenderer(DrinkMixerTileEntity.class, new DrinkMixerRenderer());
+        event.enqueueWork(() -> {
+            MenuScreens.register(AAContainerTypes.REMOTE_MASTER.get(), RemoteMasterScreen::new);
+            MenuScreens.register(AAContainerTypes.CONTROLLER.get(), ControllerScreen::new);
+        });
+    }
+
+    private void onServerStarting(final ServerStartingEvent event) {
+        //Register commands
+        //CommandTropicsTeleport.register(event.getServer().getCommandManager().getDispatcher());
+    }
+
+    private void gatherData(GatherDataEvent event) {
+        DataGenerator gen = event.getGenerator();
+        ExistingFileHelper efh = event.getExistingFileHelper();
+
+        if (event.includeClient()) {
+            gen.addProvider(new AABlockstateProvider(gen, efh));
+            gen.addProvider(new AAItemModelProvider(gen, efh));
+            gen.addProvider(new AALangProvider(gen));
+        }
+        if (event.includeServer()) {
+            AATagsProvider.addProviders(gen, efh);
+            gen.addProvider(new AARecipeProvider(gen));
+            gen.addProvider(new AALootTableProvider(gen));
+        }
+    }
 }

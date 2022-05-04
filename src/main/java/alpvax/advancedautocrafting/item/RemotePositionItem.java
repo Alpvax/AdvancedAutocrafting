@@ -21,51 +21,51 @@ import java.util.List;
 
 public class RemotePositionItem extends Item {
 
-  public RemotePositionItem(Properties properties) {
-    super(properties);
-  }
-
-  /**
-   * allows items to add custom lines of information to the mouseover description
-   */
-  /*
-   * Only on Client
-   */
-  @Override
-  public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-    BlockPosLootFunction.LevelPosPair data = BlockPosLootFunction.read(stack);
-    if (data.valid()) {
-      tooltip.add(new TranslatableComponent(AATranslationKeys.ITEM_POS_LORE, data.getPos()).withStyle(ChatFormatting.GRAY));
-      if (flagIn.isAdvanced() || !data.matchesLevel(worldIn)) {
-        tooltip.add(new TranslatableComponent(AATranslationKeys.ITEM_DIM_LORE, data.getLevelName()).withStyle(ChatFormatting.GRAY));
-      }
+    public RemotePositionItem(Properties properties) {
+        super(properties);
     }
-  }
 
-  @Override
-  public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
-    ItemStack stack = player.getItemInHand(hand);
-    BlockPosLootFunction.LevelPosPair data = BlockPosLootFunction.read(stack);
-    if (data.matchesLevel(world)) {
-      if (world.isClientSide()) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
-            BlockHighlightRender.manager.toggle(data.getPos(), 69, 120, 18, 160));
-        return InteractionResultHolder.consume(stack);
-      }
+    /**
+     * allows items to add custom lines of information to the mouseover description
+     */
+    /*
+     * Only on Client
+     */
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+        BlockPosLootFunction.LevelPosPair data = BlockPosLootFunction.read(stack);
+        if (data.valid()) {
+            tooltip.add(new TranslatableComponent(AATranslationKeys.ITEM_POS_LORE, data.getPos()).withStyle(ChatFormatting.GRAY));
+            if (flagIn.isAdvanced() || !data.matchesLevel(worldIn)) {
+                tooltip.add(new TranslatableComponent(AATranslationKeys.ITEM_DIM_LORE, data.getLevelName()).withStyle(ChatFormatting.GRAY));
+            }
+        }
     }
-    return InteractionResultHolder.pass(stack);
-  }
 
-  @Override
-  public boolean isFoil(ItemStack stack) {
-    return DistExecutor.unsafeRunForDist(() -> () -> isRendering(stack), () -> () -> super.isFoil(stack));
-  }
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        BlockPosLootFunction.LevelPosPair data = BlockPosLootFunction.read(stack);
+        if (data.matchesLevel(world)) {
+            if (world.isClientSide()) {
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
+                                                                    BlockHighlightRender.manager.toggle(data.getPos(), 69, 120, 18, 160));
+                return InteractionResultHolder.consume(stack);
+            }
+        }
+        return InteractionResultHolder.pass(stack);
+    }
 
-  /*
-   * Only on Client
-   */
-  private boolean isRendering(ItemStack stack) {
-    BlockPosLootFunction.LevelPosPair pair = BlockPosLootFunction.read(stack);
-    return pair.valid() && BlockHighlightRender.manager.contains(pair.getPos());
-  }
+    @Override
+    public boolean isFoil(ItemStack stack) {
+        return DistExecutor.unsafeRunForDist(() -> () -> isRendering(stack), () -> () -> super.isFoil(stack));
+    }
+
+    /*
+     * Only on Client
+     */
+    private boolean isRendering(ItemStack stack) {
+        BlockPosLootFunction.LevelPosPair pair = BlockPosLootFunction.read(stack);
+        return pair.valid() && BlockHighlightRender.manager.contains(pair.getPos());
+    }
 }

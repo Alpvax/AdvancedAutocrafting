@@ -17,15 +17,15 @@ import net.minecraftforge.network.NetworkHooks;
 import javax.annotation.Nullable;
 
 public class ControllerBlock extends Block implements EntityBlock {
-  public ControllerBlock(Block.Properties properties) {
-    super(properties);
-  }
+    public ControllerBlock(Block.Properties properties) {
+        super(properties);
+    }
 
-  @Nullable
-  @Override
-  public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-    return new ControllerBlockEntity(pos, state);
-  }
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new ControllerBlockEntity(pos, state);
+    }
 
   /*public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
     if (state.getBlock() != newState.getBlock() && !isMoving) {
@@ -39,15 +39,15 @@ public class ControllerBlock extends Block implements EntityBlock {
     }
   }*/
 
-  @SuppressWarnings("deprecation")
-  @Override
-  public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult rayTraceResult) {
-    return level.getBlockEntity(pos, AABlocks.Entities.CONTROLLER.get()).map(tile -> {
-      if (!level.isClientSide) {
-        NetworkHooks.openGui((ServerPlayer) player, tile, pos);
-      }
-      return InteractionResult.SUCCESS;
-    })
-    .orElseGet(() -> super.use(state, level, pos, player, hand, rayTraceResult));
-  }
+    @SuppressWarnings("deprecation")
+    @Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult rayTraceResult) {
+        return level.getBlockEntity(pos, AABlocks.Entities.CONTROLLER.get()).map(tile -> {
+                if (!level.isClientSide) {
+                    NetworkHooks.openGui((ServerPlayer) player, tile, pos);
+                }
+                return InteractionResult.SUCCESS;
+            })
+            .orElseGet(() -> super.use(state, level, pos, player, hand, rayTraceResult));
+    }
 }

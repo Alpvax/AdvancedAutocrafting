@@ -6,54 +6,55 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public interface IAxialPartInstance<T extends Comparable<T>> {
-  VoxelShape shape();
-  Direction direction();
+    VoxelShape shape();
 
-  class Impl<T extends Comparable<T>> implements IAxialPartInstance<T> {
-    final AxialPart<T> part;
-    final Direction direction;
-    final VoxelShape shape;
+    Direction direction();
 
-    public Impl(AxialPart<T> part, Direction dir) {
-      this.part = part;
-      direction = dir;
-      shape = part.getShape(dir);
+    class Impl<T extends Comparable<T>> implements IAxialPartInstance<T> {
+        final AxialPart<T> part;
+        final Direction direction;
+        final VoxelShape shape;
+
+        public Impl(AxialPart<T> part, Direction dir) {
+            this.part = part;
+            direction = dir;
+            shape = part.getShape(dir);
+        }
+
+        @Override
+        public VoxelShape shape() {
+            return shape;
+        }
+
+        @Override
+        public Direction direction() {
+            return direction;
+        }
     }
 
-    @Override
-    public VoxelShape shape() {
-      return shape;
-    }
+    class AxialCore<T extends Comparable<T>> implements IAxialPartInstance<T> {
+        public final float radius;
+        private final VoxelShape shape;
 
-    @Override
-    public Direction direction() {
-      return direction;
-    }
-  }
+        public AxialCore(float radius) {
+            this.radius = radius;
+            float min = 0.5F - radius;
+            float max = 0.5F + radius;
+            shape = Shapes.box(min, min, min, max, max, max);
+        }
 
-  class AxialCore<T extends Comparable<T>> implements IAxialPartInstance<T> {
-    public final float radius;
-    private final VoxelShape shape;
+        public static <T extends Comparable<T>> IAxialPartInstance<T> from(AxialBlockShape<T> blockShape) {
+            return new AxialCore<T>(blockShape.coreRadius);
+        }
 
-    public AxialCore(float radius) {
-      this.radius = radius;
-      float min = 0.5F - radius;
-      float max = 0.5F + radius;
-      shape = Shapes.box(min, min, min, max, max, max);
-    }
+        @Override
+        public VoxelShape shape() {
+            return shape;
+        }
 
-    public static <T extends Comparable<T>> IAxialPartInstance<T> from(AxialBlockShape<T> blockShape) {
-      return new AxialCore<T>(blockShape.coreRadius);
+        @Override
+        public Direction direction() {
+            return null;
+        }
     }
-
-    @Override
-    public VoxelShape shape() {
-      return shape;
-    }
-
-    @Override
-    public Direction direction() {
-      return null;
-    }
-  }
 }

@@ -11,21 +11,21 @@ import net.minecraftforge.registries.RegistryObject;
 import static alpvax.advancedautocrafting.AdvancedAutocrafting.MODID;
 
 public class AAItems {
-  public static final CreativeModeTab ITEM_GROUP = (new CreativeModeTab(MODID) {
-    /*
-     * Only on Client
-     */
-    public ItemStack makeIcon() {
-      return new ItemStack(AABlocks.CONTROLLER.get());
-    }
-  });
+    public static final CreativeModeTab ITEM_GROUP = (new CreativeModeTab(MODID) {
+        /*
+         * Only on Client
+         */
+        public ItemStack makeIcon() {
+            return new ItemStack(AABlocks.CONTROLLER.get());
+        }
+    });
 
-  public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
 
-  public static final RegistryObject<Item> REMOTE_POS = ITEMS.register("remote_pos", () -> new RemotePositionItem(
-      new Item.Properties()
-  ));
-  public static final RegistryObject<Item> MULTITOOL = ITEMS.register("multitool", () -> new Item(
-      new Item.Properties().tab(ITEM_GROUP)
-  ));
+    public static final RegistryObject<Item> REMOTE_POS = ITEMS.register("remote_pos", () -> new RemotePositionItem(
+        new Item.Properties()
+    ));
+    public static final RegistryObject<Item> MULTITOOL = ITEMS.register("multitool", () -> new Item(
+        new Item.Properties().tab(ITEM_GROUP)
+    ));
 }

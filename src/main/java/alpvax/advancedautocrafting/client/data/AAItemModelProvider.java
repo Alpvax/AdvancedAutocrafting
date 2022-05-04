@@ -20,62 +20,61 @@ import java.util.function.Supplier;
  */
 public class AAItemModelProvider extends ItemModelProvider {
 
-  public AAItemModelProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-    super(generator, AdvancedAutocrafting.MODID, existingFileHelper);
-  }
+    public AAItemModelProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
+        super(generator, AdvancedAutocrafting.MODID, existingFileHelper);
+    }
 
-  @Nonnull
-  @Override
-  public String getName() {
-    return "Advanced Autocrafting Item Models";
-  }
+    @Nonnull
+    @Override
+    public String getName() {
+        return "Advanced Autocrafting Item Models";
+    }
 
-  @Override
-  protected void registerModels() {
+    @Override
+    protected void registerModels() {
 
-    generated(AAItems.REMOTE_POS);
-    handheld(AAItems.MULTITOOL);
+        generated(AAItems.REMOTE_POS);
+        handheld(AAItems.MULTITOOL);
 
-    // BLOCKS
-    blockItem(AABlocks.CONTROLLER);
-    blockItem(AABlocks.REMOTE_MARKER);
-    blockItem(AABlocks.REMOTE_MASTER);
-    //blockItem(AABlocks.WIRE, "_core");
-  }
+        // BLOCKS
+        blockItem(AABlocks.CONTROLLER);
+        blockItem(AABlocks.REMOTE_MARKER);
+        blockItem(AABlocks.REMOTE_MASTER);
+        //blockItem(AABlocks.WIRE, "_core");
+    }
 
 
+    @SuppressWarnings("ConstantConditions")
+    private String name(Supplier<? extends ItemLike> item) {
+        return item.get().asItem().getRegistryName().getPath();
+    }
 
-  @SuppressWarnings("ConstantConditions")
-  private String name(Supplier<? extends ItemLike> item) {
-    return item.get().asItem().getRegistryName().getPath();
-  }
+    private ResourceLocation itemTexture(Supplier<? extends ItemLike> item) {
+        return modLoc("item/" + name(item));
+    }
 
-  private ResourceLocation itemTexture(Supplier<? extends ItemLike> item) {
-    return modLoc("item/" + name(item));
-  }
+    private ItemModelBuilder blockItem(Supplier<? extends Block> block) {
+        return blockItem(block, "");
+    }
 
-  private ItemModelBuilder blockItem(Supplier<? extends Block> block) {
-    return blockItem(block, "");
-  }
+    private ItemModelBuilder blockItem(Supplier<? extends Block> block, String suffix) {
+        String name = name(block);
+        return getBuilder(name).parent(new ModelFile.UncheckedModelFile(modLoc("block/" + name + suffix)));
+    }
 
-  private ItemModelBuilder blockItem(Supplier<? extends Block> block, String suffix) {
-    String name = name(block);
-    return getBuilder(name).parent(new ModelFile.UncheckedModelFile(modLoc("block/" + name + suffix)));
-  }
+    private ItemModelBuilder generated(Supplier<? extends ItemLike> item) {
+        return generated(item, itemTexture(item));
+    }
 
-  private ItemModelBuilder generated(Supplier<? extends ItemLike> item) {
-    return generated(item, itemTexture(item));
-  }
+    private ItemModelBuilder generated(Supplier<? extends ItemLike> item, ResourceLocation texture) {
+        return getBuilder(name(item)).parent(new ModelFile.UncheckedModelFile("item/generated")).texture("layer0", texture);
+    }
 
-  private ItemModelBuilder generated(Supplier<? extends ItemLike> item, ResourceLocation texture) {
-    return getBuilder(name(item)).parent(new ModelFile.UncheckedModelFile("item/generated")).texture("layer0", texture);
-  }
+    private ItemModelBuilder handheld(Supplier<? extends ItemLike> item) {
+        return handheld(item, itemTexture(item));
+    }
 
-  private ItemModelBuilder handheld(Supplier<? extends ItemLike> item) {
-    return handheld(item, itemTexture(item));
-  }
-
-  private ItemModelBuilder handheld(Supplier<? extends ItemLike> item, ResourceLocation texture) {
-    return withExistingParent(name(item), "item/handheld").texture("layer0", texture);
-  }
+    private ItemModelBuilder handheld(Supplier<? extends ItemLike> item, ResourceLocation texture) {
+        return withExistingParent(name(item), "item/handheld").texture("layer0", texture);
+    }
 }

@@ -7,19 +7,19 @@ import net.minecraft.core.NonNullList;
 
 
 public class SimpleNetworkNode implements INetworkNode {
-  private final BlockPos pos;
+    private final BlockPos pos;
 
-  public SimpleNetworkNode(BlockPos pos) {
-    this.pos = pos;
-  }
+    public SimpleNetworkNode(BlockPos pos) {
+        this.pos = pos;
+    }
 
-  @Override
-  public NonNullList<INetworkNode> getChildNodes(Direction inbound) {
-    return NonNullList.create();
-  }
+    @Override
+    public NonNullList<INetworkNode> getChildNodes(Direction inbound) {
+        return NonNullList.create();
+    }
 
-  @Override
-  public BlockPos getPos() {
-    return pos;
-  }
+    @Override
+    public BlockPos getPos() {
+        return pos;
+    }
 }

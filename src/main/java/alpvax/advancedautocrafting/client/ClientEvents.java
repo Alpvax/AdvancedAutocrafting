@@ -10,13 +10,13 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = AdvancedAutocrafting.MODID, value = Dist.CLIENT)
 public class ClientEvents {
-  @SubscribeEvent
-  static void renderWorldLastEvent(RenderLevelLastEvent evt) {
-    BlockHighlightRender.render(evt.getPoseStack());
-  }
+    @SubscribeEvent
+    static void renderWorldLastEvent(RenderLevelLastEvent evt) {
+        BlockHighlightRender.render(evt.getPoseStack());
+    }
 
-  @SubscribeEvent
-  static void onWorldChange(WorldEvent.Unload event) {
-    BlockHighlightRender.manager.clear();
-  }
+    @SubscribeEvent
+    static void onWorldChange(WorldEvent.Unload event) {
+        BlockHighlightRender.manager.clear();
+    }
 }

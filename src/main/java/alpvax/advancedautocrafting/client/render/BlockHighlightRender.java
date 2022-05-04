@@ -18,154 +18,175 @@ import java.util.Map;
  * Heavily modified (re-written) by Alpvax, with caching
  */
 public class BlockHighlightRender {
-  private static final Direction[] DIRECTIONS = Direction.values();
-  public static final ContigiousRegionManager manager = new ContigiousRegionManager();
+    private static final Direction[] DIRECTIONS = Direction.values();
+    public static final ContigiousRegionManager manager = new ContigiousRegionManager();
 
-  private static class HighlightData {
-    private final int red;
-    private final int green;
-    private final int blue;
-    private final int alpha;
-    /** Whether or not the render can be seen through walls (no depth test) */
-    private boolean throughWalls;
-    /** Which directions to render faces in */
-    private final boolean[] dirs = new boolean[6];
-    /** [x_min, x_max] */
-    private float[] xVert = {0F, 1F};
-    /** [y_min, y_max] */
-    private float[] yVert = {0F, 1F};
-    /** [z_min, z_max] */
-    private float[] zVert = {0F, 1F};
-    protected HighlightData(int red, int green, int blue, int alpha, boolean throughWalls) {
-      this.red = red;
-      this.blue = blue;
-      this.green = green;
-      this.alpha = alpha;
-      this.throughWalls = throughWalls;
-    }
-    protected HighlightData setDirection(Direction d, boolean show) {
-      if(dirs[d.get3DDataValue()] != show) { //Only adjust if direction is different
-        dirs[d.get3DDataValue()] = show;
-        int index = d.getAxisDirection() == Direction.AxisDirection.POSITIVE ? 1 : 0;
-        double amount = (index == 0) == show ? -0.005 : 0.005;
-        switch (d.getAxis()) {
-          case X -> xVert[index] += amount;
-          case Y -> yVert[index] += amount;
-          case Z -> zVert[index] += amount;
+    private static class HighlightData {
+        private final int red;
+        private final int green;
+        private final int blue;
+        private final int alpha;
+        /**
+         * Whether or not the render can be seen through walls (no depth test)
+         */
+        private final boolean throughWalls;
+        /**
+         * Which directions to render faces in
+         */
+        private final boolean[] dirs = new boolean[6];
+        /**
+         * [x_min, x_max]
+         */
+        private final float[] xVert = {0F, 1F};
+        /**
+         * [y_min, y_max]
+         */
+        private final float[] yVert = {0F, 1F};
+        /**
+         * [z_min, z_max]
+         */
+        private final float[] zVert = {0F, 1F};
+
+        protected HighlightData(int red, int green, int blue, int alpha, boolean throughWalls) {
+            this.red = red;
+            this.blue = blue;
+            this.green = green;
+            this.alpha = alpha;
+            this.throughWalls = throughWalls;
         }
-      }
-      return this;
-    }
-    protected void addVertexData(VertexConsumer builder, Matrix4f matrix) {
-      if(dirs[Direction.DOWN.get3DDataValue()]) {
-        builder.vertex(matrix, xVert[0], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[1], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[1], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[0], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
-      }
-      if(dirs[Direction.UP.get3DDataValue()]) {
-        builder.vertex(matrix, xVert[0], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[0], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[1], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[1], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
-      }
-      if (dirs[Direction.NORTH.get3DDataValue()]) {
-        builder.vertex(matrix, xVert[0], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[0], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[0], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[0], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
-      }
-      if (dirs[Direction.SOUTH.get3DDataValue()]) {
-        builder.vertex(matrix, xVert[1], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[1], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[1], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[1], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
-      }
-      if (dirs[Direction.WEST.get3DDataValue()]) {
-        builder.vertex(matrix, xVert[0], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[1], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[1], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[0], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
-      }
-      if (dirs[Direction.EAST.get3DDataValue()]) {
-        builder.vertex(matrix, xVert[0], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[0], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[1], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, xVert[1], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
-      }
-    }
-  }
-  public static class ContigiousRegionManager {
-    private final Map<BlockPos, HighlightData> cache = Maps.newHashMap();
-    public void add(BlockPos pos, int red, int green, int blue, int alpha) {
-      add(pos, new HighlightData(red, green, blue, alpha, false));
-    }
-    private HighlightData add(BlockPos pos, HighlightData data) {
-      cache.put(pos, data);
-      for(Direction d : DIRECTIONS) {
-        BlockPos aPos = pos.relative(d);
-        HighlightData aData = cache.get(aPos);
-        data.setDirection(d, aData == null);
-        if(aData != null) {
-          aData.setDirection(d.getOpposite(), false);
+
+        protected HighlightData setDirection(Direction d, boolean show) {
+            if (dirs[d.get3DDataValue()] != show) { //Only adjust if direction is different
+                dirs[d.get3DDataValue()] = show;
+                int index = d.getAxisDirection() == Direction.AxisDirection.POSITIVE ? 1 : 0;
+                double amount = (index == 0) == show ? -0.005 : 0.005;
+                switch (d.getAxis()) {
+                    case X -> xVert[index] += amount;
+                    case Y -> yVert[index] += amount;
+                    case Z -> zVert[index] += amount;
+                }
+            }
+            return this;
         }
-      }
-      return data;
-    }
-    public boolean remove(BlockPos pos) {
-      if(cache.remove(pos) != null) {
-        for(Direction d : DIRECTIONS) {
-          BlockPos aPos = pos.relative(d);
-          HighlightData aData = cache.get(aPos);
-          if(aData != null) {
-            aData.setDirection(d.getOpposite(), true);
-          }
+
+        protected void addVertexData(VertexConsumer builder, Matrix4f matrix) {
+            if (dirs[Direction.DOWN.get3DDataValue()]) {
+                builder.vertex(matrix, xVert[0], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[1], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[1], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[0], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
+            }
+            if (dirs[Direction.UP.get3DDataValue()]) {
+                builder.vertex(matrix, xVert[0], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[0], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[1], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[1], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
+            }
+            if (dirs[Direction.NORTH.get3DDataValue()]) {
+                builder.vertex(matrix, xVert[0], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[0], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[0], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[0], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
+            }
+            if (dirs[Direction.SOUTH.get3DDataValue()]) {
+                builder.vertex(matrix, xVert[1], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[1], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[1], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[1], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
+            }
+            if (dirs[Direction.WEST.get3DDataValue()]) {
+                builder.vertex(matrix, xVert[0], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[1], yVert[0], zVert[1]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[1], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[0], yVert[1], zVert[1]).color(red, green, blue, alpha).endVertex();
+            }
+            if (dirs[Direction.EAST.get3DDataValue()]) {
+                builder.vertex(matrix, xVert[0], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[0], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[1], yVert[1], zVert[0]).color(red, green, blue, alpha).endVertex();
+                builder.vertex(matrix, xVert[1], yVert[0], zVert[0]).color(red, green, blue, alpha).endVertex();
+            }
         }
-        return true;
-      }
-      return false;
-    }
-    public boolean toggle(BlockPos pos, int red, int green, int blue, int alpha) {
-      return toggle(pos, new HighlightData(red, green, blue, alpha, false));
-    }
-    public boolean toggle(BlockPos pos, HighlightData addData) {
-      if (contains(pos)) {
-        remove(pos);
-        return false;
-      }
-      add(pos, addData);
-      return true;
-    }
-    @Nullable
-    protected HighlightData get(BlockPos pos) {
-      return cache.get(pos);
-    }
-    protected HighlightData getOrCreate(BlockPos pos, int red, int green, int blue, int alpha) {
-      HighlightData data = get(pos);
-      if (data == null) {
-        data = add(pos, new HighlightData(red, green, blue, alpha, false));
-      }
-      return data;
     }
 
-    public boolean contains(BlockPos pos) {
-      return cache.containsKey(pos);
+    public static class ContigiousRegionManager {
+        private final Map<BlockPos, HighlightData> cache = Maps.newHashMap();
+
+        public void add(BlockPos pos, int red, int green, int blue, int alpha) {
+            add(pos, new HighlightData(red, green, blue, alpha, false));
+        }
+
+        private HighlightData add(BlockPos pos, HighlightData data) {
+            cache.put(pos, data);
+            for (Direction d : DIRECTIONS) {
+                BlockPos aPos = pos.relative(d);
+                HighlightData aData = cache.get(aPos);
+                data.setDirection(d, aData == null);
+                if (aData != null) {
+                    aData.setDirection(d.getOpposite(), false);
+                }
+            }
+            return data;
+        }
+
+        public boolean remove(BlockPos pos) {
+            if (cache.remove(pos) != null) {
+                for (Direction d : DIRECTIONS) {
+                    BlockPos aPos = pos.relative(d);
+                    HighlightData aData = cache.get(aPos);
+                    if (aData != null) {
+                        aData.setDirection(d.getOpposite(), true);
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public boolean toggle(BlockPos pos, int red, int green, int blue, int alpha) {
+            return toggle(pos, new HighlightData(red, green, blue, alpha, false));
+        }
+
+        public boolean toggle(BlockPos pos, HighlightData addData) {
+            if (contains(pos)) {
+                remove(pos);
+                return false;
+            }
+            add(pos, addData);
+            return true;
+        }
+
+        @Nullable
+        protected HighlightData get(BlockPos pos) {
+            return cache.get(pos);
+        }
+
+        protected HighlightData getOrCreate(BlockPos pos, int red, int green, int blue, int alpha) {
+            HighlightData data = get(pos);
+            if (data == null) {
+                data = add(pos, new HighlightData(red, green, blue, alpha, false));
+            }
+            return data;
+        }
+
+        public boolean contains(BlockPos pos) {
+            return cache.containsKey(pos);
+        }
+
+        public void clear() {
+            cache.clear();
+        }
     }
 
-    public void clear() {
-      cache.clear();
-    }
-  }
+    public static void render(PoseStack poseStack) {
+        Vec3 camPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
 
-  public static void render(PoseStack poseStack) {
-    Vec3 camPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-    MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        poseStack.pushPose();
+        poseStack.translate(-camPos.x(), -camPos.y(), -camPos.z()); // translate back to camera
 
-    poseStack.pushPose();
-    poseStack.translate(-camPos.x(), -camPos.y(), -camPos.z()); // translate back to camera
-
-    VertexConsumer builder = buffer.getBuffer(AARenderTypes.BLOCK_OVERLAY);
-    //TODO: no depth? VertexConsumer throughWalls = buffer.getBuffer(AARenderTypes.BLOCK_OVERLAY_NO_DEPTH);
+        VertexConsumer builder = buffer.getBuffer(AARenderTypes.BLOCK_OVERLAY);
+        //TODO: no depth? VertexConsumer throughWalls = buffer.getBuffer(AARenderTypes.BLOCK_OVERLAY_NO_DEPTH);
     /*Matrix4f matrix4f = poseStack.last().pose(); // get final transformation matrix, handy to get yaw+pitch transformation
     RenderSystem.multMatrix(matrix4f);
     RenderSystem.enableBlend();
@@ -176,20 +197,20 @@ public class BlockHighlightRender {
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuilder();*/
 
-    manager.cache.forEach((pos, data) -> {
-      if(pos != null) {
-        poseStack.pushPose();
-        //RenderSystem.translatef(e.getX() - 0.005F, e.getY() - 0.005F, e.getZ() - 0.005F);
-        poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
-        data.addVertexData(builder, poseStack.last().pose());
+        manager.cache.forEach((pos, data) -> {
+            if (pos != null) {
+                poseStack.pushPose();
+                //RenderSystem.translatef(e.getX() - 0.005F, e.getY() - 0.005F, e.getZ() - 0.005F);
+                poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
+                data.addVertexData(builder, poseStack.last().pose());
+                poseStack.popPose();
+            }
+        });
         poseStack.popPose();
-      }
-    });
-    poseStack.popPose();
 
-    buffer.endBatch(AARenderTypes.BLOCK_OVERLAY); //TODO: Own rendertype?
+        buffer.endBatch(AARenderTypes.BLOCK_OVERLAY); //TODO: Own rendertype?
 
-    //RenderSystem.disableBlend();
-    //RenderSystem.enableTexture();
-  }
+        //RenderSystem.disableBlend();
+        //RenderSystem.enableTexture();
+    }
 }

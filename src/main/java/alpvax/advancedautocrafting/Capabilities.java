@@ -7,9 +7,10 @@ import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 
 public class Capabilities {
-  public static Capability<INetworkNode> NODE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
+    public static Capability<INetworkNode> NODE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
+    });
 
-  public static void register(RegisterCapabilitiesEvent event) {
-    event.register(INetworkNode.class);
-  }
+    public static void register(RegisterCapabilitiesEvent event) {
+        event.register(INetworkNode.class);
+    }
 }

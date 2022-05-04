@@ -12,16 +12,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
 
 public class RemotePositionMarkerBlock extends Block {
-  public RemotePositionMarkerBlock(Properties properties) {
-    super(properties);
-  }
-
-  @Override
-  public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
-    if (player.isCrouching() && level instanceof Level l) {
-      ItemStack stack = new ItemStack(AAItems.REMOTE_POS.get());
-      BlockPosLootFunction.write(stack.getOrCreateTag(), l, pos);
+    public RemotePositionMarkerBlock(Properties properties) {
+        super(properties);
     }
-    return super.getCloneItemStack(state, target, level, pos, player);
-  }
+
+    @Override
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+        if (player.isCrouching() && level instanceof Level l) {
+            ItemStack stack = new ItemStack(AAItems.REMOTE_POS.get());
+            BlockPosLootFunction.write(stack.getOrCreateTag(), l, pos);
+        }
+        return super.getCloneItemStack(state, target, level, pos, player);
+    }
 }
