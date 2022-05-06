@@ -21,7 +21,7 @@ public class AAItems {
     });
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-    
+
     public static final RegistryObject<Item> MULTITOOL = ITEMS.register("multitool", () -> new Item(
         new Item.Properties().tab(ITEM_GROUP)
     ));

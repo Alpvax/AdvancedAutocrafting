@@ -41,7 +41,7 @@ public class AAItemModelProvider extends ItemModelProvider {
         //blockItem(AABlocks.WIRE, "_core");
 
         generated(AABlocks.POSITION_MARKER).override()
-            .predicate(new ResourceLocation(AdvancedAutocrafting.MODID, "position_dimension"), 0)
+            .predicate(new ResourceLocation(AdvancedAutocrafting.MODID, "position_dimension"), 2F)
             .model(new ModelFile.UncheckedModelFile(modLoc("block/" + name(AABlocks.POSITION_MARKER))))
             .end();
     }

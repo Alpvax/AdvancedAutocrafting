@@ -6,7 +6,7 @@
   "overrides": [
     {
       "predicate": {
-        "advancedautocrafting:position_dimension": 0.0
+        "advancedautocrafting:position_dimension": 2.0
       },
       "model": "advancedautocrafting:block/position_marker"
     }
