@@ -48,8 +48,8 @@ public class AALootTableProvider extends LootTableProvider {
         protected void addTables() {
             dropSelf(AABlocks.CONTROLLER);
             dropSelf(AABlocks.REMOTE_MASTER);
-            add(AABlocks.REMOTE_MARKER.get(),
-                (b) -> withPosition(b, AAItems.REMOTE_POS)
+            add(AABlocks.POSITION_MARKER.get(),
+                (b) -> withPosition(b, AAItems.POSITION_MARKER)
             );
             dropSelf(AABlocks.WIRE);
         }
@@ -60,7 +60,7 @@ public class AALootTableProvider extends LootTableProvider {
 
         @SuppressWarnings("SameParameterValue")
         private LootTable.Builder withPosition(Block block, Supplier<? extends ItemLike> item) {
-            return LootTable.lootTable().withPool(LootPool.lootPool().add(LootItem.lootTableItem(item.get()).apply(BlockPosLootFunction.builder())));
+            return LootTable.lootTable().withPool(LootPool.lootPool().add(LootItem.lootTableItem(item.get()).apply(PositionReferenceLootFunction.builder())));
         }
 
         @Override

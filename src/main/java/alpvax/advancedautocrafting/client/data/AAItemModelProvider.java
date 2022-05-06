@@ -33,12 +33,13 @@ public class AAItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
 
-        generated(AAItems.REMOTE_POS);
+        generated(AAItems.POSITION_MARKER).override()
+            .predicate(new ResourceLocation(AdvancedAutocrafting.MODID, "position_dimension"), 0)
+            .model(new ModelFile.UncheckedModelFile(modLoc("block/" + name(AABlocks.POSITION_MARKER))));
         handheld(AAItems.MULTITOOL);
 
         // BLOCKS
         blockItem(AABlocks.CONTROLLER);
-        blockItem(AABlocks.REMOTE_MARKER);
         blockItem(AABlocks.REMOTE_MASTER);
         //blockItem(AABlocks.WIRE, "_core");
     }

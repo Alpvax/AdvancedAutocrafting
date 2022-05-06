@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "advancedautocrafting:remote_marker"
+      "advancedautocrafting:position_marker"
     ]
   },
   "criteria": {
@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:iron_bars"
+            "items": [
+              "minecraft:iron_bars"
+            ]
           }
         ]
       }
@@ -39,7 +41,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "advancedautocrafting:remote_marker"
+        "recipe": "advancedautocrafting:position_marker"
       }
     }
   },

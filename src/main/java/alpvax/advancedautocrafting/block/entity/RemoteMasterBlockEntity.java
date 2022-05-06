@@ -5,7 +5,7 @@ import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.container.RemoteMasterContainer;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
-import alpvax.advancedautocrafting.data.BlockPosLootFunction;
+import alpvax.advancedautocrafting.util.IPositionReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -34,7 +34,7 @@ public class RemoteMasterBlockEntity extends BlockEntity implements MenuProvider
     public ItemStackHandler inventory = new ItemStackHandler(27) {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return BlockPosLootFunction.read(stack).valid();
+            return stack.getCapability(Capabilities.POSITION_MARKER_CAPABILITY).isPresent();
         }
 
         @Override
@@ -59,10 +59,8 @@ public class RemoteMasterBlockEntity extends BlockEntity implements MenuProvider
         return new INetworkNode() {
             @Override
             public NonNullList<INetworkNode> getChildNodes(Direction inbound) {
-                return RemoteMasterBlockEntity.this.getItems().stream()
-                    .map(BlockPosLootFunction::read)
-                    .filter(BlockPosLootFunction.LevelPosPair::valid)
-                    .map(p -> new SimpleNetworkNode(p.getPos()))
+                return RemoteMasterBlockEntity.this.getRemotePositions().stream()
+                    .map(p -> new SimpleNetworkNode(p.getPosition()))
                     .collect(Collectors.toCollection(NonNullList::create));
             }
 
@@ -84,11 +82,11 @@ public class RemoteMasterBlockEntity extends BlockEntity implements MenuProvider
         return list;
     }
 
-    public NonNullList<BlockPos> getRemotePositions() {
+    public NonNullList<IPositionReference> getRemotePositions() {
         return getItems().stream()
-            .map(BlockPosLootFunction::read)
-            .filter(BlockPosLootFunction.LevelPosPair::valid)
-            .map(BlockPosLootFunction.LevelPosPair::getPos)
+            .map(stack -> stack.getCapability(Capabilities.POSITION_MARKER_CAPABILITY))
+            .filter(LazyOptional::isPresent)
+            .map(lazy -> lazy.resolve().orElseThrow())
             .collect(Collectors.toCollection(NonNullList::create));
     }
 

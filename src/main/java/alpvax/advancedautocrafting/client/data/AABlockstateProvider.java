@@ -26,7 +26,7 @@ public class AABlockstateProvider extends BlockStateProvider {
     @Override
     protected void registerStatesAndModels() {
         simpleBlock(CONTROLLER);
-        simpleBlock(REMOTE_MARKER);
+        simpleBlock(POSITION_MARKER);
         simpleBlock(REMOTE_MASTER);
         axisBlock(WIRE);
     }

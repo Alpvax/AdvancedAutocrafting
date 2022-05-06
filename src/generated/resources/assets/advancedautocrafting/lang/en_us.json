@@ -1,10 +1,11 @@
 {
+  "advancedautocrafting:bound.dimension": "Bound dimension: %s",
   "advancedautocrafting:bound.position": "Bound position: %s",
   "block.advancedautocrafting.controller": "Autocrafting Controller",
-  "block.advancedautocrafting.remote_marker": "Remote Position Marker",
+  "block.advancedautocrafting.position_marker": "Remote Position Marker",
   "block.advancedautocrafting.remote_master": "Remote Network Container",
   "block.advancedautocrafting.wire": "Wire",
   "item.advancedautocrafting.multitool": "Multitool",
-  "item.advancedautocrafting.remote_pos": "Remote Position Reference",
+  "item.advancedautocrafting.position_marker": "Remote Position Reference",
   "itemGroup.advancedautocrafting": "Advanced Autocrafting"
 }

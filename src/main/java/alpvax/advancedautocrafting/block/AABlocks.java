@@ -26,7 +26,7 @@ public class AABlocks {
     public static final RegistryObject<Block> CONTROLLER = register("controller", () -> new ControllerBlock(
         Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(6.0F, 30F)
     ));
-    public static final RegistryObject<Block> REMOTE_MARKER = register("remote_marker", () -> new RemotePositionMarkerBlock(
+    public static final RegistryObject<Block> POSITION_MARKER = registerBlockOnly("position_marker", () -> new PositionMarkerBlock(
         Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(1.0F, 30F)
     ));
     public static final RegistryObject<Block> REMOTE_MASTER = register("remote_master", () -> new RemoteMasterBlock(

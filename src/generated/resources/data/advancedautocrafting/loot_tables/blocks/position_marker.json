@@ -3,15 +3,16 @@
   "pools": [
     {
       "rolls": 1.0,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
           "functions": [
             {
-              "function": "advancedautocrafting:blockpos"
+              "function": "advancedautocrafting:position_reference"
             }
           ],
-          "name": "advancedautocrafting:remote_pos"
+          "name": "advancedautocrafting:position_marker"
         }
       ]
     }

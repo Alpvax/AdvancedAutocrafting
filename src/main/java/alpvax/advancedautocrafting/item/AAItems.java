@@ -22,8 +22,8 @@ public class AAItems {
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
 
-    public static final RegistryObject<Item> REMOTE_POS = ITEMS.register("remote_pos", () -> new RemotePositionItem(
-        new Item.Properties()
+    public static final RegistryObject<Item> POSITION_MARKER = ITEMS.register("position_marker", () -> new PositionMarkerItem(
+        new Item.Properties().tab(ITEM_GROUP)
     ));
     public static final RegistryObject<Item> MULTITOOL = ITEMS.register("multitool", () -> new Item(
         new Item.Properties().tab(ITEM_GROUP)

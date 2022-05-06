@@ -3,15 +3,12 @@ package alpvax.advancedautocrafting.data;
 import alpvax.advancedautocrafting.AdvancedAutocrafting;
 import alpvax.advancedautocrafting.item.AAItems;
 import net.minecraft.advancements.CriterionTriggerInstance;
-import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
 
@@ -23,14 +20,6 @@ public class AARecipeProvider extends RecipeProvider {
 
     public AARecipeProvider(DataGenerator generator) {
         super(generator);
-    }
-
-    /**
-     * Copied version due to parent function being private
-     * Changed return value to remove unnecessary import
-     */
-    private static CriterionTriggerInstance has(TagKey<Item> p_206407_) {
-        return inventoryTrigger(ItemPredicate.Builder.item().of(p_206407_).build());
     }
 
     @Override
@@ -46,7 +35,7 @@ public class AARecipeProvider extends RecipeProvider {
             .unlockedBy("has_glass", has(Tags.Items.GLASS))
             .unlockedBy("has_iron_block", hasIronBlock)
             .save(consumer);
-        ShapedRecipeBuilder.shaped(REMOTE_MARKER.get())
+        ShapedRecipeBuilder.shaped(AAItems.POSITION_MARKER.get())
             .pattern("IPI").pattern("PBP").pattern("IPI")
             .define('I', Items.IRON_BARS)
             .define('P', Tags.Items.ENDER_PEARLS)
@@ -54,13 +43,13 @@ public class AARecipeProvider extends RecipeProvider {
             .unlockedBy("has_iron_bars", hasIronBars)
             .unlockedBy("has_pearl", hasPearl)
             .unlockedBy("has_iron_block", hasIronBlock)
-            .group(REMOTE_MARKER.getId().toString())
+            .group(POSITION_MARKER.getId().toString())
             .save(consumer);
-        ShapelessRecipeBuilder.shapeless(REMOTE_MARKER.get())
-            .requires(AAItems.REMOTE_POS.get())
-            .unlockedBy("has_pos_marker", has(AAItems.REMOTE_POS.get()))
-            .group(REMOTE_MARKER.getId().toString())
-            .save(consumer, new ResourceLocation(AdvancedAutocrafting.MODID, REMOTE_MARKER.getId().getPath() + "_from_marker"));
+        ShapelessRecipeBuilder.shapeless(AAItems.POSITION_MARKER.get())
+            .requires(AAItems.POSITION_MARKER.get())
+            .unlockedBy("has_pos_marker", has(AAItems.POSITION_MARKER.get()))
+            .group(POSITION_MARKER.getId().toString())
+            .save(consumer, new ResourceLocation(AdvancedAutocrafting.MODID, POSITION_MARKER.getId().getPath() + "_clear"));
         ShapedRecipeBuilder.shaped(REMOTE_MASTER.get())
             .pattern("PGP").pattern("GBG").pattern("PGP")
             .define('P', Tags.Items.ENDER_PEARLS)

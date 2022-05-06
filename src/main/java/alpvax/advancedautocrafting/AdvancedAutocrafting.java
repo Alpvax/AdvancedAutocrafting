@@ -11,11 +11,13 @@ import alpvax.advancedautocrafting.data.AALootTableProvider;
 import alpvax.advancedautocrafting.data.AARecipeProvider;
 import alpvax.advancedautocrafting.data.AATags;
 import alpvax.advancedautocrafting.data.AATagsProvider;
-import alpvax.advancedautocrafting.data.BlockPosLootFunction;
+import alpvax.advancedautocrafting.data.PositionReferenceLootFunction;
 import alpvax.advancedautocrafting.item.AAItems;
 import alpvax.advancedautocrafting.network.AAPacketManager;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -44,10 +46,6 @@ public class AdvancedAutocrafting {
         modBus.addListener(this::gatherData);
         modBus.addListener(Capabilities::register);
 
-        // Loot Table registering
-        BlockPosLootFunction.register();
-        //LootFunctionManager.registerFunction(new BlockPosLootFunction.Serializer());
-
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             // Client setup
             modBus.addListener(this::setupClient);
@@ -60,6 +58,8 @@ public class AdvancedAutocrafting {
         AABlocks.Entities.BLOCK_ENTITIES.register(modBus);
         AAItems.ITEMS.register(modBus);
         AAContainerTypes.CONTAINER_TYPES.register(modBus);
+
+        PositionReferenceLootFunction.register(modBus);
 
         AATags.init();
     }
@@ -76,6 +76,15 @@ public class AdvancedAutocrafting {
         event.enqueueWork(() -> {
             MenuScreens.register(AAContainerTypes.REMOTE_MASTER.get(), RemoteMasterScreen::new);
             MenuScreens.register(AAContainerTypes.CONTROLLER.get(), ControllerScreen::new);
+
+            // Register property override for items with Position marker capability.
+            // 0 = no position, 1 = current dimension, 2 = different dimension
+            ItemProperties.registerGeneric(new ResourceLocation(MODID, "position_dimension"),
+                (itemStack, clientLevel, livingEntity, seed) ->
+                    itemStack.getCapability(Capabilities.POSITION_MARKER_CAPABILITY).map(
+                        marker -> marker.matchesLevel(clientLevel) ? 1 : 2
+                    ).orElse(0)
+            );
         });
     }
 

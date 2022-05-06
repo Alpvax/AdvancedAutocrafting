@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "advancedautocrafting:remote_marker_from_marker"
+      "advancedautocrafting:position_marker_clear"
     ]
   },
   "criteria": {
@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "advancedautocrafting:remote_pos"
+            "items": [
+              "advancedautocrafting:position_marker"
+            ]
           }
         ]
       }
@@ -19,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "advancedautocrafting:remote_marker_from_marker"
+        "recipe": "advancedautocrafting:position_marker_clear"
       }
     }
   },

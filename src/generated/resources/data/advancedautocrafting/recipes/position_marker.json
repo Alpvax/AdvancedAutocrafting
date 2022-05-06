@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "group": "advancedautocrafting:remote_marker",
+  "group": "advancedautocrafting:position_marker",
   "pattern": [
     "IPI",
     "PBP",
@@ -18,6 +18,6 @@
     }
   },
   "result": {
-    "item": "advancedautocrafting:remote_marker"
+    "item": "advancedautocrafting:position_marker"
   }
 }

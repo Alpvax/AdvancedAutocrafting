@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "advancedautocrafting:position_marker",
+  "ingredients": [
+    {
+      "item": "advancedautocrafting:position_marker"
+    }
+  ],
+  "result": {
+    "item": "advancedautocrafting:position_marker"
+  }
+}

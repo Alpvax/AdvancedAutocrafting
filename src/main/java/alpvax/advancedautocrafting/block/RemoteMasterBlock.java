@@ -64,7 +64,7 @@ public class RemoteMasterBlock extends Block implements EntityBlock {
         if (!stack.isEmpty()) {
             if (stack.getItem() instanceof BlockItem) {
                 BlockState state = ((BlockItem) stack.getItem()).getBlock().defaultBlockState();
-                tile.getRemotePositions().forEach((p) -> level.setBlock(p, state, Block.UPDATE_ALL));
+                tile.getRemotePositions().forEach((p) -> level.setBlock(p.getPosition(), state, Block.UPDATE_ALL));
                 return false;
             } else if (tile.inventory.isItemValid(0, stack)) {
                 tile.addItem(stack.copy());
@@ -73,7 +73,7 @@ public class RemoteMasterBlock extends Block implements EntityBlock {
             }
             return true;
         } else {
-            tile.getRemotePositions().forEach((p) -> level.removeBlock(p, false));
+            tile.getRemotePositions().forEach((p) -> level.removeBlock(p.getPosition(), false));
             return false;
         }
     }
