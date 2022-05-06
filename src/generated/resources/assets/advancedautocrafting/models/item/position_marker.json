@@ -8,7 +8,7 @@
       "predicate": {
         "advancedautocrafting:position_dimension": 0.0
       },
-      "model": "advancedautocrafting:block/air"
+      "model": "advancedautocrafting:block/position_marker"
     }
   ]
 }

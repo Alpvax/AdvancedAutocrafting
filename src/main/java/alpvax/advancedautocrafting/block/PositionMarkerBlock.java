@@ -1,6 +1,5 @@
 package alpvax.advancedautocrafting.block;
 
-import alpvax.advancedautocrafting.item.AAItems;
 import alpvax.advancedautocrafting.util.IPositionReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
@@ -19,7 +18,7 @@ public class PositionMarkerBlock extends Block {
     @Override
     public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
         if (player.isCrouching() && level instanceof Level l) {
-            ItemStack stack = new ItemStack(AAItems.POSITION_MARKER.get());
+            ItemStack stack = new ItemStack(asItem());
             IPositionReference.PositionMarkerItemStack.setPosition(stack, l.dimension(), pos.immutable());
         }
         return super.getCloneItemStack(state, target, level, pos, player);

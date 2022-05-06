@@ -27,7 +27,6 @@ public class AALangProvider extends LanguageProvider {
     protected void addTranslations() {
         add(AAItems.ITEM_GROUP, "Advanced Autocrafting");
 
-        add(AAItems.POSITION_MARKER.get(), "Remote Position Reference");
         add(AAItems.MULTITOOL.get(), "Multitool");
 
         addBlock(AABlocks.CONTROLLER);

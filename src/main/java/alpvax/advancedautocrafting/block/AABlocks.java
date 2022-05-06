@@ -4,6 +4,7 @@ import alpvax.advancedautocrafting.AdvancedAutocrafting;
 import alpvax.advancedautocrafting.block.entity.ControllerBlockEntity;
 import alpvax.advancedautocrafting.block.entity.RemoteMasterBlockEntity;
 import alpvax.advancedautocrafting.item.AAItems;
+import alpvax.advancedautocrafting.item.PositionMarkerItem;
 import com.google.common.collect.Sets;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -26,9 +27,9 @@ public class AABlocks {
     public static final RegistryObject<Block> CONTROLLER = register("controller", () -> new ControllerBlock(
         Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(6.0F, 30F)
     ));
-    public static final RegistryObject<Block> POSITION_MARKER = registerBlockOnly("position_marker", () -> new PositionMarkerBlock(
+    public static final RegistryObject<Block> POSITION_MARKER = register("position_marker", () -> new PositionMarkerBlock(
         Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(1.0F, 30F)
-    ));
+    ), (b) -> () -> new PositionMarkerItem(b.get(), new Item.Properties().tab(AAItems.ITEM_GROUP)));
     public static final RegistryObject<Block> REMOTE_MASTER = register("remote_master", () -> new RemoteMasterBlock(
         Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(6.0F, 30F)
     ));

@@ -35,7 +35,7 @@ public class AARecipeProvider extends RecipeProvider {
             .unlockedBy("has_glass", has(Tags.Items.GLASS))
             .unlockedBy("has_iron_block", hasIronBlock)
             .save(consumer);
-        ShapedRecipeBuilder.shaped(AAItems.POSITION_MARKER.get())
+        ShapedRecipeBuilder.shaped(POSITION_MARKER.get())
             .pattern("IPI").pattern("PBP").pattern("IPI")
             .define('I', Items.IRON_BARS)
             .define('P', Tags.Items.ENDER_PEARLS)
@@ -45,9 +45,9 @@ public class AARecipeProvider extends RecipeProvider {
             .unlockedBy("has_iron_block", hasIronBlock)
             .group(POSITION_MARKER.getId().toString())
             .save(consumer);
-        ShapelessRecipeBuilder.shapeless(AAItems.POSITION_MARKER.get())
-            .requires(AAItems.POSITION_MARKER.get())
-            .unlockedBy("has_pos_marker", has(AAItems.POSITION_MARKER.get()))
+        ShapelessRecipeBuilder.shapeless(POSITION_MARKER.get())
+            .requires(POSITION_MARKER.get())
+            .unlockedBy("has_pos_marker", has(POSITION_MARKER.get()))
             .group(POSITION_MARKER.getId().toString())
             .save(consumer, new ResourceLocation(AdvancedAutocrafting.MODID, POSITION_MARKER.getId().getPath() + "_clear"));
         ShapedRecipeBuilder.shaped(REMOTE_MASTER.get())

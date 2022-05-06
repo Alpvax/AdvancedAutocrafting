@@ -1,7 +1,6 @@
 package alpvax.advancedautocrafting.data;
 
 import alpvax.advancedautocrafting.block.AABlocks;
-import alpvax.advancedautocrafting.item.AAItems;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.data.DataGenerator;
@@ -49,7 +48,7 @@ public class AALootTableProvider extends LootTableProvider {
             dropSelf(AABlocks.CONTROLLER);
             dropSelf(AABlocks.REMOTE_MASTER);
             add(AABlocks.POSITION_MARKER.get(),
-                (b) -> withPosition(b, AAItems.POSITION_MARKER)
+                (b) -> withPosition(b, AABlocks.POSITION_MARKER)
             );
             dropSelf(AABlocks.WIRE);
         }
