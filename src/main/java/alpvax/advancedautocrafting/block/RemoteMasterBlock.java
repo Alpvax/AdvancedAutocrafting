@@ -8,6 +8,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -47,7 +48,7 @@ public class RemoteMasterBlock extends Block implements EntityBlock {
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult rayTraceResult) {
         if (!level.isClientSide) {
             level.getBlockEntity(pos, AABlocks.Entities.REMOTE_MASTER.get()).ifPresent(tile -> {
-                if (this.interactWith(level, pos, player, hand))
+                if (this.interactWith(level, pos, player, hand, rayTraceResult))
                     NetworkHooks.openGui((ServerPlayer) player, tile, pos);
             });
         }
@@ -55,20 +56,27 @@ public class RemoteMasterBlock extends Block implements EntityBlock {
     }
 
     //TODO: Make this do something useful?
-    private boolean interactWith(Level level, BlockPos pos, Player player, InteractionHand hand) {
+    private boolean interactWith(Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         RemoteMasterBlockEntity tile = AABlocks.Entities.REMOTE_MASTER.get().getBlockEntity(level, pos);
         if (tile == null) {
             return false;
         }
         ItemStack stack = player.getItemInHand(hand);
         if (!stack.isEmpty()) {
-            if (stack.getItem() instanceof BlockItem) {
-                BlockState state = ((BlockItem) stack.getItem()).getBlock().defaultBlockState();
-                tile.getRemotePositions().forEach((p) -> level.setBlock(p.getPosition(), state, Block.UPDATE_ALL));
-                return false;
-            } else if (tile.inventory.isItemValid(0, stack)) {
+            if (tile.inventory.isItemValid(0, stack)) {
                 tile.addItem(stack.copy());
                 stack.setCount(0);
+                return false;
+            } else if (stack.getItem() instanceof BlockItem) {
+                Block block = ((BlockItem) stack.getItem()).getBlock();
+                tile.getRemotePositions().forEach((p) -> {
+                    BlockState state = block.getStateForPlacement(new BlockPlaceContext(p.getLevel(), player, hand, stack, hitResult));
+                    if (state == null) {
+                        state = block.defaultBlockState();
+                    }
+                    p.getLevel().setBlock(p.getPosition(), state, Block.UPDATE_ALL);
+
+                });
                 return false;
             }
             return true;

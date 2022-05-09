@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
@@ -116,20 +117,18 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.makeConnections(context.getLevel(), context.getClickedPos());
+        final LevelReader level = context.getLevel();
+        final BlockPos pos = context.getClickedPos();
+        BlockState state = defaultBlockState().setValue(WATERLOGGED, level.getFluidState(pos).getType() == Fluids.WATER);
+        boolean disableAll = context.isSecondaryUseActive();
+        for (Direction d : ALL_DIRECTIONS) {
+            state = withConnectionState(state, d, disableAll ? ConnectionState.DISABLED : makeConnection(level, pos, d, pos.relative(d)));
+        }
+        return state;
     }
 
     private BlockState withConnectionState(BlockState bState, Direction dir, ConnectionState cState) {
         return getConnectionProp(dir).map(prop -> bState.setValue(prop, cState)).orElse(bState);
-    }
-
-    public BlockState makeConnections(LevelReader level, BlockPos thisPos) {
-        BlockState state = defaultBlockState();
-        for (Direction d : ALL_DIRECTIONS) {
-            BlockPos pos = thisPos.relative(d);
-            state = withConnectionState(state, d, makeConnection(level, thisPos, d, pos));
-        }
-        return state;
     }
 
     /**
@@ -151,13 +150,10 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
 
     @SuppressWarnings("deprecation")
     @Override
-    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-        BlockPos dPos = fromPos.subtract(pos);
-        Direction d = Direction.fromNormal(dPos.getX(), dPos.getY(), dPos.getZ());
-        getConnection(state, d).filter(ConnectionState::isNotDisabled).ifPresent(val ->
-                                                                                     level.setBlock(pos, withConnectionState(state, d, makeConnection(level, pos, d, fromPos)), 2)
-        );
-        super.neighborChanged(state, level, pos, blockIn, fromPos, isMoving);
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos currentPos, BlockPos neighborPos) {
+        return getConnection(state, direction).filter(ConnectionState::isNotDisabled).map(conn ->
+            withConnectionState(state, direction, makeConnection(level, currentPos, direction, neighborPos))
+        ).orElseGet(() -> super.updateShape(state, direction, neighborState, level, currentPos, neighborPos));
     }
 
     private BlockState getToggledState(BlockState state, LevelReader level, BlockPos pos, Direction d) {
