@@ -5,6 +5,7 @@ import alpvax.advancedautocrafting.client.data.lang.AATranslationKeys;
 import alpvax.advancedautocrafting.client.render.BlockHighlightRender;
 import alpvax.advancedautocrafting.util.IPositionReference;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -40,7 +41,7 @@ public class PositionMarkerItem extends BlockItem {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
         stack.getCapability(Capabilities.POSITION_MARKER_CAPABILITY).ifPresent(ref -> {
             tooltip.add(new TranslatableComponent(AATranslationKeys.ITEM_POS_LORE, ref.getPosition()).withStyle(ChatFormatting.GRAY));
-            if (flagIn.isAdvanced() || !ref.matchesLevel(level)) {
+            if (flagIn.isAdvanced() || !ref.matchesLevel(level) || Screen.hasShiftDown()) {
                 tooltip.add(new TranslatableComponent(AATranslationKeys.ITEM_DIM_LORE, ref.getDimensionKey().location()).withStyle(ChatFormatting.GRAY));
             }
         });
