@@ -9,8 +9,8 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
@@ -18,6 +18,7 @@ import java.util.function.Supplier;
 /**
  * Credits to the Tropicraft team, for their sample and helper methods.
  */
+@SuppressWarnings("UnusedReturnValue")
 public class AAItemModelProvider extends ItemModelProvider {
 
     public AAItemModelProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
@@ -42,7 +43,7 @@ public class AAItemModelProvider extends ItemModelProvider {
 
         generated(AABlocks.POSITION_MARKER).override()
             .predicate(new ResourceLocation(AdvancedAutocrafting.MODID, "position_dimension"), 2F)
-            .model(new ModelFile.UncheckedModelFile(modLoc("block/" + name(AABlocks.POSITION_MARKER))))
+            .model(getExistingFile(blockPath(AABlocks.POSITION_MARKER.getId())))
             .end();
     }
 
@@ -53,26 +54,28 @@ public class AAItemModelProvider extends ItemModelProvider {
     }
 
     private ResourceLocation itemTexture(Supplier<? extends ItemLike> item) {
-        return modLoc("item/" + name(item));
+        return modLoc(ITEM_FOLDER + "/" + name(item));
     }
 
-    private ItemModelBuilder blockItem(Supplier<? extends Block> block) {
-        return blockItem(block, "");
+    private ItemModelBuilder blockItem(RegistryObject<? extends Block> block) {
+        ResourceLocation blockID = block.getId();
+        return withExistingParent(blockID.getPath(), blockPath(blockID));
     }
 
-    private ItemModelBuilder blockItem(Supplier<? extends Block> block, String suffix) {
-        String name = name(block);
-        return getBuilder(name).parent(new ModelFile.UncheckedModelFile(modLoc("block/" + name + suffix)));
+    private ResourceLocation blockPath(ResourceLocation blockId) {
+        return new ResourceLocation(blockId.getNamespace(), BLOCK_FOLDER + "/" + blockId.getPath());
     }
 
+    @SuppressWarnings("SameParameterValue")
     private ItemModelBuilder generated(Supplier<? extends ItemLike> item) {
         return generated(item, itemTexture(item));
     }
 
     private ItemModelBuilder generated(Supplier<? extends ItemLike> item, ResourceLocation texture) {
-        return getBuilder(name(item)).parent(new ModelFile.UncheckedModelFile("item/generated")).texture("layer0", texture);
+        return withExistingParent(name(item), "item/generated").texture("layer0", texture);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private ItemModelBuilder handheld(Supplier<? extends ItemLike> item) {
         return handheld(item, itemTexture(item));
     }
