@@ -3,6 +3,8 @@ package alpvax.advancedautocrafting.util;
 import alpvax.advancedautocrafting.AdvancedAutocrafting;
 import alpvax.advancedautocrafting.Capabilities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.BlockSource;
+import net.minecraft.core.BlockSourceImpl;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -22,8 +24,20 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
+/**
+ * Represents a reference to a specific position in a specific dimension.<br>
+ *
+ * Preferred structure for saving to NBT is to save the {@linkplain
+ * #getPosition() position} to NBT using {@link NbtUtils#writeBlockPos} and
+ * saving the {@link ResourceLocation#getPath path} of the {@linkplain
+ * #getDimensionKey() dimension key} to the same compound with the key
+ * "dimension". This results in a single tag with properties: {@literal "X"},
+ * {@literal "Y"}, {@literal "Z"} and {@literal "dimension"}
+ */
 public interface IPositionReference {
     ResourceKey<Level> getDimensionKey();
+
+    BlockPos getPosition();
 
     /**
      * Only call on logical server
@@ -32,36 +46,44 @@ public interface IPositionReference {
         return ServerLifecycleHooks.getCurrentServer().getLevel(getDimensionKey());
     }
 
-    BlockPos getPosition();
-
     default boolean matchesLevel(@Nullable Level level) {
         return level != null && getDimensionKey().equals(level.dimension());
     }
 
-//    /**
-//     * Only call on logical server
-//     */
-//    default BlockSource toBlockSource() {
-//        return new BlockSourceImpl(getLevel(), getPosition());
-//    }
+    /**
+     * Only call on logical server
+     */
+    default BlockSource toBlockSource() {
+        return new BlockSourceImpl(getLevel(), getPosition());
+    }
 
-    class Impl implements IPositionReference {
-        private final ResourceLocation dimension;
-        private final BlockPos position;
+    static CompoundTag save(IPositionReference ref) {
+        CompoundTag nbt = NbtUtils.writeBlockPos(ref.getPosition());
+        nbt.putString("dimension", ref.getDimensionKey().location().toString());
+        return nbt;
+    }
+    static IPositionReference load(CompoundTag nbt) {
+        return new Impl(
+            new ResourceLocation(nbt.getString("dimension")),
+            NbtUtils.readBlockPos(nbt)
+        );
+    }
 
-        public Impl(ResourceLocation level, BlockPos pos) {
-            dimension = level;
-            position = pos.immutable();
+    record Impl(ResourceLocation dimension, BlockPos position) implements IPositionReference {
+        public Impl {
+            position = position.immutable();
         }
 
         public Impl(ResourceKey<Level> level, BlockPos pos) {
-            dimension = level.location();
-            position = pos.immutable();
+            this(level.location(), pos);
         }
 
         public Impl(Level level, BlockPos pos) {
-            dimension = level.dimension().location();
-            position = pos.immutable();
+            this(level.dimension().location(), pos);
+        }
+
+        public Impl(BlockSource source) {
+            this(source.getLevel().dimension().location(), source.getPos());
         }
 
         @Override

@@ -20,7 +20,6 @@ import net.minecraftforge.registries.RegistryObject;
 
 
 public class PositionReferenceLootFunction extends LootItemConditionalFunction {
-    private static final String NBT_KEY = AdvancedAutocrafting.MODID + ":position";
     private static final DeferredRegister<LootItemFunctionType> LOOT_FUNCTIONS = DeferredRegister.create(Registry.LOOT_FUNCTION_REGISTRY, AdvancedAutocrafting.MODID);
 
     protected PositionReferenceLootFunction(LootItemCondition[] conditionsIn) {
