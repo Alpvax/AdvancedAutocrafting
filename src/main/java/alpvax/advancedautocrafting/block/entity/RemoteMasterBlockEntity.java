@@ -5,11 +5,13 @@ import alpvax.advancedautocrafting.block.AABlocks;
 import alpvax.advancedautocrafting.container.RemoteMasterContainer;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
+import alpvax.advancedautocrafting.inventory.ItemListHandler;
 import alpvax.advancedautocrafting.util.IPositionReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.Containers;
@@ -24,14 +26,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.stream.Collectors;
 
 public class RemoteMasterBlockEntity extends BlockEntity implements MenuProvider {
-    public ItemStackHandler inventory = new ItemStackHandler(27) {
+    public ItemListHandler inventory = new ItemListHandler() {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             return stack.getCapability(Capabilities.POSITION_MARKER_CAPABILITY).isPresent();
@@ -94,20 +95,14 @@ public class RemoteMasterBlockEntity extends BlockEntity implements MenuProvider
         Containers.dropContents(level, pos, getItems());
     }
 
-    public ItemStack addItem(ItemStack stack) {
-        for (int i = 0; i < inventory.getSlots(); i++) {
-            ItemStack s = inventory.getStackInSlot(i);
-            if (s.isEmpty()) {
-                return inventory.insertItem(i, stack, false);
-            }
-        }
-        return stack;
+    public void addItem(ItemStack stack) {
+        inventory.setStackInSlot(-1, stack);
     }
 
     @Override
     public void load(CompoundTag compound) {
         super.load(compound);
-        inventory.deserializeNBT(compound.getCompound("remoteItems"));
+        inventory.deserializeNBT(compound.getList("remoteItems", Tag.TAG_COMPOUND));
     }
 
     @Override
