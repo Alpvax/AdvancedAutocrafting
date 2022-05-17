@@ -8,7 +8,7 @@ import alpvax.advancedautocrafting.client.ClientEvents;
 import alpvax.advancedautocrafting.client.data.AABlockstateProvider;
 import alpvax.advancedautocrafting.client.data.AAItemModelProvider;
 import alpvax.advancedautocrafting.client.data.AALangProvider;
-import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
+import alpvax.advancedautocrafting.api.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.NodeConnectivityManager;
 import alpvax.advancedautocrafting.data.AALootTableProvider;
 import alpvax.advancedautocrafting.data.AARecipeProvider;

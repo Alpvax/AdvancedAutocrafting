@@ -1,4 +1,4 @@
-package alpvax.advancedautocrafting.craftnetwork;
+package alpvax.advancedautocrafting.api.craftnetwork;
 
 
 import net.minecraft.core.BlockPos;

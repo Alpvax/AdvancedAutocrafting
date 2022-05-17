@@ -4,7 +4,7 @@ import alpvax.advancedautocrafting.api.AAReference;
 import alpvax.advancedautocrafting.api.util.IPositionReference;
 import alpvax.advancedautocrafting.init.AABlocks;
 import alpvax.advancedautocrafting.container.RemoteMasterContainer;
-import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
+import alpvax.advancedautocrafting.api.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
 import alpvax.advancedautocrafting.inventory.ItemListHandler;
 import net.minecraft.core.BlockPos;

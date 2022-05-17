@@ -3,7 +3,7 @@ package alpvax.advancedautocrafting.block.entity;
 import alpvax.advancedautocrafting.api.AAReference;
 import alpvax.advancedautocrafting.init.AABlocks;
 import alpvax.advancedautocrafting.container.ControllerContainer;
-import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
+import alpvax.advancedautocrafting.api.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
