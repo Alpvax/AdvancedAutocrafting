@@ -1,6 +1,6 @@
 package alpvax.advancedautocrafting.network;
 
-import alpvax.advancedautocrafting.AdvancedAutocrafting;
+import alpvax.advancedautocrafting.api.AAReference;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.util.FakePlayer;
@@ -11,7 +11,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 public class AAPacketManager {
     private static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel HANDLER = NetworkRegistry.newSimpleChannel(
-        new ResourceLocation(AdvancedAutocrafting.MODID, "main"),
+        new ResourceLocation(AAReference.MODID, "main"),
         () -> PROTOCOL_VERSION,
         PROTOCOL_VERSION::equals,
         PROTOCOL_VERSION::equals

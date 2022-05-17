@@ -1,7 +1,8 @@
 package alpvax.advancedautocrafting.data;
 
-import alpvax.advancedautocrafting.AdvancedAutocrafting;
-import alpvax.advancedautocrafting.item.AAItems;
+import alpvax.advancedautocrafting.api.AAReference;
+import alpvax.advancedautocrafting.init.AAItems;
+import alpvax.advancedautocrafting.init.AATags;
 import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
@@ -23,7 +24,7 @@ public abstract class AATagsProvider {
 
     private static class BlockProvider extends BlockTagsProvider {
         public BlockProvider(DataGenerator pGenerator, @Nullable ExistingFileHelper existingFileHelper) {
-            super(pGenerator, AdvancedAutocrafting.MODID, existingFileHelper);
+            super(pGenerator, AAReference.MODID, existingFileHelper);
         }
 
         @Override
@@ -38,7 +39,7 @@ public abstract class AATagsProvider {
 
     private static class ItemProvider extends ItemTagsProvider {
         protected ItemProvider(DataGenerator generator, BlockTagsProvider blockTags, @Nullable ExistingFileHelper existingFileHelper) {
-            super(generator, blockTags, AdvancedAutocrafting.MODID, existingFileHelper);
+            super(generator, blockTags, AAReference.MODID, existingFileHelper);
         }
 
         @Override
@@ -55,6 +56,7 @@ public abstract class AATagsProvider {
             return ResourceKey.create(Registry.ITEM_REGISTRY, loc);
         }
 
+        @SuppressWarnings("SameParameterValue")
         private ResourceKey<Item> itemKey(RegistryObject<Item> obj) {
             return itemKey(obj.getId());
         }

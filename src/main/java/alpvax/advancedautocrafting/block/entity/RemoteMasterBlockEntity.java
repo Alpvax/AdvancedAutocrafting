@@ -1,12 +1,12 @@
 package alpvax.advancedautocrafting.block.entity;
 
-import alpvax.advancedautocrafting.Capabilities;
-import alpvax.advancedautocrafting.block.AABlocks;
+import alpvax.advancedautocrafting.api.AAReference;
+import alpvax.advancedautocrafting.api.util.IPositionReference;
+import alpvax.advancedautocrafting.init.AABlocks;
 import alpvax.advancedautocrafting.container.RemoteMasterContainer;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
 import alpvax.advancedautocrafting.inventory.ItemListHandler;
-import alpvax.advancedautocrafting.util.IPositionReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -35,7 +35,7 @@ public class RemoteMasterBlockEntity extends BlockEntity implements MenuProvider
     public ItemListHandler inventory = new ItemListHandler() {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return stack.getCapability(Capabilities.POSITION_MARKER_CAPABILITY).isPresent();
+            return stack.getCapability(AAReference.POSITION_MARKER_CAPABILITY).isPresent();
         }
 
         @Override
@@ -85,7 +85,7 @@ public class RemoteMasterBlockEntity extends BlockEntity implements MenuProvider
 
     public NonNullList<IPositionReference> getRemotePositions() {
         return getItems().stream()
-            .map(stack -> stack.getCapability(Capabilities.POSITION_MARKER_CAPABILITY))
+            .map(stack -> stack.getCapability(AAReference.POSITION_MARKER_CAPABILITY))
             .filter(LazyOptional::isPresent)
             .map(lazy -> lazy.resolve().orElseThrow())
             .collect(Collectors.toCollection(NonNullList::create));
@@ -135,6 +135,6 @@ public class RemoteMasterBlockEntity extends BlockEntity implements MenuProvider
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
-        return cap == Capabilities.NODE_CAPABILITY ? networkCapability.cast() : super.getCapability(cap, side);
+        return cap == AAReference.NODE_CAPABILITY ? networkCapability.cast() : super.getCapability(cap, side);
     }
 }

@@ -1,6 +1,6 @@
 package alpvax.advancedautocrafting.client.data.lang;
 
-import alpvax.advancedautocrafting.AdvancedAutocrafting;
+import alpvax.advancedautocrafting.api.AAReference;
 import com.google.common.collect.Maps;
 
 import java.util.Arrays;
@@ -14,7 +14,7 @@ public class AATranslationKeys {
     public static final String ITEM_DIM_LORE = register("Bound dimension: %s", "bound", "dimension");
 
     private static String key(String... parts) {
-        return AdvancedAutocrafting.MODID + ":" + String.join(".", parts);
+        return AAReference.MODID + ":" + String.join(".", parts);
     }
 
     private static Map<String, String> keys(String prefix, String suffix, String... variables) {

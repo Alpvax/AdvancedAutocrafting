@@ -1,6 +1,6 @@
-package alpvax.advancedautocrafting.data;
+package alpvax.advancedautocrafting.init;
 
-import alpvax.advancedautocrafting.AdvancedAutocrafting;
+import alpvax.advancedautocrafting.api.AAReference;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -18,7 +18,7 @@ public class AATags {
 
 
         private static TagKey<Block> tag(String name) {
-            return BlockTags.create(new ResourceLocation(AdvancedAutocrafting.MODID, name));
+            return BlockTags.create(new ResourceLocation(AAReference.MODID, name));
         }
 
         private static TagKey<Block> forgeTag(String name) {
@@ -36,7 +36,7 @@ public class AATags {
         public static final TagKey<Item> FORGE_TOOLS_WRENCH = forgeTag("tools/wrench");
 
         private static TagKey<Item> tag(String name) {
-            return ItemTags.create(new ResourceLocation(AdvancedAutocrafting.MODID, name));
+            return ItemTags.create(new ResourceLocation(AAReference.MODID, name));
         }
 
         private static TagKey<Item> forgeTag(String name) {

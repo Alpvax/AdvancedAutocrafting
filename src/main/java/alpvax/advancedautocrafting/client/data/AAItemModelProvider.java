@@ -1,8 +1,8 @@
 package alpvax.advancedautocrafting.client.data;
 
-import alpvax.advancedautocrafting.AdvancedAutocrafting;
-import alpvax.advancedautocrafting.block.AABlocks;
-import alpvax.advancedautocrafting.item.AAItems;
+import alpvax.advancedautocrafting.api.AAReference;
+import alpvax.advancedautocrafting.init.AABlocks;
+import alpvax.advancedautocrafting.init.AAItems;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 public class AAItemModelProvider extends ItemModelProvider {
 
     public AAItemModelProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-        super(generator, AdvancedAutocrafting.MODID, existingFileHelper);
+        super(generator, AAReference.MODID, existingFileHelper);
     }
 
     @Nonnull
@@ -42,7 +42,7 @@ public class AAItemModelProvider extends ItemModelProvider {
         //blockItem(AABlocks.WIRE, "_core");
 
         generated(AABlocks.POSITION_MARKER).override()
-            .predicate(new ResourceLocation(AdvancedAutocrafting.MODID, "position_dimension"), 2F)
+            .predicate(new ResourceLocation(AAReference.MODID, "position_dimension"), 2F)
             .model(getExistingFile(blockPath(AABlocks.POSITION_MARKER.getId())))
             .end();
     }

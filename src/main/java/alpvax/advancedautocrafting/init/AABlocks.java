@@ -1,9 +1,12 @@
-package alpvax.advancedautocrafting.block;
+package alpvax.advancedautocrafting.init;
 
-import alpvax.advancedautocrafting.AdvancedAutocrafting;
+import alpvax.advancedautocrafting.api.AAReference;
+import alpvax.advancedautocrafting.block.ControllerBlock;
+import alpvax.advancedautocrafting.block.PositionMarkerBlock;
+import alpvax.advancedautocrafting.block.RemoteMasterBlock;
+import alpvax.advancedautocrafting.block.WireBlock;
 import alpvax.advancedautocrafting.block.entity.ControllerBlockEntity;
 import alpvax.advancedautocrafting.block.entity.RemoteMasterBlockEntity;
-import alpvax.advancedautocrafting.item.AAItems;
 import alpvax.advancedautocrafting.item.PositionMarkerItem;
 import com.google.common.collect.Sets;
 import net.minecraft.world.item.BlockItem;
@@ -21,7 +24,7 @@ import java.util.function.Supplier;
 
 
 public class AABlocks {
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, AdvancedAutocrafting.MODID);
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, AAReference.MODID);
     public static final DeferredRegister<Item> ITEMS = AAItems.ITEMS;
 
     public static final RegistryObject<Block> CONTROLLER = register("controller", () -> new ControllerBlock(
@@ -53,7 +56,7 @@ public class AABlocks {
 
     @SuppressWarnings("ConstantConditions")
     public static class Entities {
-        public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, AdvancedAutocrafting.MODID);
+        public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, AAReference.MODID);
 
         public static final RegistryObject<BlockEntityType<ControllerBlockEntity>> CONTROLLER = BLOCK_ENTITIES.register("controller", () ->
                                                                                                                                           new BlockEntityType<>(ControllerBlockEntity::new, Sets.newHashSet(AABlocks.CONTROLLER.get()), null)

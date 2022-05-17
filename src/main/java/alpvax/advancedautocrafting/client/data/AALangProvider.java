@@ -1,9 +1,9 @@
 package alpvax.advancedautocrafting.client.data;
 
-import alpvax.advancedautocrafting.AdvancedAutocrafting;
-import alpvax.advancedautocrafting.block.AABlocks;
+import alpvax.advancedautocrafting.api.AAReference;
+import alpvax.advancedautocrafting.init.AABlocks;
 import alpvax.advancedautocrafting.client.data.lang.AATranslationKeys;
-import alpvax.advancedautocrafting.item.AAItems;
+import alpvax.advancedautocrafting.init.AAItems;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class AALangProvider extends LanguageProvider {
 
     public AALangProvider(DataGenerator gen) {
-        super(gen, AdvancedAutocrafting.MODID, "en_us");
+        super(gen, AAReference.MODID, "en_us");
     }
 
     @Override

@@ -1,7 +1,6 @@
-package alpvax.advancedautocrafting.util;
+package alpvax.advancedautocrafting.api.util;
 
-import alpvax.advancedautocrafting.AdvancedAutocrafting;
-import alpvax.advancedautocrafting.Capabilities;
+import alpvax.advancedautocrafting.api.AAReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.BlockSourceImpl;
@@ -98,7 +97,7 @@ public interface IPositionReference {
     }
 
     class PositionMarkerItemStack implements IPositionReference, ICapabilityProvider {
-        private static final String NBT_KEY = AdvancedAutocrafting.MODID + ":position";
+        private static final String NBT_KEY = AAReference.MODID + ":position";
         private static final String DIM_KEY = "dimension";
 
         private final LazyOptional<IPositionReference> holder = LazyOptional.of(() -> this);
@@ -120,7 +119,7 @@ public interface IPositionReference {
         @Nonnull
         @Override
         public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-            return cap == Capabilities.POSITION_MARKER_CAPABILITY && getTag().isPresent() ? holder.cast() : LazyOptional.empty();
+            return cap == AAReference.POSITION_MARKER_CAPABILITY && getTag().isPresent() ? holder.cast() : LazyOptional.empty();
         }
 
         @Override

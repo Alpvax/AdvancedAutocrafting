@@ -1,7 +1,7 @@
 package alpvax.advancedautocrafting.data;
 
-import alpvax.advancedautocrafting.AdvancedAutocrafting;
-import alpvax.advancedautocrafting.item.AAItems;
+import alpvax.advancedautocrafting.api.AAReference;
+import alpvax.advancedautocrafting.init.AAItems;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -14,7 +14,7 @@ import net.minecraftforge.common.Tags;
 
 import java.util.function.Consumer;
 
-import static alpvax.advancedautocrafting.block.AABlocks.*;
+import static alpvax.advancedautocrafting.init.AABlocks.*;
 
 public class AARecipeProvider extends RecipeProvider {
 
@@ -49,7 +49,7 @@ public class AARecipeProvider extends RecipeProvider {
             .requires(POSITION_MARKER.get())
             .unlockedBy("has_pos_marker", has(POSITION_MARKER.get()))
             .group(POSITION_MARKER.getId().toString())
-            .save(consumer, new ResourceLocation(AdvancedAutocrafting.MODID, POSITION_MARKER.getId().getPath() + "_clear"));
+            .save(consumer, new ResourceLocation(AAReference.MODID, POSITION_MARKER.getId().getPath() + "_clear"));
         ShapedRecipeBuilder.shaped(REMOTE_MASTER.get())
             .pattern("PGP").pattern("GBG").pattern("PGP")
             .define('P', Tags.Items.ENDER_PEARLS)

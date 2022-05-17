@@ -1,6 +1,7 @@
 package alpvax.advancedautocrafting.data;
 
-import alpvax.advancedautocrafting.block.AABlocks;
+import alpvax.advancedautocrafting.init.AABlocks;
+import alpvax.advancedautocrafting.init.PositionReferenceLootFunction;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.data.DataGenerator;

@@ -1,6 +1,6 @@
 package alpvax.advancedautocrafting.block;
 
-import alpvax.advancedautocrafting.util.IPositionReference;
+import alpvax.advancedautocrafting.api.util.IPositionReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;

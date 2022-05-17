@@ -1,6 +1,7 @@
 package alpvax.advancedautocrafting.block;
 
 import alpvax.advancedautocrafting.block.entity.ControllerBlockEntity;
+import alpvax.advancedautocrafting.init.AABlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;

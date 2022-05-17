@@ -1,42 +1,45 @@
 package alpvax.advancedautocrafting;
 
-import alpvax.advancedautocrafting.block.AABlocks;
+import alpvax.advancedautocrafting.api.AAIMCHelper;
+import alpvax.advancedautocrafting.api.AAReference;
+import alpvax.advancedautocrafting.api.craftnetwork.NodeConnectivity;
+import alpvax.advancedautocrafting.api.util.IPositionReference;
+import alpvax.advancedautocrafting.client.ClientEvents;
 import alpvax.advancedautocrafting.client.data.AABlockstateProvider;
 import alpvax.advancedautocrafting.client.data.AAItemModelProvider;
 import alpvax.advancedautocrafting.client.data.AALangProvider;
-import alpvax.advancedautocrafting.client.gui.ControllerScreen;
-import alpvax.advancedautocrafting.client.gui.RemoteMasterScreen;
-import alpvax.advancedautocrafting.container.AAContainerTypes;
+import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
+import alpvax.advancedautocrafting.craftnetwork.NodeConnectivityManager;
 import alpvax.advancedautocrafting.data.AALootTableProvider;
 import alpvax.advancedautocrafting.data.AARecipeProvider;
-import alpvax.advancedautocrafting.data.AATags;
+import alpvax.advancedautocrafting.init.AARegistration;
 import alpvax.advancedautocrafting.data.AATagsProvider;
-import alpvax.advancedautocrafting.data.PositionReferenceLootFunction;
-import alpvax.advancedautocrafting.item.AAItems;
 import alpvax.advancedautocrafting.network.AAPacketManager;
-import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.Util;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
+import java.util.Map;
 
-@Mod(AdvancedAutocrafting.MODID)
+
+@Mod(AAReference.MODID)
 public class AdvancedAutocrafting {
-    public static final String MODID = "advancedautocrafting";
-
     private static final Logger LOGGER = LogManager.getLogger();
 
     public AdvancedAutocrafting() {
@@ -44,53 +47,54 @@ public class AdvancedAutocrafting {
         // General mod setup
         modBus.addListener(this::setup);
         modBus.addListener(this::gatherData);
-        modBus.addListener(Capabilities::register);
+        modBus.addListener(this::registerCapabilities);
+        modBus.addListener(this::processIMC);
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             // Client setup
-            modBus.addListener(this::setupClient);
+            modBus.addListener(ClientEvents::setupClient);
         });
 
         MinecraftForge.EVENT_BUS.addListener(this::onServerStarting);
 
         // Registry objects
-        AABlocks.BLOCKS.register(modBus);
-        AABlocks.Entities.BLOCK_ENTITIES.register(modBus);
-        AAItems.ITEMS.register(modBus);
-        AAContainerTypes.CONTAINER_TYPES.register(modBus);
-
-        PositionReferenceLootFunction.register(modBus);
-
-        AATags.init();
+        AARegistration.init(modBus);
     }
 
     private void setup(final FMLCommonSetupEvent event) {
         AAPacketManager.registerPackets();
     }
 
-    /*
-     * Only on Client
-     */
-    private void setupClient(final FMLClientSetupEvent event) {
-        //ClientRegistry.bindTileEntitySpecialRenderer(DrinkMixerTileEntity.class, new DrinkMixerRenderer());
-        event.enqueueWork(() -> {
-            MenuScreens.register(AAContainerTypes.REMOTE_MASTER.get(), RemoteMasterScreen::new);
-            MenuScreens.register(AAContainerTypes.CONTROLLER.get(), ControllerScreen::new);
-
-            // Register property override for items with Position marker capability.
-            // 0 = current dimension, 1 = different dimension, 2 = no position
-            ItemProperties.registerGeneric(new ResourceLocation(MODID, "position_dimension"),
-                (itemStack, clientLevel, livingEntity, seed) ->
-                    itemStack.getCapability(Capabilities.POSITION_MARKER_CAPABILITY).map(
-                        marker -> marker.matchesLevel(clientLevel) ? 0F : 1F
-                    ).orElse(2F)
-            );
-        });
+    private void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.register(INetworkNode.class);
+        event.register(IPositionReference.class);
     }
 
     private void onServerStarting(final ServerStartingEvent event) {
         //Register commands
         //CommandTropicsTeleport.register(event.getServer().getCommandManager().getDispatcher());
+    }
+
+    private static final Map<String, AAIMCHelper.IMCMethod> imcMethodFromName = Util.make(new HashMap<>(), map -> {
+        for (AAIMCHelper.IMCMethod method : AAIMCHelper.IMCMethod.values()) {
+            map.put(method.getSerializedName(), method);
+        }
+    });
+
+    private void processIMC(final InterModProcessEvent event) {
+        event.getIMCStream().forEach(msg -> {
+            //TODO: Remove warning suppression if/when more IMC types are added
+            //noinspection SwitchStatementWithTooFewBranches
+            switch (imcMethodFromName.get(msg.method())) {
+                case REGISTER_CONNECTIVITY -> {
+                    @SuppressWarnings("unchecked")
+                    Pair<ResourceLocation, NodeConnectivity.IBlockStateConnectivityMapper> value =
+                        (Pair<ResourceLocation, NodeConnectivity.IBlockStateConnectivityMapper>) msg.messageSupplier().get();
+                    NodeConnectivityManager.registerBlockstateConnectivityFactory(value.getLeft(), value.getRight());
+                }
+                default -> LOGGER.warn("Recieved IMC message from mod \"{}\" with invalid method: \"{}\"", msg.senderModId(), msg.method());
+            }
+        });
     }
 
     private void gatherData(GatherDataEvent event) {

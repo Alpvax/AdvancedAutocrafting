@@ -1,10 +1,10 @@
 package alpvax.advancedautocrafting.block;
 
-import alpvax.advancedautocrafting.Capabilities;
+import alpvax.advancedautocrafting.api.AAReference;
 import alpvax.advancedautocrafting.block.axial.AxialBlock;
 import alpvax.advancedautocrafting.block.axial.AxialBlockShape;
 import alpvax.advancedautocrafting.block.axial.AxialPart;
-import alpvax.advancedautocrafting.data.AATags;
+import alpvax.advancedautocrafting.init.AATags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
@@ -136,7 +136,7 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
      */
     public ConnectionState makeConnection(LevelReader level, BlockPos thisPos, Direction dir, BlockPos neighborPos) {
         BlockEntity tile = level.getBlockEntity(neighborPos);
-        if (tile != null && tile.getCapability(Capabilities.NODE_CAPABILITY).isPresent()) {
+        if (tile != null && tile.getCapability(AAReference.NODE_CAPABILITY).isPresent()) {
             return ConnectionState.INTERFACE;
         }
         BlockState neighbor = level.getBlockState(neighborPos);

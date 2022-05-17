@@ -1,7 +1,7 @@
 package alpvax.advancedautocrafting.block.axial;
 
-import alpvax.advancedautocrafting.data.AATags;
-import alpvax.advancedautocrafting.item.AAItems;
+import alpvax.advancedautocrafting.init.AATags;
+import alpvax.advancedautocrafting.init.AAItems;
 import com.google.common.collect.Maps;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;

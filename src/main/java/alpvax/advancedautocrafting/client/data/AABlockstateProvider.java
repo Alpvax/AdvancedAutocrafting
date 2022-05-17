@@ -1,6 +1,6 @@
 package alpvax.advancedautocrafting.client.data;
 
-import alpvax.advancedautocrafting.AdvancedAutocrafting;
+import alpvax.advancedautocrafting.api.AAReference;
 import alpvax.advancedautocrafting.block.axial.AxialBlock;
 import alpvax.advancedautocrafting.block.axial.AxialBlockShape;
 import net.minecraft.data.DataGenerator;
@@ -16,11 +16,11 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-import static alpvax.advancedautocrafting.block.AABlocks.*;
+import static alpvax.advancedautocrafting.init.AABlocks.*;
 
 public class AABlockstateProvider extends BlockStateProvider {
     public AABlockstateProvider(DataGenerator gen, ExistingFileHelper exFileHelper) {
-        super(gen, AdvancedAutocrafting.MODID, exFileHelper);
+        super(gen, AAReference.MODID, exFileHelper);
     }
 
     @Override

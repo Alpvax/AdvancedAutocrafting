@@ -1,6 +1,5 @@
-package alpvax.advancedautocrafting.item;
+package alpvax.advancedautocrafting.init;
 
-import alpvax.advancedautocrafting.block.AABlocks;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -8,13 +7,16 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import static alpvax.advancedautocrafting.AdvancedAutocrafting.MODID;
+import javax.annotation.Nonnull;
+
+import static alpvax.advancedautocrafting.api.AAReference.MODID;
 
 public class AAItems {
     public static final CreativeModeTab ITEM_GROUP = (new CreativeModeTab(MODID) {
         /*
          * Only on Client
          */
+        @Nonnull
         public ItemStack makeIcon() {
             return new ItemStack(AABlocks.CONTROLLER.get());
         }

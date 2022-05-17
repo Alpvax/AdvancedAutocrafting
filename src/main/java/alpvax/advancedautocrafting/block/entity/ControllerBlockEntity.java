@@ -1,7 +1,7 @@
 package alpvax.advancedautocrafting.block.entity;
 
-import alpvax.advancedautocrafting.Capabilities;
-import alpvax.advancedautocrafting.block.AABlocks;
+import alpvax.advancedautocrafting.api.AAReference;
+import alpvax.advancedautocrafting.init.AABlocks;
 import alpvax.advancedautocrafting.container.ControllerContainer;
 import alpvax.advancedautocrafting.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
@@ -42,6 +42,6 @@ public class ControllerBlockEntity extends BlockEntity implements MenuProvider {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
-        return cap == Capabilities.NODE_CAPABILITY ? networkCapability.cast() : super.getCapability(cap, side);
+        return cap == AAReference.NODE_CAPABILITY ? networkCapability.cast() : super.getCapability(cap, side);
     }
 }

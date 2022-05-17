@@ -1,9 +1,9 @@
 package alpvax.advancedautocrafting.item;
 
-import alpvax.advancedautocrafting.Capabilities;
+import alpvax.advancedautocrafting.api.AAReference;
+import alpvax.advancedautocrafting.api.util.IPositionReference;
 import alpvax.advancedautocrafting.client.data.lang.AATranslationKeys;
 import alpvax.advancedautocrafting.client.render.BlockHighlightRender;
-import alpvax.advancedautocrafting.util.IPositionReference;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
@@ -39,7 +39,7 @@ public class PositionMarkerItem extends BlockItem {
      */
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
-        stack.getCapability(Capabilities.POSITION_MARKER_CAPABILITY).ifPresent(ref -> {
+        stack.getCapability(AAReference.POSITION_MARKER_CAPABILITY).ifPresent(ref -> {
             tooltip.add(new TranslatableComponent(AATranslationKeys.ITEM_POS_LORE, ref.getPosition()).withStyle(ChatFormatting.GRAY));
             if (flagIn.isAdvanced() || !ref.matchesLevel(level) || Screen.hasShiftDown()) {
                 tooltip.add(new TranslatableComponent(AATranslationKeys.ITEM_DIM_LORE, ref.getDimensionKey().location()).withStyle(ChatFormatting.GRAY));
@@ -51,7 +51,7 @@ public class PositionMarkerItem extends BlockItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        return stack.getCapability(Capabilities.POSITION_MARKER_CAPABILITY).resolve()
+        return stack.getCapability(AAReference.POSITION_MARKER_CAPABILITY).resolve()
             .flatMap(ref -> {
                 if (ref.matchesLevel(level)) {
                     DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> BlockHighlightRender.manager.toggle(ref.getPosition(), 69, 120, 18, 160));
@@ -72,7 +72,7 @@ public class PositionMarkerItem extends BlockItem {
      */
     private boolean isRendering(ItemStack stack) {
         //TODO: check level / overhaul Highlight renderer
-        return stack.getCapability(Capabilities.POSITION_MARKER_CAPABILITY)
+        return stack.getCapability(AAReference.POSITION_MARKER_CAPABILITY)
             .map(p -> BlockHighlightRender.manager.contains(p.getPosition()))
             .orElse(false);
     }
