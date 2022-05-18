@@ -16,10 +16,6 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class AxialBlockShape<T extends Comparable<T>> {
-    private AxialBlockShape(String modelName) {
-        this.modelName = modelName;
-    }
-
     protected final String modelName;
     /**
      * if > 0, will produce a cube of that radius as the core
@@ -29,13 +25,19 @@ public class AxialBlockShape<T extends Comparable<T>> {
      * the core shape
      */
     protected VoxelShape coreShape = Shapes.empty();
-
     protected Map<String, AxialPart<T>> parts = new HashMap<>();
-
     /*
      * Only on Client
      */
     private Map<String, ModelFile> models;
+
+    private AxialBlockShape(String modelName) {
+        this.modelName = modelName;
+    }
+
+    public static <T extends Comparable<T>> Builder<T> builder(String modelName, Class<T> valueClass) {
+        return new Builder<T>(modelName, valueClass);
+    }
 
     public VoxelShape getCombinedShape(Map<Direction, T> propertyValues) {
         List<VoxelShape> shapes = new ArrayList<>();
@@ -97,10 +99,6 @@ public class AxialBlockShape<T extends Comparable<T>> {
 
     public Stream<AxialPart<T>> validParts(T propValue) {
         return parts.values().stream().filter(p -> p.allowedValues.contains(propValue));
-    }
-
-    public static <T extends Comparable<T>> Builder<T> builder(String modelName, Class<T> valueClass) {
-        return new Builder<T>(modelName, valueClass);
     }
 
     public static class Builder<T extends Comparable<T>> extends AxialBlockShape<T> {

@@ -1,11 +1,11 @@
 package alpvax.advancedautocrafting.block.entity;
 
 import alpvax.advancedautocrafting.api.AAReference;
-import alpvax.advancedautocrafting.api.util.IPositionReference;
-import alpvax.advancedautocrafting.init.AABlocks;
-import alpvax.advancedautocrafting.container.RemoteMasterContainer;
 import alpvax.advancedautocrafting.api.craftnetwork.INetworkNode;
+import alpvax.advancedautocrafting.api.util.IPositionReference;
+import alpvax.advancedautocrafting.container.RemoteMasterContainer;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
+import alpvax.advancedautocrafting.init.AABlocks;
 import alpvax.advancedautocrafting.inventory.ItemListHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -60,14 +60,14 @@ public class RemoteMasterBlockEntity extends BlockEntity implements MenuProvider
         return new INetworkNode() {
             @Override
             public NonNullList<INetworkNode> getChildNodes(Direction inbound) {
-                return RemoteMasterBlockEntity.this.getRemotePositions().stream()
+                return getRemotePositions().stream()
                     .map(p -> new SimpleNetworkNode(p.getPosition()))
                     .collect(Collectors.toCollection(NonNullList::create));
             }
 
             @Override
             public BlockPos getPos() {
-                return RemoteMasterBlockEntity.this.worldPosition;
+                return worldPosition;
             }
         };
     }

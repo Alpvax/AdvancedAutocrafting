@@ -25,7 +25,7 @@ import java.util.Optional;
 
 /**
  * Represents a reference to a specific position in a specific dimension.<br>
- *
+ * <p>
  * Preferred structure for saving to NBT is to save the {@linkplain
  * #getPosition() position} to NBT using {@link NbtUtils#writeBlockPos} and
  * saving the {@link ResourceLocation#getPath path} of the {@linkplain
@@ -119,12 +119,15 @@ public interface IPositionReference {
         @Nonnull
         @Override
         public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-            return cap == AAReference.POSITION_MARKER_CAPABILITY && getTag().isPresent() ? holder.cast() : LazyOptional.empty();
+            return cap == AAReference.POSITION_MARKER_CAPABILITY && getTag().isPresent()
+                   ? holder.cast()
+                   : LazyOptional.empty();
         }
 
         @Override
         public ResourceKey<Level> getDimensionKey() {
-            return ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(getTag().orElseThrow().getString(DIM_KEY)));
+            return ResourceKey.create(
+                Registry.DIMENSION_REGISTRY, new ResourceLocation(getTag().orElseThrow().getString(DIM_KEY)));
         }
 
         @Override

@@ -1,7 +1,7 @@
 package alpvax.advancedautocrafting.block.axial;
 
-import alpvax.advancedautocrafting.init.AATags;
 import alpvax.advancedautocrafting.init.AAItems;
+import alpvax.advancedautocrafting.init.AATags;
 import com.google.common.collect.Maps;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -29,9 +29,8 @@ import java.util.stream.StreamSupport;
 
 public abstract class AxialBlock<T extends Comparable<T>> extends Block {
     public static final Direction[] ALL_DIRECTIONS = Direction.values();
-
-    private Map<Direction, Property<T>> directionToPropertyMap;
     private final AxialBlockShape<T> shape;
+    private Map<Direction, Property<T>> directionToPropertyMap;
 
     public AxialBlock(Properties properties, AxialBlockShape<T> shape) {
         super(properties);
@@ -60,7 +59,7 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        directionToPropertyMap = Util.make(Maps.newEnumMap(Direction.class), (map) -> {
+        directionToPropertyMap = Util.make(Maps.newEnumMap(Direction.class), map -> {
             for (Direction d : ALL_DIRECTIONS) {
                 Property<T> prop = buildPropertyForDirection(d);
                 if (prop != null) {
@@ -87,13 +86,13 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
             Entity e = ctx.getEntity();
             if (e != null) {
                 if (context.isHoldingItem(AAItems.MULTITOOL.get())
-                        || (e instanceof Player player && StreamSupport
+                    || e instanceof Player player && StreamSupport
                     .stream(player.getHandSlots().spliterator(), true)
                     .anyMatch(stack -> stack.is(AATags.Items.MULTITOOL))
-                )
                 ) {
                     Vec3 start = new Vec3(e.xOld, e.yOld + e.getEyeHeight(), e.zOld);
-                    Vec3 end = start.add(e.getViewVector(0).scale(ForgeMod.REACH_DISTANCE.get().sanitizeValue(Double.MAX_VALUE)));
+                    Vec3 end = start.add(
+                        e.getViewVector(0).scale(ForgeMod.REACH_DISTANCE.get().sanitizeValue(Double.MAX_VALUE)));
                     return getPartialBlockHighlight(state, rayTracePart(state, pos, start, end));
                 }
             }
@@ -129,7 +128,8 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
 
     protected VoxelShape getPartialBlockHighlight(BlockState state, IAxialPartInstance<T> partInstance) {
         Direction d = partInstance.direction();
-        return getConnection(state, d).map(val -> getBlockShape().getAxialShape(d, val)).orElse(getBlockShape().getCoreShape());
+        return getConnection(state, d).map(val -> getBlockShape().getAxialShape(d, val))
+            .orElse(getBlockShape().getCoreShape());
         //return partInstance.shape();
     }
 }

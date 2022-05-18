@@ -1,10 +1,10 @@
 package alpvax.advancedautocrafting.block.entity;
 
 import alpvax.advancedautocrafting.api.AAReference;
-import alpvax.advancedautocrafting.init.AABlocks;
-import alpvax.advancedautocrafting.container.ControllerContainer;
 import alpvax.advancedautocrafting.api.craftnetwork.INetworkNode;
+import alpvax.advancedautocrafting.container.ControllerContainer;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
+import alpvax.advancedautocrafting.init.AABlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ControllerBlockEntity extends BlockEntity implements MenuProvider {
-    private final INetworkNode network = new SimpleNetworkNode(this.worldPosition);
+    private final INetworkNode network = new SimpleNetworkNode(worldPosition);
     private final LazyOptional<INetworkNode> networkCapability = LazyOptional.of(() -> network);
 
     public ControllerBlockEntity(BlockPos pos, BlockState state) {

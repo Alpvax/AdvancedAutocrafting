@@ -12,7 +12,8 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class ControllerScreen extends AbstractContainerScreen<ControllerContainer> {
     //private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(AdvancedAutocrafting.MODID, "textures/gui/container/controller.png");
-    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
+    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(
+        "textures/gui/container/generic_54.png");
 
     public ControllerScreen(ControllerContainer container, Inventory inv, Component title) {
         super(container, inv, title);
@@ -28,7 +29,7 @@ public class ControllerScreen extends AbstractContainerScreen<ControllerContaine
     @Override
     protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
         font.draw(matrixStack, title, (float) titleLabelX, (float) titleLabelY, 4210752);
-        font.draw(matrixStack, this.playerInventoryTitle, (float) inventoryLabelX, (float) inventoryLabelY, 4210752);
+        font.draw(matrixStack, playerInventoryTitle, (float) inventoryLabelX, (float) inventoryLabelY, 4210752);
 
         //XXX
         //TODO: actual screen render
@@ -42,7 +43,7 @@ public class ControllerScreen extends AbstractContainerScreen<ControllerContaine
         RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
         int i = getGuiLeft();
         int j = getGuiTop();
-        blit(matrixStack, i, j, 0, 0, this.imageWidth, 3 * 18 + 17);
-        blit(matrixStack, i, j + 3 * 18 + 17, 0, 126, this.imageWidth, 96);
+        blit(matrixStack, i, j, 0, 0, imageWidth, 3 * 18 + 17);
+        blit(matrixStack, i, j + 3 * 18 + 17, 0, 126, imageWidth, 96);
     }
 }

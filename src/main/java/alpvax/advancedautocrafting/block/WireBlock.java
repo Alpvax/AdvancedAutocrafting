@@ -64,7 +64,8 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
     }
 
     private static final float CORE_RADIUS = 3 / 16F;
-    public static final AxialBlockShape<ConnectionState> WIRE_SHAPE = AxialBlockShape.builder("base_wire", ConnectionState.class)
+    public static final AxialBlockShape<ConnectionState> WIRE_SHAPE = AxialBlockShape.builder(
+            "base_wire", ConnectionState.class)
         .withCore(CORE_RADIUS)
         .withPart(new AxialPart<>(
             "arm",
@@ -73,7 +74,7 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
             0.5F - CORE_RADIUS,
             ConnectionState.CONNECTION, ConnectionState.INTERFACE
         )
-            .face(Direction.SOUTH, null))
+                      .face(Direction.SOUTH, null))
         .withPart(new AxialPart<>(
             "interface",
             6 / 16F,
@@ -81,16 +82,16 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
             1 / 16F,
             ConnectionState.INTERFACE
         )
-            .face(Direction.SOUTH, f -> f.uvs(0, 0, 16, 16), true))
+                      .face(Direction.SOUTH, f -> f.uvs(0, 0, 16, 16), true))
         .withPart(new AxialPart<>(
-                "disabled",
-                2.5F / 16F,
-                0.5F - 1 / 16F - CORE_RADIUS,
-                0.5F - CORE_RADIUS,
-                ConnectionState.DISABLED
-            )
-                .face(Direction.NORTH, f -> f.uvs(0, 0, 16, 16), true)
-                .face(Direction.SOUTH, null)
+                      "disabled",
+                      2.5F / 16F,
+                      0.5F - 1 / 16F - CORE_RADIUS,
+                      0.5F - CORE_RADIUS,
+                      ConnectionState.DISABLED
+                  )
+                      .face(Direction.NORTH, f -> f.uvs(0, 0, 16, 16), true)
+                      .face(Direction.SOUTH, null)
         );
 
     public WireBlock(Block.Properties properties) {
@@ -119,10 +120,14 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         final LevelReader level = context.getLevel();
         final BlockPos pos = context.getClickedPos();
-        BlockState state = defaultBlockState().setValue(WATERLOGGED, level.getFluidState(pos).getType() == Fluids.WATER);
+        BlockState state = defaultBlockState().setValue(
+            WATERLOGGED, level.getFluidState(pos).getType() == Fluids.WATER);
         boolean disableAll = context.isSecondaryUseActive();
         for (Direction d : ALL_DIRECTIONS) {
-            state = withConnectionState(state, d, disableAll ? ConnectionState.DISABLED : makeConnection(level, pos, d, pos.relative(d)));
+            state = withConnectionState(
+                state, d, disableAll
+                          ? ConnectionState.DISABLED
+                          : makeConnection(level, pos, d, pos.relative(d)));
         }
         return state;
     }
@@ -150,22 +155,21 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
 
     @SuppressWarnings("deprecation")
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos currentPos, BlockPos neighborPos) {
-        return getConnection(state, direction).filter(ConnectionState::isNotDisabled).map(conn ->
-            withConnectionState(state, direction, makeConnection(level, currentPos, direction, neighborPos))
-        ).orElseGet(() -> super.updateShape(state, direction, neighborState, level, currentPos, neighborPos));
-    }
-
-    private BlockState getToggledState(BlockState state, LevelReader level, BlockPos pos, Direction d) {
-        return getConnection(state, d).map(val -> withConnectionState(state, d, val.isNotDisabled()
-                                                                                    ? ConnectionState.DISABLED
-                                                                                    : makeConnection(level, pos, d, pos.relative(d)))
-        ).orElse(state);
+    public BlockState updateShape(
+        BlockState state, Direction direction, BlockState neighborState, LevelAccessor level,
+        BlockPos currentPos, BlockPos neighborPos) {
+        return getConnection(state, direction)
+            .filter(ConnectionState::isNotDisabled)
+            .map(
+                conn -> withConnectionState(state, direction, makeConnection(level, currentPos, direction, neighborPos))
+            ).orElseGet(() -> super.updateShape(state, direction, neighborState, level, currentPos, neighborPos));
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult rayTraceResult) {
+    public InteractionResult use(
+        BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+        BlockHitResult rayTraceResult) {
         ItemStack stack = player.getItemInHand(hand);
         if (!stack.isEmpty() && stack.is(AATags.Items.MULTITOOL)) {
             // Multitool
@@ -177,7 +181,8 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
                     }
                 } else {
                     Vec3 start = new Vec3(player.xOld, player.yOld + player.getEyeHeight(), player.zOld);
-                    Vec3 end = start.add(player.getViewVector(0).scale(player.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue()));
+                    Vec3 end = start.add(
+                        player.getViewVector(0).scale(player.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue()));
                     Direction dir = rayTracePart(state, pos, start, end).direction();
                     if (dir == null) {
                         dir = rayTraceResult.getDirection();
@@ -194,5 +199,14 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
     @Override
     public FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+    }
+
+    private BlockState getToggledState(BlockState state, LevelReader level, BlockPos pos, Direction d) {
+        return getConnection(state, d)
+            .map(val -> withConnectionState(
+                     state, d,
+                     val.isNotDisabled() ? ConnectionState.DISABLED : makeConnection(level, pos, d, pos.relative(d))
+                 )
+            ).orElse(state);
     }
 }

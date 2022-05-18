@@ -40,9 +40,13 @@ public class PositionMarkerItem extends BlockItem {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
         stack.getCapability(AAReference.POSITION_MARKER_CAPABILITY).ifPresent(ref -> {
-            tooltip.add(new TranslatableComponent(AATranslationKeys.ITEM_POS_LORE, ref.getPosition()).withStyle(ChatFormatting.GRAY));
+            tooltip.add(new TranslatableComponent(AATranslationKeys.ITEM_POS_LORE, ref.getPosition()).withStyle(
+                ChatFormatting.GRAY));
             if (flagIn.isAdvanced() || !ref.matchesLevel(level) || Screen.hasShiftDown()) {
-                tooltip.add(new TranslatableComponent(AATranslationKeys.ITEM_DIM_LORE, ref.getDimensionKey().location()).withStyle(ChatFormatting.GRAY));
+                tooltip.add(new TranslatableComponent(
+                    AATranslationKeys.ITEM_DIM_LORE,
+                    ref.getDimensionKey().location()
+                ).withStyle(ChatFormatting.GRAY));
             }
         });
         super.appendHoverText(stack, level, tooltip, flagIn);
@@ -54,7 +58,10 @@ public class PositionMarkerItem extends BlockItem {
         return stack.getCapability(AAReference.POSITION_MARKER_CAPABILITY).resolve()
             .flatMap(ref -> {
                 if (ref.matchesLevel(level)) {
-                    DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> BlockHighlightRender.manager.toggle(ref.getPosition(), 69, 120, 18, 160));
+                    DistExecutor.unsafeRunWhenOn(
+                        Dist.CLIENT,
+                        () -> () -> BlockHighlightRender.manager.toggle(ref.getPosition(), 69, 120, 18, 160)
+                    );
                     return Optional.of(InteractionResultHolder.consume(stack));
                 }
                 return Optional.empty();

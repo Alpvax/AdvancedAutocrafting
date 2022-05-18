@@ -12,15 +12,16 @@ import javax.annotation.Nonnull;
 import static alpvax.advancedautocrafting.api.AAReference.MODID;
 
 public class AAItems {
-    public static final CreativeModeTab ITEM_GROUP = (new CreativeModeTab(MODID) {
+    public static final CreativeModeTab ITEM_GROUP = new CreativeModeTab(MODID) {
         /*
          * Only on Client
          */
+        @Override
         @Nonnull
         public ItemStack makeIcon() {
             return new ItemStack(AABlocks.CONTROLLER.get());
         }
-    });
+    };
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
 

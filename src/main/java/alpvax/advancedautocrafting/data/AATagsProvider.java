@@ -38,7 +38,9 @@ public abstract class AATagsProvider {
     }
 
     private static class ItemProvider extends ItemTagsProvider {
-        protected ItemProvider(DataGenerator generator, BlockTagsProvider blockTags, @Nullable ExistingFileHelper existingFileHelper) {
+        protected ItemProvider(
+            DataGenerator generator, BlockTagsProvider blockTags,
+            @Nullable ExistingFileHelper existingFileHelper) {
             super(generator, blockTags, AAReference.MODID, existingFileHelper);
         }
 
@@ -46,10 +48,16 @@ public abstract class AATagsProvider {
         protected void addTags() {
             ResourceKey<Item> multitool = itemKey(AAItems.MULTITOOL);
             //noinspection unchecked
-            tag(AATags.Items.MULTITOOL).add(multitool).addTags(AATags.Items.FORGE_TOOLS_WRENCH, AATags.Items.FORGE_WRENCHES);
+            tag(AATags.Items.MULTITOOL).add(multitool)
+                .addTags(AATags.Items.FORGE_TOOLS_WRENCH, AATags.Items.FORGE_WRENCHES);
             tag(AATags.Items.FORGE_TOOLS).addTag(AATags.Items.MULTITOOL);
             tag(AATags.Items.FORGE_TOOLS_WRENCH).add(multitool);
             tag(AATags.Items.FORGE_WRENCHES).add(multitool);
+        }
+
+        @Override
+        public String getName() {
+            return "AdvancedAutocrafting Item Tags";
         }
 
         private ResourceKey<Item> itemKey(ResourceLocation loc) {
@@ -59,11 +67,6 @@ public abstract class AATagsProvider {
         @SuppressWarnings("SameParameterValue")
         private ResourceKey<Item> itemKey(RegistryObject<Item> obj) {
             return itemKey(obj.getId());
-        }
-
-        @Override
-        public String getName() {
-            return "AdvancedAutocrafting Item Tags";
         }
     }
 }

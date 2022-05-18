@@ -20,7 +20,8 @@ public abstract class AbstractBlockEntityContainer<T extends BlockEntity> extend
         @SuppressWarnings("unchecked")
         @Override
         default C create(int windowId, Inventory inv, FriendlyByteBuf data) {
-            return create(windowId, inv, (T) Objects.requireNonNull(inv.player.level.getBlockEntity(data.readBlockPos())));
+            return create(
+                windowId, inv, (T) Objects.requireNonNull(inv.player.level.getBlockEntity(data.readBlockPos())));
         }
     }
 
@@ -32,7 +33,8 @@ public abstract class AbstractBlockEntityContainer<T extends BlockEntity> extend
 
     private final T blockentity;
 
-    public AbstractBlockEntityContainer(MenuType<? extends AbstractBlockEntityContainer<T>> type, final int id, final T blockentity) {
+    public AbstractBlockEntityContainer(
+        MenuType<? extends AbstractBlockEntityContainer<T>> type, final int id, final T blockentity) {
         super(type, id);
         this.blockentity = blockentity;
     }

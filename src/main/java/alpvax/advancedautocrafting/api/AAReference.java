@@ -1,7 +1,7 @@
 package alpvax.advancedautocrafting.api;
 
-import alpvax.advancedautocrafting.api.util.IPositionReference;
 import alpvax.advancedautocrafting.api.craftnetwork.INetworkNode;
+import alpvax.advancedautocrafting.api.util.IPositionReference;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 

@@ -8,9 +8,11 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 public class AARegistration {
-    private static final DeferredRegister<LootItemFunctionType> LOOT_FUNCTIONS = DeferredRegister.create(Registry.LOOT_FUNCTION_REGISTRY, AAReference.MODID);
+    private static final DeferredRegister<LootItemFunctionType> LOOT_FUNCTIONS = DeferredRegister.create(
+        Registry.LOOT_FUNCTION_REGISTRY, AAReference.MODID);
 
-    public static final RegistryObject<LootItemFunctionType> POSITION_REFERENCE_LOOT = LOOT_FUNCTIONS.register("position_reference",
+    public static final RegistryObject<LootItemFunctionType> POSITION_REFERENCE_LOOT = LOOT_FUNCTIONS.register(
+        "position_reference",
         () -> new LootItemFunctionType(new PositionReferenceLootFunction.Serializer())
     );
 

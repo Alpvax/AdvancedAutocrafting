@@ -5,9 +5,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import javax.annotation.Nullable;
+
 public interface IAxialPartInstance<T extends Comparable<T>> {
     VoxelShape shape();
 
+    @Nullable
     Direction direction();
 
     class Impl<T extends Comparable<T>> implements IAxialPartInstance<T> {

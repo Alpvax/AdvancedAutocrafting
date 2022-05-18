@@ -48,10 +48,16 @@ public class AALootTableProvider extends LootTableProvider {
         protected void addTables() {
             dropSelf(AABlocks.CONTROLLER);
             dropSelf(AABlocks.REMOTE_MASTER);
-            add(AABlocks.POSITION_MARKER.get(),
-                (b) -> withPosition(b, AABlocks.POSITION_MARKER)
+            add(
+                AABlocks.POSITION_MARKER.get(),
+                b -> withPosition(b, AABlocks.POSITION_MARKER)
             );
             dropSelf(AABlocks.WIRE);
+        }
+
+        @Override
+        protected Iterable<Block> getKnownBlocks() {
+            return AABlocks.BLOCKS.getEntries().stream().map(Supplier::get).collect(Collectors.toList());
         }
 
         private void dropSelf(Supplier<? extends Block> block) {
@@ -60,12 +66,9 @@ public class AALootTableProvider extends LootTableProvider {
 
         @SuppressWarnings("SameParameterValue")
         private LootTable.Builder withPosition(Block block, Supplier<? extends ItemLike> item) {
-            return LootTable.lootTable().withPool(LootPool.lootPool().add(LootItem.lootTableItem(item.get()).apply(PositionReferenceLootFunction.builder())));
-        }
-
-        @Override
-        protected Iterable<Block> getKnownBlocks() {
-            return AABlocks.BLOCKS.getEntries().stream().map(Supplier::get).collect(Collectors.toList());
+            return LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                              .add(LootItem.lootTableItem(item.get()).apply(PositionReferenceLootFunction.builder())));
         }
     }
 }

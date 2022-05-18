@@ -46,18 +46,23 @@ public class RemoteMasterBlock extends Block implements EntityBlock {
 
     @SuppressWarnings("deprecation")
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult rayTraceResult) {
+    public InteractionResult use(
+        BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+        BlockHitResult rayTraceResult) {
         if (!level.isClientSide) {
             level.getBlockEntity(pos, AABlocks.Entities.REMOTE_MASTER.get()).ifPresent(tile -> {
-                if (this.interactWith(level, pos, player, hand, rayTraceResult))
+                if (interactWith(level, pos, player, hand, rayTraceResult)) {
                     NetworkHooks.openGui((ServerPlayer) player, tile, pos);
+                }
             });
         }
         return InteractionResult.SUCCESS;
     }
 
     //TODO: Make this do something useful?
-    private boolean interactWith(Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    private boolean interactWith(
+        Level level, BlockPos pos, Player player, InteractionHand hand,
+        BlockHitResult hitResult) {
         RemoteMasterBlockEntity tile = AABlocks.Entities.REMOTE_MASTER.get().getBlockEntity(level, pos);
         if (tile == null) {
             return false;
@@ -70,8 +75,9 @@ public class RemoteMasterBlock extends Block implements EntityBlock {
                 return false;
             } else if (stack.getItem() instanceof BlockItem) {
                 Block block = ((BlockItem) stack.getItem()).getBlock();
-                tile.getRemotePositions().forEach((p) -> {
-                    BlockState state = block.getStateForPlacement(new BlockPlaceContext(p.getLevel(), player, hand, stack, hitResult));
+                tile.getRemotePositions().forEach(p -> {
+                    BlockState state = block.getStateForPlacement(
+                        new BlockPlaceContext(p.getLevel(), player, hand, stack, hitResult));
                     if (state == null) {
                         state = block.defaultBlockState();
                     }
@@ -82,7 +88,7 @@ public class RemoteMasterBlock extends Block implements EntityBlock {
             }
             return true;
         } else {
-            tile.getRemotePositions().forEach((p) -> level.removeBlock(p.getPosition(), false));
+            tile.getRemotePositions().forEach(p -> level.removeBlock(p.getPosition(), false));
             return false;
         }
     }

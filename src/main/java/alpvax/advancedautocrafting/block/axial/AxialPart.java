@@ -49,11 +49,14 @@ public class AxialPart<T extends Comparable<T>> {
         makeShapes();
     }
 
-    public AxialPart<T> face(Direction d, @Nullable Consumer<BlockModelBuilder.ElementBuilder.FaceBuilder> faceBuilder) {
+    public AxialPart<T> face(
+        Direction d, @Nullable Consumer<BlockModelBuilder.ElementBuilder.FaceBuilder> faceBuilder) {
         return face(d, faceBuilder, false);
     }
 
-    public AxialPart<T> face(Direction d, Consumer<BlockModelBuilder.ElementBuilder.FaceBuilder> faceBuilder, boolean additional) {
+    public AxialPart<T> face(
+        Direction d, @Nullable Consumer<BlockModelBuilder.ElementBuilder.FaceBuilder> faceBuilder,
+        boolean additional) {
         if (faceBuilder == null) {
             modelFaceModifiers.remove(d);
         } else if (additional) {
@@ -87,6 +90,7 @@ public class AxialPart<T extends Comparable<T>> {
      * Call by BlockStateProvider to generate model file
      *
      * @param modelBuilder generally `models().getBuilder("model_name")`
+     *
      * @return an ElementBuilder which can be further customised in the BlockStateProvider
      */
     /*
@@ -110,6 +114,7 @@ public class AxialPart<T extends Comparable<T>> {
      * @param radius    the radius of the part (should not exceed 0.5)
      * @param start     the distance from the edge of the block (should not exceed end)
      * @param end       the distance from the edge of the block (should not exceed 0.5)
+     *
      * @return [min, max] co-ords for the given axis (range 0-1)
      */
     private static float[] getMinMax(int axisValue, float radius, float start, float end) {
@@ -125,6 +130,6 @@ public class AxialPart<T extends Comparable<T>> {
             min = 1F - end;
             max = 1F - start;
         }
-        return new float[]{min, max};
+        return new float[] {min, max};
     }
 }

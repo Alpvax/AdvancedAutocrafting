@@ -5,7 +5,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -17,14 +16,14 @@ import javax.annotation.Nonnull;
  *
  * <em>DO NOT TRUST THE SLOT INDEX TO REMAIN THE SAME AT ANY POINT</em>
  */
-public class ItemListHandler implements IItemHandler, IItemHandlerModifiable, INBTSerializable<ListTag> {
+public class ItemListHandler implements IItemHandlerModifiable, INBTSerializable<ListTag> {
     private NonNullList<ItemStack> stacks;
 
     public ItemListHandler() {
         stacks = NonNullList.of(ItemStack.EMPTY);
     }
-    public ItemListHandler(NonNullList<ItemStack> stacks)
-    {
+
+    public ItemListHandler(NonNullList<ItemStack> stacks) {
         this.stacks = stacks;
     }
 
@@ -157,7 +156,8 @@ public class ItemListHandler implements IItemHandler, IItemHandlerModifiable, IN
                 }
                 return existing;
             }
-        } else if (!simulate && setStack(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract))) {
+        } else if (!simulate &&
+                   setStack(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract))) {
             onContentsChanged(slot);
         }
 
@@ -176,11 +176,12 @@ public class ItemListHandler implements IItemHandler, IItemHandlerModifiable, IN
 
     /**
      * Check whether the numbered slot is within the range
+     *
      * @param slot the slot to check
+     *
      * @return true if the slot is the last "always empty" slot
      */
-    protected boolean validateSlot(int slot)
-    {
+    protected boolean validateSlot(int slot) {
         int size = stacks.size();
         if (slot < 0 || slot > size) {
             throw new RuntimeException("Slot " + slot + " not in valid range - [0," + (size + 1) + ")");
@@ -188,13 +189,11 @@ public class ItemListHandler implements IItemHandler, IItemHandlerModifiable, IN
         return slot == size;
     }
 
-    protected int getStackLimit(int slot, @Nonnull ItemStack stack)
-    {
+    protected int getStackLimit(int slot, @Nonnull ItemStack stack) {
         return Math.min(getSlotLimit(slot), stack.getMaxStackSize());
     }
 
-    protected void onContentsChanged(int slot)
-    {
+    protected void onContentsChanged(int slot) {
 
     }
 }

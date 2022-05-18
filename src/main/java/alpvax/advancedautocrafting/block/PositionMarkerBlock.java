@@ -16,7 +16,9 @@ public class PositionMarkerBlock extends Block {
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(
+        BlockState state, HitResult target, BlockGetter level, BlockPos pos,
+        Player player) {
         if (player.isCrouching() && level instanceof Level l) {
             ItemStack stack = new ItemStack(asItem());
             IPositionReference.PositionMarkerItemStack.setPosition(stack, l.dimension(), pos.immutable());

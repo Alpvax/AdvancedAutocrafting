@@ -29,22 +29,26 @@ public class AAIMCHelper {
      * Convenience method to send an IMC message to register a new blockstate connectivity factory.
      * Should be called from {@link net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent},
      * as it just wraps around {@link InterModComms#sendTo}
+     *
      * @param senderModId The modID of the mod sending this message.
      *                    If null then the sendTo method without the modId is called instead.
-     * @param blockId the ResourceLocation of the block that can act as a wire
-     * @param mapper a method which queries the connectivity of the given state.
-     *               The state should always match the blockId
-     * @return the value of the wrapped {@link InterModComms#sendTo} function
-     * (whether or not the message was enqueued)
+     * @param blockId     the ResourceLocation of the block that can act as a wire.
+     * @param mapper      a method which queries the connectivity of the given state.
+     *                    The state should always match the blockId.
+     *
+     * @return the value of the wrapped {@link InterModComms#sendTo} function (whether the message was enqueued)
      */
-    public boolean sendRegisterBlockStateConnectivity(@Nullable final String senderModId, final ResourceLocation blockId, final NodeConnectivity.IBlockStateConnectivityMapper mapper) {
+    public boolean sendRegisterBlockStateConnectivity(
+        @Nullable final String senderModId,
+        final ResourceLocation blockId,
+        final NodeConnectivity.IBlockStateConnectivityMapper mapper) {
         return sendIMC(senderModId, IMCMethod.REGISTER_CONNECTIVITY, () -> Pair.of(blockId, mapper));
     }
 
     @SuppressWarnings("SameParameterValue") //TODO: Remove warning suppression if/when more IMC types are added
     private <T> boolean sendIMC(@Nullable final String senderModId, IMCMethod method, Supplier<T> supplier) {
         return senderModId == null
-            ? InterModComms.sendTo(AAReference.MODID, method.getSerializedName(), supplier)
-            : InterModComms.sendTo(senderModId, AAReference.MODID, method.getSerializedName(), supplier);
+               ? InterModComms.sendTo(AAReference.MODID, method.getSerializedName(), supplier)
+               : InterModComms.sendTo(senderModId, AAReference.MODID, method.getSerializedName(), supplier);
     }
 }

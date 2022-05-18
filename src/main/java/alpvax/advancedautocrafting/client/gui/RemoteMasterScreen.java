@@ -11,11 +11,12 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class RemoteMasterScreen extends AbstractContainerScreen<RemoteMasterContainer> {
     //private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(AdvancedAutocrafting.MODID, "textures/gui/container/remote_master.png");
-    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
+    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(
+        "textures/gui/container/generic_54.png");
 
     public RemoteMasterScreen(final RemoteMasterContainer container, final Inventory inventory, final Component title) {
         super(container, inventory, title);
-        this.imageHeight = 114 + 3 * 18;
+        imageHeight = 114 + 3 * 18;
     }
 
     @Override
@@ -28,7 +29,7 @@ public class RemoteMasterScreen extends AbstractContainerScreen<RemoteMasterCont
     @Override
     protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
         font.draw(matrixStack, title, (float) titleLabelX, (float) titleLabelY, 4210752);
-        font.draw(matrixStack, this.playerInventoryTitle, (float) inventoryLabelX, (float) inventoryLabelY, 4210752);
+        font.draw(matrixStack, playerInventoryTitle, (float) inventoryLabelX, (float) inventoryLabelY, 4210752);
     }
 
     @Override

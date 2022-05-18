@@ -19,7 +19,7 @@ public class AATranslationKeys {
 
     private static Map<String, String> keys(String prefix, String suffix, String... variables) {
         Map<String, String> m = Maps.newHashMap();
-        Arrays.stream(variables).forEach((var) -> {
+        Arrays.stream(variables).forEach(var -> {
             String s = prefix + "." + var;
             if (suffix != null) {
                 s += "." + suffix;

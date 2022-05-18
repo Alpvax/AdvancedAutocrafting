@@ -24,15 +24,17 @@ import java.util.function.Supplier;
 
 
 public class AABlocks {
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, AAReference.MODID);
+    public static final DeferredRegister<Block> BLOCKS =
+        DeferredRegister.create(ForgeRegistries.BLOCKS, AAReference.MODID);
     public static final DeferredRegister<Item> ITEMS = AAItems.ITEMS;
 
     public static final RegistryObject<Block> CONTROLLER = register("controller", () -> new ControllerBlock(
         Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(6.0F, 30F)
     ));
-    public static final RegistryObject<Block> POSITION_MARKER = register("position_marker", () -> new PositionMarkerBlock(
-        Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(1.0F, 30F)
-    ), (b) -> () -> new PositionMarkerItem(b.get(), new Item.Properties().tab(AAItems.ITEM_GROUP)));
+    public static final RegistryObject<Block> POSITION_MARKER =
+        register("position_marker", () -> new PositionMarkerBlock(
+            Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(1.0F, 30F)
+        ), b -> () -> new PositionMarkerItem(b.get(), new Item.Properties().tab(AAItems.ITEM_GROUP)));
     public static final RegistryObject<Block> REMOTE_MASTER = register("remote_master", () -> new RemoteMasterBlock(
         Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(6.0F, 30F)
     ));
@@ -41,10 +43,12 @@ public class AABlocks {
     ));
 
     private static <T extends Block> RegistryObject<T> register(String name, Supplier<? extends T> block) {
-        return register(name, block, (b) -> () -> new BlockItem(b.get(), new Item.Properties().tab(AAItems.ITEM_GROUP)));
+        return register(name, block, b -> () -> new BlockItem(b.get(), new Item.Properties().tab(AAItems.ITEM_GROUP)));
     }
 
-    private static <T extends Block> RegistryObject<T> register(String name, Supplier<? extends T> block, Function<RegistryObject<T>, Supplier<? extends Item>> itemCreator) {
+    private static <T extends Block> RegistryObject<T> register(
+        String name, Supplier<? extends T> block,
+        Function<RegistryObject<T>, Supplier<? extends Item>> itemCreator) {
         RegistryObject<T> ret = registerBlockOnly(name, block);
         ITEMS.register(name, itemCreator.apply(ret));
         return ret;
@@ -56,13 +60,18 @@ public class AABlocks {
 
     @SuppressWarnings("ConstantConditions")
     public static class Entities {
-        public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, AAReference.MODID);
+        public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
+            DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, AAReference.MODID);
 
-        public static final RegistryObject<BlockEntityType<ControllerBlockEntity>> CONTROLLER = BLOCK_ENTITIES.register("controller", () ->
-                                                                                                                                          new BlockEntityType<>(ControllerBlockEntity::new, Sets.newHashSet(AABlocks.CONTROLLER.get()), null)
+        public static final RegistryObject<BlockEntityType<ControllerBlockEntity>> CONTROLLER = BLOCK_ENTITIES.register(
+            "controller",
+            () -> new BlockEntityType<>(ControllerBlockEntity::new, Sets.newHashSet(AABlocks.CONTROLLER.get()), null)
         );
-        public static final RegistryObject<BlockEntityType<RemoteMasterBlockEntity>> REMOTE_MASTER = BLOCK_ENTITIES.register("remote_master", () ->
-                                                                                                                                                  new BlockEntityType<>(RemoteMasterBlockEntity::new, Sets.newHashSet(AABlocks.REMOTE_MASTER.get()), null)
+        public static final RegistryObject<BlockEntityType<RemoteMasterBlockEntity>> REMOTE_MASTER = BLOCK_ENTITIES.register(
+            "remote_master",
+            () -> new BlockEntityType<>(RemoteMasterBlockEntity::new, Sets.newHashSet(AABlocks.REMOTE_MASTER.get()),
+                                        null
+            )
         );
     }
 }

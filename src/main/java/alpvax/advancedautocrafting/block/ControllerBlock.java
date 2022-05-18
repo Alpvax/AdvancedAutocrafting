@@ -42,7 +42,9 @@ public class ControllerBlock extends Block implements EntityBlock {
 
     @SuppressWarnings("deprecation")
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult rayTraceResult) {
+    public InteractionResult use(
+        BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+        BlockHitResult rayTraceResult) {
         return level.getBlockEntity(pos, AABlocks.Entities.CONTROLLER.get()).map(tile -> {
                 if (!level.isClientSide) {
                     NetworkHooks.openGui((ServerPlayer) player, tile, pos);

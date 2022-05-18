@@ -27,7 +27,8 @@ public class PositionReferenceLootFunction extends LootItemConditionalFunction {
     protected ItemStack run(ItemStack stack, LootContext context) {
         Vec3 pos = context.getParamOrNull(LootContextParams.ORIGIN);
         if (pos != null) {
-            IPositionReference.PositionMarkerItemStack.setPosition(stack, context.getLevel().dimension(), new BlockPos(pos));
+            IPositionReference.PositionMarkerItemStack.setPosition(
+                stack, context.getLevel().dimension(), new BlockPos(pos));
         }
         return stack;
     }
@@ -39,7 +40,10 @@ public class PositionReferenceLootFunction extends LootItemConditionalFunction {
 
     public static class Serializer extends LootItemConditionalFunction.Serializer<PositionReferenceLootFunction> {
         @Override
-        public PositionReferenceLootFunction deserialize(JsonObject object, JsonDeserializationContext deserializationContext, LootItemCondition[] conditionsIn) {
+        public PositionReferenceLootFunction deserialize(
+            JsonObject object,
+            JsonDeserializationContext deserializationContext,
+            LootItemCondition[] conditionsIn) {
             return new PositionReferenceLootFunction(conditionsIn);
         }
     }

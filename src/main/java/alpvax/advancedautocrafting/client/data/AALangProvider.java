@@ -1,8 +1,8 @@
 package alpvax.advancedautocrafting.client.data;
 
 import alpvax.advancedautocrafting.api.AAReference;
-import alpvax.advancedautocrafting.init.AABlocks;
 import alpvax.advancedautocrafting.client.data.lang.AATranslationKeys;
+import alpvax.advancedautocrafting.init.AABlocks;
 import alpvax.advancedautocrafting.init.AAItems;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.network.chat.TranslatableComponent;

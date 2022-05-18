@@ -2,18 +2,18 @@ package alpvax.advancedautocrafting;
 
 import alpvax.advancedautocrafting.api.AAIMCHelper;
 import alpvax.advancedautocrafting.api.AAReference;
+import alpvax.advancedautocrafting.api.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.api.craftnetwork.NodeConnectivity;
 import alpvax.advancedautocrafting.api.util.IPositionReference;
 import alpvax.advancedautocrafting.client.ClientEvents;
 import alpvax.advancedautocrafting.client.data.AABlockstateProvider;
 import alpvax.advancedautocrafting.client.data.AAItemModelProvider;
 import alpvax.advancedautocrafting.client.data.AALangProvider;
-import alpvax.advancedautocrafting.api.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.craftnetwork.NodeConnectivityManager;
 import alpvax.advancedautocrafting.data.AALootTableProvider;
 import alpvax.advancedautocrafting.data.AARecipeProvider;
-import alpvax.advancedautocrafting.init.AARegistration;
 import alpvax.advancedautocrafting.data.AATagsProvider;
+import alpvax.advancedautocrafting.init.AARegistration;
 import alpvax.advancedautocrafting.network.AAPacketManager;
 import net.minecraft.Util;
 import net.minecraft.data.DataGenerator;
@@ -80,7 +80,6 @@ public class AdvancedAutocrafting {
             map.put(method.getSerializedName(), method);
         }
     });
-
     private void processIMC(final InterModProcessEvent event) {
         event.getIMCStream().forEach(msg -> {
             //TODO: Remove warning suppression if/when more IMC types are added
@@ -89,10 +88,14 @@ public class AdvancedAutocrafting {
                 case REGISTER_CONNECTIVITY -> {
                     @SuppressWarnings("unchecked")
                     Pair<ResourceLocation, NodeConnectivity.IBlockStateConnectivityMapper> value =
-                        (Pair<ResourceLocation, NodeConnectivity.IBlockStateConnectivityMapper>) msg.messageSupplier().get();
+                        (Pair<ResourceLocation, NodeConnectivity.IBlockStateConnectivityMapper>)
+                            msg.messageSupplier().get();
                     NodeConnectivityManager.registerBlockstateConnectivityFactory(value.getLeft(), value.getRight());
                 }
-                default -> LOGGER.warn("Recieved IMC message from mod \"{}\" with invalid method: \"{}\"", msg.senderModId(), msg.method());
+                default -> LOGGER.warn(
+                    "Recieved IMC message from mod \"{}\" with invalid method: \"{}\"", msg.senderModId(),
+                    msg.method()
+                );
             }
         });
     }

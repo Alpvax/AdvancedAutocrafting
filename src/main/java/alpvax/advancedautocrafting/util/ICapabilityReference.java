@@ -15,18 +15,20 @@ public interface ICapabilityReference<T> {
 
     LazyOptional<T> getCapability();
 
-    @Nullable Direction getCapabliltySide();
+    @Nullable
+    Direction getCapabliltySide();
 
     class Impl<T> implements ICapabilityReference<T> {
         private final Capability<T> capability;
-        private final @Nullable Direction side;
+        @Nullable
+        private final Direction side;
         private final IPositionReference posRef;
         private LazyOptional<T> capInstance;
 
         public Impl(Capability<T> capability, @Nullable Direction side, IPositionReference position) {
             this.capability = capability;
             this.side = side;
-            this.posRef = position;
+            posRef = position;
             updateCapInstance();
         }
 
@@ -48,14 +50,14 @@ public interface ICapabilityReference<T> {
             return capInstance;
         }
 
-        protected void updateCapInstance() {
-            capInstance = getPosition().getLevel().getCapability(getCapabilityType(), getCapabliltySide());
-        }
-
         @Nullable
         @Override
         public Direction getCapabliltySide() {
             return side;
+        }
+
+        protected void updateCapInstance() {
+            capInstance = getPosition().getLevel().getCapability(getCapabilityType(), getCapabliltySide());
         }
 
         @Override
@@ -70,8 +72,8 @@ public interface ICapabilityReference<T> {
             }
             if (obj instanceof ICapabilityReference other) {
                 return capability == other.getCapabilityType()
-                    && side == other.getCapabliltySide()
-                    && posRef.equals(other.getPosition());
+                       && side == other.getCapabliltySide()
+                       && posRef.equals(other.getPosition());
             }
             return false;
         }

@@ -15,34 +15,34 @@ public class RemoteMasterContainer extends AbstractBlockEntityContainer<RemoteMa
 
         for (int j = 0; j < 3; ++j) {
             for (int k = 0; k < 9; ++k) {
-                this.addSlot(new SlotItemHandler(tile.inventory, k + j * 9, 8 + k * 18, 18 + j * 18));
+                addSlot(new SlotItemHandler(tile.inventory, k + j * 9, 8 + k * 18, 18 + j * 18));
             }
         }
 
         //Player inventory
         for (int l = 0; l < 3; ++l) {
             for (int j1 = 0; j1 < 9; ++j1) {
-                this.addSlot(new Slot(playerInventory, j1 + l * 9 + 9, 8 + j1 * 18, 85 + l * 18));
+                addSlot(new Slot(playerInventory, j1 + l * 9 + 9, 8 + j1 * 18, 85 + l * 18));
             }
         }
         //Hotbar
         for (int i1 = 0; i1 < 9; ++i1) {
-            this.addSlot(new Slot(playerInventory, i1, 8 + i1 * 18, 143));
+            addSlot(new Slot(playerInventory, i1, 8 + i1 * 18, 143));
         }
     }
 
     @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(index);
+        Slot slot = slots.get(index);
         if (slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
             if (index < 27) {
-                if (!this.moveItemStackTo(itemstack1, 27, this.slots.size(), true)) {
+                if (!moveItemStackTo(itemstack1, 27, slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.moveItemStackTo(itemstack1, 0, 27, false)) {
+            } else if (!moveItemStackTo(itemstack1, 0, 27, false)) {
                 return ItemStack.EMPTY;
             }
 

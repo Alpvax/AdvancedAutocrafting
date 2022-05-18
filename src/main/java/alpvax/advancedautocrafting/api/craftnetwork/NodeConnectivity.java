@@ -27,6 +27,8 @@ public enum NodeConnectivity {
 
     @FunctionalInterface
     public interface IBlockStateConnectivityMapper {
-        NodeConnectivity getConnectivity(BlockState state, @Nullable Direction side, @Nonnull IPositionReference fromLocation);
+        NodeConnectivity getConnectivity(
+            BlockState state, @Nullable Direction side,
+            @Nonnull IPositionReference fromLocation);
     }
 }
