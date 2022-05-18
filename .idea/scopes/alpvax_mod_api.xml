@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="alpvax.mod.api" pattern="alpvax.*.api..*" />
+</component>

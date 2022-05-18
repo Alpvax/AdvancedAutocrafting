@@ -11,7 +11,7 @@ out
 *.ipr
 *.iws
 *.iml
-.idea
+# Contents inside .idea directory managed by .gitignore inside said directory
 
 # gradle
 build
