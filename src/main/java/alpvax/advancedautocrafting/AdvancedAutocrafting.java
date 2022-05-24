@@ -5,7 +5,6 @@ import alpvax.advancedautocrafting.api.AAReference;
 import alpvax.advancedautocrafting.api.craftnetwork.INetworkNode;
 import alpvax.advancedautocrafting.api.craftnetwork.NodeConnectivity;
 import alpvax.advancedautocrafting.api.util.IPositionReference;
-import alpvax.advancedautocrafting.client.ClientEvents;
 import alpvax.advancedautocrafting.client.data.AABlockstateProvider;
 import alpvax.advancedautocrafting.client.data.AAItemModelProvider;
 import alpvax.advancedautocrafting.client.data.AALangProvider;
@@ -18,13 +17,11 @@ import alpvax.advancedautocrafting.network.AAPacketManager;
 import net.minecraft.Util;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
@@ -49,11 +46,6 @@ public class AdvancedAutocrafting {
         modBus.addListener(this::gatherData);
         modBus.addListener(this::registerCapabilities);
         modBus.addListener(this::processIMC);
-
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            // Client setup
-            modBus.addListener(ClientEvents::setupClient);
-        });
 
         MinecraftForge.EVENT_BUS.addListener(this::onServerStarting);
 

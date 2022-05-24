@@ -27,24 +27,24 @@ public class ClientEvents {
         BlockHighlightRender.manager.clear();
     }
 
-    /**
-     * DO NOT ADD {@link SubscribeEvent} ANNOTATION!
-     * This is called on the Mod bus. (Registed in Mod constructor)
-     */
-    public static void setupClient(final FMLClientSetupEvent event) {
-        event.enqueueWork(() -> {
-            MenuScreens.register(AAContainerTypes.REMOTE_MASTER.get(), RemoteMasterScreen::new);
-            MenuScreens.register(AAContainerTypes.CONTROLLER.get(), ControllerScreen::new);
+    @Mod.EventBusSubscriber(modid = AAReference.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+    static class ModBusEvents {
+        @SubscribeEvent
+        static void setupClient(final FMLClientSetupEvent event) {
+            event.enqueueWork(() -> {
+                MenuScreens.register(AAContainerTypes.REMOTE_MASTER.get(), RemoteMasterScreen::new);
+                MenuScreens.register(AAContainerTypes.CONTROLLER.get(), ControllerScreen::new);
 
-            // Register property override for items with Position marker capability.
-            // 0 = current dimension, 1 = different dimension, 2 = no position
-            ItemProperties.registerGeneric(
-                new ResourceLocation(AAReference.MODID, "position_dimension"),
-                (itemStack, clientLevel, livingEntity, seed) ->
-                    itemStack.getCapability(AAReference.POSITION_MARKER_CAPABILITY).map(
-                        marker -> marker.matchesLevel(clientLevel) ? 0F : 1F
-                    ).orElse(2F)
-            );
-        });
+                // Register property override for items with Position marker capability.
+                // 0 = current dimension, 1 = different dimension, 2 = no position
+                ItemProperties.registerGeneric(
+                    new ResourceLocation(AAReference.MODID, "position_dimension"),
+                    (itemStack, clientLevel, livingEntity, seed) ->
+                        itemStack.getCapability(AAReference.POSITION_MARKER_CAPABILITY).map(
+                            marker -> marker.matchesLevel(clientLevel) ? 0F : 1F
+                        ).orElse(2F)
+                );
+            });
+        }
     }
 }
