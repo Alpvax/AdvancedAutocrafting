@@ -3,13 +3,16 @@ package alpvax.advancedautocrafting.client;
 import alpvax.advancedautocrafting.api.AAReference;
 import alpvax.advancedautocrafting.client.gui.ControllerScreen;
 import alpvax.advancedautocrafting.client.gui.RemoteMasterScreen;
+import alpvax.advancedautocrafting.client.model.WireModelLoader;
 import alpvax.advancedautocrafting.client.render.BlockHighlightRender;
 import alpvax.advancedautocrafting.init.AAContainerTypes;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -45,6 +48,11 @@ public class ClientEvents {
                         ).orElse(2F)
                 );
             });
+        }
+
+        @SubscribeEvent
+        static void onRegisterModel(ModelRegistryEvent event) {
+            ModelLoaderRegistry.registerLoader(new ResourceLocation(AAReference.MODID, "wire_loader"), new WireModelLoader());
         }
     }
 }
