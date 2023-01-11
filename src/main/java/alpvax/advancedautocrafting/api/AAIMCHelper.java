@@ -12,7 +12,8 @@ import java.util.function.Supplier;
 
 public class AAIMCHelper {
     public enum IMCMethod implements StringRepresentable {
-        REGISTER_CONNECTIVITY;
+        REGISTER_CONNECTIVITY,
+        REGISTER_WIRE_MODEL_ADAPTER;
 
         private final String name;
         IMCMethod() {
@@ -44,6 +45,26 @@ public class AAIMCHelper {
         final NodeConnectivity.IBlockStateConnectivityMapper mapper) {
         return sendIMC(senderModId, IMCMethod.REGISTER_CONNECTIVITY, () -> Pair.of(blockId, mapper));
     }
+//TODO: Register additional wire model parts
+//    /**
+//     * Convenience method to send an IMC message to register a new wire model adapter.
+//     * Should be called from {@link net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent},
+//     * as it just wraps around {@link InterModComms#sendTo}
+//     *
+//     * @param senderModId The modID of the mod sending this message.
+//     *                    If null then the sendTo method without the modId is called instead.
+//     * @param blockId     the ResourceLocation of the block that can act as a wire.
+//     * @param adapter      a method which queries the connectivity of the given state.
+//     *                    The state should always match the blockId.
+//     *
+//     * @return the value of the wrapped {@link InterModComms#sendTo} function (whether the message was enqueued)
+//     */
+//    public boolean sendRegisterWireModelAdapter(
+//        @Nullable final String senderModId,
+//        final ResourceLocation blockId,
+//        final ConnectionStatus adapter) {
+//        return sendIMC(senderModId, IMCMethod.REGISTER_CONNECTIVITY, () -> Pair.of(blockId, adapter));
+//    }
 
     @SuppressWarnings("SameParameterValue") //TODO: Remove warning suppression if/when more IMC types are added
     private <T> boolean sendIMC(@Nullable final String senderModId, IMCMethod method, Supplier<T> supplier) {
