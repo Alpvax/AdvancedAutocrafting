@@ -1,19 +1,18 @@
 package alpvax.advancedautocrafting.client.model;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.PerspectiveMapWrapper;
-import net.minecraftforge.client.model.data.IDynamicBakedModel;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.IDynamicBakedModel;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 
 import javax.annotation.Nonnull;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Predicate;
 
 public class WireBakedModel implements IDynamicBakedModel {
@@ -37,17 +35,17 @@ public class WireBakedModel implements IDynamicBakedModel {
     private final ImmutableMap<Direction, ImmutableMap<BakedModel, Predicate<String>>> bakedParts;
     private final boolean isAmbientOcclusion;
     private final boolean isGui3d;
-    private final boolean isSideLit;
+    private final boolean usesBlockLight;
     private final TextureAtlasSprite particle;
     private final ItemOverrides overrides;
     private final ModelState transforms;
 
-    public WireBakedModel(boolean isGui3d, boolean isSideLit, boolean isAmbientOcclusion, TextureAtlasSprite particle, BakedModel coreModel, ImmutableMap<Direction, ImmutableMap<BakedModel, Predicate<String>>> bakedParts, ModelState combinedTransform, ItemOverrides overrides) {
+    public WireBakedModel(boolean isGui3d, boolean usesBlockLight, boolean isAmbientOcclusion, TextureAtlasSprite particle, BakedModel coreModel, ImmutableMap<Direction, ImmutableMap<BakedModel, Predicate<String>>> bakedParts, ModelState combinedTransform, ItemOverrides overrides) {
         this.coreModel = coreModel;
         this.bakedParts = bakedParts;
         this.isAmbientOcclusion = isAmbientOcclusion;
         this.isGui3d = isGui3d;
-        this.isSideLit = isSideLit;
+        this.usesBlockLight = usesBlockLight;
         this.particle = particle;
         this.overrides = overrides;
         transforms = combinedTransform;
@@ -55,13 +53,12 @@ public class WireBakedModel implements IDynamicBakedModel {
 
     @Nonnull
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData modelData) {
-        List<BakedQuad> quads = new ArrayList<>(coreModel.getQuads(state, side, rand, modelData));
-        quads.addAll(coreModel.getQuads(state, side, rand, modelData));
-        bakedParts.forEach((dir, parts) -> Optional.ofNullable(modelData.getData(DIRECTION_DATA.get(dir)))
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand, ModelData modelData, @Nullable RenderType renderType) {
+        List<BakedQuad> quads = new ArrayList<>(coreModel.getQuads(state, side, rand, modelData, renderType));
+        bakedParts.forEach((dir, parts) -> Optional.ofNullable(modelData.get(DIRECTION_DATA.get(dir)))
             .ifPresent(valid -> parts.forEach((model, predicate) -> {
                 if (predicate.test(valid)) {
-                    quads.addAll(model.getQuads(state, side, rand, modelData));
+                    quads.addAll(model.getQuads(state, side, rand, modelData, renderType));
                 }
             })));
         return quads;
@@ -95,7 +92,7 @@ public class WireBakedModel implements IDynamicBakedModel {
     @Override
     public boolean usesBlockLight()
     {
-        return isSideLit;
+        return usesBlockLight;
     }
 
     @Override
@@ -115,17 +112,5 @@ public class WireBakedModel implements IDynamicBakedModel {
     public ItemOverrides getOverrides()
     {
         return overrides;
-    }
-
-    @Override
-    public boolean doesHandlePerspectives()
-    {
-        return true;
-    }
-
-    @Override
-    public BakedModel handlePerspective(ItemTransforms.TransformType cameraTransformType, PoseStack poseStack)
-    {
-        return PerspectiveMapWrapper.handlePerspective(this, transforms, cameraTransformType, poseStack);
     }
 }

@@ -3,32 +3,33 @@ package alpvax.advancedautocrafting.data;
 import alpvax.advancedautocrafting.api.AAReference;
 import alpvax.advancedautocrafting.init.AAItems;
 import alpvax.advancedautocrafting.init.AATags;
-import net.minecraft.core.Registry;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nullable;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class AATagsProvider {
-    public static void addProviders(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-        BlockTagsProvider blockTags = new BlockProvider(generator, existingFileHelper);
-        generator.addProvider(blockTags);
-        generator.addProvider(new ItemProvider(generator, blockTags, existingFileHelper));
+    public static void addProviders(DataGenerator generator, CompletableFuture<HolderLookup.Provider> lookupProvider, boolean includeServer, ExistingFileHelper existingFileHelper) {
+        PackOutput output = generator.getPackOutput();
+        BlockTagsProvider blockTags = new BlockProvider(output, lookupProvider, existingFileHelper);
+        generator.addProvider(includeServer, blockTags);
+        generator.addProvider(includeServer, new ItemProvider(output, lookupProvider, blockTags, existingFileHelper));
     }
 
     private static class BlockProvider extends BlockTagsProvider {
-        public BlockProvider(DataGenerator pGenerator, @Nullable ExistingFileHelper existingFileHelper) {
-            super(pGenerator, AAReference.MODID, existingFileHelper);
+        public BlockProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
+            super(output, lookupProvider, AAReference.MODID, existingFileHelper);
         }
 
         @Override
-        public void addTags() {
+        public void addTags(HolderLookup.Provider provider) {
         }
 
         @Override
@@ -38,16 +39,15 @@ public abstract class AATagsProvider {
     }
 
     private static class ItemProvider extends ItemTagsProvider {
-        protected ItemProvider(
-            DataGenerator generator, BlockTagsProvider blockTags,
+        protected ItemProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, BlockTagsProvider blockTags,
             @Nullable ExistingFileHelper existingFileHelper) {
-            super(generator, blockTags, AAReference.MODID, existingFileHelper);
+            super(output, lookupProvider, blockTags, AAReference.MODID, existingFileHelper);
         }
 
         @Override
-        protected void addTags() {
-            ResourceKey<Item> multitool = itemKey(AAItems.MULTITOOL);
-            //noinspection unchecked
+        protected void addTags(HolderLookup.Provider provider) {
+            ResourceKey<Item> multitool = AAItems.MULTITOOL.getKey();
+            //noinspection unchecked,ConstantConditions
             tag(AATags.Items.MULTITOOL).add(multitool)
                 .addTags(AATags.Items.FORGE_TOOLS_WRENCH, AATags.Items.FORGE_WRENCHES);
             tag(AATags.Items.FORGE_TOOLS).addTag(AATags.Items.MULTITOOL);
@@ -58,15 +58,6 @@ public abstract class AATagsProvider {
         @Override
         public String getName() {
             return "AdvancedAutocrafting Item Tags";
-        }
-
-        private ResourceKey<Item> itemKey(ResourceLocation loc) {
-            return ResourceKey.create(Registry.ITEM_REGISTRY, loc);
-        }
-
-        @SuppressWarnings("SameParameterValue")
-        private ResourceKey<Item> itemKey(RegistryObject<Item> obj) {
-            return itemKey(obj.getId());
         }
     }
 }

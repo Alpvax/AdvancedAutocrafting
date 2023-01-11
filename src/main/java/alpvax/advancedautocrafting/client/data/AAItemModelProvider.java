@@ -3,13 +3,14 @@ package alpvax.advancedautocrafting.client.data;
 import alpvax.advancedautocrafting.api.AAReference;
 import alpvax.advancedautocrafting.init.AABlocks;
 import alpvax.advancedautocrafting.init.AAItems;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
@@ -21,8 +22,8 @@ import java.util.function.Supplier;
 @SuppressWarnings("UnusedReturnValue")
 public class AAItemModelProvider extends ItemModelProvider {
 
-    public AAItemModelProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-        super(generator, AAReference.MODID, existingFileHelper);
+    public AAItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
+        super(output, AAReference.MODID, existingFileHelper);
     }
 
     @Nonnull
@@ -50,7 +51,7 @@ public class AAItemModelProvider extends ItemModelProvider {
 
     @SuppressWarnings("ConstantConditions")
     private String name(Supplier<? extends ItemLike> item) {
-        return item.get().asItem().getRegistryName().getPath();
+        return ForgeRegistries.ITEMS.getKey(item.get().asItem()).getPath();
     }
 
     private ResourceLocation itemTexture(Supplier<? extends ItemLike> item) {

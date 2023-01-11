@@ -52,7 +52,7 @@ public class RemoteMasterBlock extends Block implements EntityBlock {
         if (!level.isClientSide) {
             level.getBlockEntity(pos, AABlocks.Entities.REMOTE_MASTER.get()).ifPresent(tile -> {
                 if (interactWith(level, pos, player, hand, rayTraceResult)) {
-                    NetworkHooks.openGui((ServerPlayer) player, tile, pos);
+                    NetworkHooks.openScreen((ServerPlayer) player, tile, pos);
                 }
             });
         }

@@ -6,40 +6,36 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.Variant;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.BlockModelRotation;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
-import net.minecraftforge.client.model.CompositeModelState;
-import net.minecraftforge.client.model.IModelBuilder;
-import net.minecraftforge.client.model.IModelConfiguration;
-import net.minecraftforge.client.model.IModelLoader;
-import net.minecraftforge.client.model.geometry.IModelGeometryPart;
-import net.minecraftforge.client.model.geometry.IMultipartModelGeometry;
+import net.minecraftforge.client.model.SimpleModelState;
+import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
+import net.minecraftforge.client.model.geometry.IGeometryLoader;
+import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class WireModelLoader implements IModelLoader<WireModelLoader.Geometry> {
+public class WireModelLoader implements IGeometryLoader<WireModelLoader.Geometry> {
     private static final EnumMap<Direction, BlockModelRotation> ROTATIONS = Util.make(new EnumMap<>(Direction.class), m -> {
         m.put(Direction.DOWN, BlockModelRotation.X90_Y0);
         m.put(Direction.UP, BlockModelRotation.X270_Y0);
@@ -50,15 +46,9 @@ public class WireModelLoader implements IModelLoader<WireModelLoader.Geometry> {
     });
 
     @Override
-    public void onResourceManagerReload(ResourceManager resourceManager) {
-
-    }
-
-    @Override
-    public Geometry read(
-        JsonDeserializationContext deserializationContext, JsonObject modelContents) {
-        SubModel core = new SubModel("core", deserialiseCore(deserializationContext, GsonHelper.getAsJsonObject(modelContents, "core")), null);
-        Map<String, SubModel> parts = deserialiseParts(deserializationContext, GsonHelper.getAsJsonObject(modelContents, "parts"));
+    public Geometry read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) throws JsonParseException {
+        SubModel core = new SubModel("core", deserialiseCore(deserializationContext, GsonHelper.getAsJsonObject(jsonObject, "core")), null);
+        Map<String, SubModel> parts = deserialiseParts(deserializationContext, GsonHelper.getAsJsonObject(jsonObject, "parts"));
         return new Geometry(core, parts);
     }
 
@@ -78,7 +68,7 @@ public class WireModelLoader implements IModelLoader<WireModelLoader.Geometry> {
             to.add(t);
             to.add(t);
             to.add(t);
-            JsonArray elements = new JsonArray();
+//            JsonArray elements = new JsonArray();
 
             json.add("from", from);
             json.add("to", to);
@@ -97,10 +87,10 @@ public class WireModelLoader implements IModelLoader<WireModelLoader.Geometry> {
                     GsonHelper.getAsJsonArray(json, "when", null)
                 );
             })
-            .collect(Collectors.toMap(SubModel::name, Function.identity()));
+            .collect(Collectors.toMap(m -> m.name, Function.identity()));
     }
 
-    public static class Geometry implements IMultipartModelGeometry<Geometry> {
+    public static class Geometry implements IUnbakedGeometry<Geometry> {
         private final SubModel core;
         private final ImmutableMap<String, SubModel> parts;
 
@@ -110,45 +100,36 @@ public class WireModelLoader implements IModelLoader<WireModelLoader.Geometry> {
         }
 
         @Override
-        public Collection<? extends IModelGeometryPart> getParts() {
-            return parts.values();//TODO: add core?
-        }
-
-        @Override
-        public Optional<? extends IModelGeometryPart> getPart(String name) {
-            return name.equals("core") ? Optional.of(core) : Optional.ofNullable(parts.get(name));
-        }
-
-        @Override
-        public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelstate, ItemOverrides overrides, ResourceLocation modelLocation) {
-            Material particleLocation = owner.resolveTexture("particle");
+        public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
+            Material particleLocation = context.getMaterial("particle");
             TextureAtlasSprite particle = spriteGetter.apply(particleLocation);
 
-            BakedModel coreModel = core.bakeModel(bakery, spriteGetter, modelstate, modelLocation);
+            var rootTransform = context.getRootTransform();
+            if (!rootTransform.isIdentity())
+                modelState = new SimpleModelState(modelState.getRotation().compose(rootTransform), modelState.isUvLocked());
+
+            BakedModel coreModel = core.bakeModel(baker, spriteGetter, modelState, modelLocation);
 
             ImmutableMap.Builder<Direction, ImmutableMap<BakedModel, Predicate<String>>> bakedParts = ImmutableMap.builder();
+            ModelState finalModelState = modelState;
             ROTATIONS.forEach((dir, rotation) -> {
                 ImmutableMap.Builder<BakedModel, Predicate<String>> partsForDir = ImmutableMap.builder();
-                parts.values().stream().filter(owner::getPartVisibility).forEach(submodel -> {
-                    partsForDir.put(submodel.bakeModel(bakery, spriteGetter, new CompositeModelState(rotation, modelstate,
-                                                                                                           rotation.isUvLocked() || modelstate.isUvLocked()), modelLocation), submodel::isValid);
+                parts.values().stream().filter(p -> context.isComponentVisible(p.name, true)).forEach(submodel -> {
+                    partsForDir.put(submodel.bakeModel(baker, spriteGetter, new Variant(modelLocation, rotation.getRotation(), rotation.isUvLocked() || finalModelState.isUvLocked(), 1), modelLocation), submodel::isValid);
                 });
                 bakedParts.put(dir, partsForDir.build());
             });
-            return new WireBakedModel(owner.isShadedInGui(), owner.useSmoothLighting(), owner.isSideLit(), particle, coreModel, bakedParts.build(), owner.getCombinedTransform(), overrides);
+            return new WireBakedModel(context.isGui3d(), context.useBlockLight(), context.useAmbientOcclusion(), particle, coreModel, bakedParts.build(), modelState, overrides);
         }
 
         @Override
-        public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation, UnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
-            Set<Material> textures = new HashSet<>(core.getTextures(owner, modelGetter, missingTextureErrors));
-            for (SubModel part : parts.values()) {
-                textures.addAll(part.getTextures(owner, modelGetter, missingTextureErrors));
-            }
-            return textures;
+        public Set<String> getConfigurableComponentNames()
+        {
+            return Set.of();
         }
     }
 
-    static class SubModel implements IModelGeometryPart {
+    static class SubModel implements UnbakedModel {
         private final String name;
         private final BlockModel model;
         @Nullable
@@ -170,25 +151,25 @@ public class WireModelLoader implements IModelLoader<WireModelLoader.Geometry> {
             return when == null || when.contains(matchAgainst);
         }
 
-        @Override
-        public String name() {
-            return name;
-        }
-        @Override
-        public void addQuads(IModelConfiguration owner, IModelBuilder<?> modelBuilder, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelstate, ResourceLocation modelLocation)
+        public BakedModel bakeModel(ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelstate, ResourceLocation modelLocation)
         {
-            throw new UnsupportedOperationException("Attempted to call adQuads on a Submodel instance. Please don't.");
-        }
-
-        public BakedModel bakeModel(ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelstate, ResourceLocation modelLocation)
-        {
-            return model.bake(bakery, model, spriteGetter, modelstate, modelLocation, true);
+            return model.bake(baker, model, spriteGetter, modelstate, modelLocation, true);
         }
 
         @Override
-        public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation, UnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors)
-        {
-            return model.getMaterials(modelGetter, missingTextureErrors);
+        public Collection<ResourceLocation> getDependencies() {
+            return Collections.emptySet();
+        }
+        @Override
+        public void resolveParents(Function<ResourceLocation, UnbakedModel> p_119538_) {
+
+        }
+        @Nullable
+        @Override
+        public BakedModel bake(
+            ModelBaker pBaker, Function<Material, TextureAtlasSprite> pSpriteGetter, ModelState pState,
+            ResourceLocation pLocation) {
+            return null;
         }
     }
 }

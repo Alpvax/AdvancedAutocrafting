@@ -47,7 +47,7 @@ public class ControllerBlock extends Block implements EntityBlock {
         BlockHitResult rayTraceResult) {
         return level.getBlockEntity(pos, AABlocks.Entities.CONTROLLER.get()).map(tile -> {
                 if (!level.isClientSide) {
-                    NetworkHooks.openGui((ServerPlayer) player, tile, pos);
+                    NetworkHooks.openScreen((ServerPlayer) player, tile, pos);
                 }
                 return InteractionResult.SUCCESS;
             })

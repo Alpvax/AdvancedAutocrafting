@@ -5,7 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.BlockSourceImpl;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
@@ -87,7 +87,7 @@ public interface IPositionReference {
 
         @Override
         public ResourceKey<Level> getDimensionKey() {
-            return ResourceKey.create(Registry.DIMENSION_REGISTRY, dimension);
+            return ResourceKey.create(Registries.DIMENSION, dimension);
         }
 
         @Override
@@ -127,7 +127,7 @@ public interface IPositionReference {
         @Override
         public ResourceKey<Level> getDimensionKey() {
             return ResourceKey.create(
-                Registry.DIMENSION_REGISTRY, new ResourceLocation(getTag().orElseThrow().getString(DIM_KEY)));
+                Registries.DIMENSION, new ResourceLocation(getTag().orElseThrow().getString(DIM_KEY)));
         }
 
         @Override

@@ -2,39 +2,31 @@ package alpvax.advancedautocrafting.data;
 
 import alpvax.advancedautocrafting.init.AABlocks;
 import alpvax.advancedautocrafting.init.PositionReferenceLootFunction;
-import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.util.Pair;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class AALootTableProvider extends LootTableProvider {
 
-    public AALootTableProvider(DataGenerator generator) {
-        super(generator);
-    }
-
-    @Override
-    protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
-        return ImmutableList.of(
-            Pair.of(Blocks::new, LootContextParamSets.BLOCK)
-        );
+    public AALootTableProvider(PackOutput packOutput) {
+        super(packOutput, Collections.emptySet(), List.of(
+            new SubProviderEntry(Blocks::new, LootContextParamSets.BLOCK)
+        ));
     }
 
     @Override
@@ -42,15 +34,18 @@ public class AALootTableProvider extends LootTableProvider {
         // Nothing for now
     }
 
-    private static class Blocks extends BlockLoot {
+    private static class Blocks extends BlockLootSubProvider {
 
+        protected Blocks() {
+            super(Collections.emptySet(), FeatureFlags.REGISTRY.allFlags());
+        }
         @Override
-        protected void addTables() {
+        protected void generate() {
             dropSelf(AABlocks.CONTROLLER);
             dropSelf(AABlocks.REMOTE_MASTER);
             add(
                 AABlocks.POSITION_MARKER.get(),
-                b -> withPosition(b, AABlocks.POSITION_MARKER)
+                withPosition(AABlocks.POSITION_MARKER)
             );
             dropSelf(AABlocks.WIRE);
         }
@@ -65,7 +60,7 @@ public class AALootTableProvider extends LootTableProvider {
         }
 
         @SuppressWarnings("SameParameterValue")
-        private LootTable.Builder withPosition(Block block, Supplier<? extends ItemLike> item) {
+        private LootTable.Builder withPosition(Supplier<? extends ItemLike> item) {
             return LootTable.lootTable()
                 .withPool(LootPool.lootPool()
                               .add(LootItem.lootTableItem(item.get()).apply(PositionReferenceLootFunction.builder())));

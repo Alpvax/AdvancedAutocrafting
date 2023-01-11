@@ -4,8 +4,8 @@ import alpvax.advancedautocrafting.api.AAReference;
 import alpvax.advancedautocrafting.client.data.lang.AATranslationKeys;
 import alpvax.advancedautocrafting.init.AABlocks;
 import alpvax.advancedautocrafting.init.AAItems;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.data.PackOutput;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.block.Block;
@@ -19,14 +19,12 @@ import java.util.stream.Collectors;
 @SuppressWarnings("SameParameterValue")
 public class AALangProvider extends LanguageProvider {
 
-    public AALangProvider(DataGenerator gen) {
-        super(gen, AAReference.MODID, "en_us");
+    public AALangProvider(PackOutput output) {
+        super(output, AAReference.MODID, "en_us");
     }
 
     @Override
     protected void addTranslations() {
-        add(AAItems.ITEM_GROUP, "Advanced Autocrafting");
-
         add(AAItems.MULTITOOL.get(), "Multitool");
 
         addBlock(AABlocks.CONTROLLER);
@@ -38,7 +36,7 @@ public class AALangProvider extends LanguageProvider {
     }
 
     private void add(CreativeModeTab tab, String name) {
-        if (tab.getDisplayName() instanceof TranslatableComponent t) {
+        if (tab.getDisplayName().getContents() instanceof TranslatableContents t) {
             add(t.getKey(), name);
         }
     }

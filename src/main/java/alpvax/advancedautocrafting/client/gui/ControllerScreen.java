@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
@@ -33,7 +32,7 @@ public class ControllerScreen extends AbstractContainerScreen<ControllerContaine
 
         //XXX
         //TODO: actual screen render
-        font.draw(matrixStack, new TextComponent("[WIP]AN ACTUAL SCREEN TO COME!"), 30, imageHeight / 2F, 0xff0000);
+        font.draw(matrixStack, Component.literal("[WIP]AN ACTUAL SCREEN TO COME!"), 30, imageHeight / 2F, 0xff0000);
     }
 
     @Override //TODO: actual screen render

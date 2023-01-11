@@ -13,7 +13,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -123,7 +122,7 @@ public class RemoteMasterBlockEntity extends BlockEntity implements MenuProvider
 
     @Override
     public Component getDisplayName() {
-        return new TranslatableComponent(AABlocks.REMOTE_MASTER.get().getDescriptionId());
+        return Component.translatable(AABlocks.REMOTE_MASTER.get().getDescriptionId());
     }
 
     @Nullable

@@ -3,13 +3,14 @@ package alpvax.advancedautocrafting.client.data;
 import alpvax.advancedautocrafting.api.AAReference;
 import alpvax.advancedautocrafting.block.axial.AxialBlock;
 import alpvax.advancedautocrafting.block.axial.AxialBlockShape;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.MultiPartBlockStateBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,8 +20,8 @@ import java.util.function.Supplier;
 import static alpvax.advancedautocrafting.init.AABlocks.*;
 
 public class AABlockstateProvider extends BlockStateProvider {
-    public AABlockstateProvider(DataGenerator gen, ExistingFileHelper exFileHelper) {
-        super(gen, AAReference.MODID, exFileHelper);
+    public AABlockstateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
+        super(output, AAReference.MODID, exFileHelper);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class AABlockstateProvider extends BlockStateProvider {
 
     private <T extends Comparable<T>> void axisBlock(Supplier<? extends AxialBlock<T>> sup) {
         AxialBlock<T> block = sup.get();
-        ResourceLocation blockName = block.getRegistryName();
+        ResourceLocation blockName = ForgeRegistries.BLOCKS.getKey(sup.get());
         //noinspection ConstantConditions
         axisBlock(
             block, (partName, baseModel) -> models().singleTexture(blockName.toString() + "_" + partName,

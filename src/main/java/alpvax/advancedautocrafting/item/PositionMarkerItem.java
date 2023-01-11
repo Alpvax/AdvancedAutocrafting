@@ -8,7 +8,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -40,10 +39,10 @@ public class PositionMarkerItem extends BlockItem {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
         stack.getCapability(AAReference.POSITION_MARKER_CAPABILITY).ifPresent(ref -> {
-            tooltip.add(new TranslatableComponent(AATranslationKeys.ITEM_POS_LORE, ref.getPosition()).withStyle(
+            tooltip.add(Component.translatable(AATranslationKeys.ITEM_POS_LORE, ref.getPosition()).withStyle(
                 ChatFormatting.GRAY));
             if (flagIn.isAdvanced() || !ref.matchesLevel(level) || Screen.hasShiftDown()) {
-                tooltip.add(new TranslatableComponent(
+                tooltip.add(Component.translatable(
                     AATranslationKeys.ITEM_DIM_LORE,
                     ref.getDimensionKey().location()
                 ).withStyle(ChatFormatting.GRAY));

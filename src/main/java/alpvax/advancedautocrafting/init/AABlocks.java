@@ -34,7 +34,7 @@ public class AABlocks {
     public static final RegistryObject<Block> POSITION_MARKER =
         register("position_marker", () -> new PositionMarkerBlock(
             Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(1.0F, 30F)
-        ), b -> () -> new PositionMarkerItem(b.get(), new Item.Properties().tab(AAItems.ITEM_GROUP)));
+        ), b -> () -> new PositionMarkerItem(b.get(), new Item.Properties()));
     public static final RegistryObject<Block> REMOTE_MASTER = register("remote_master", () -> new RemoteMasterBlock(
         Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(6.0F, 30F)
     ));
@@ -43,7 +43,7 @@ public class AABlocks {
     ));
 
     private static <T extends Block> RegistryObject<T> register(String name, Supplier<? extends T> block) {
-        return register(name, block, b -> () -> new BlockItem(b.get(), new Item.Properties().tab(AAItems.ITEM_GROUP)));
+        return register(name, block, b -> () -> new BlockItem(b.get(), new Item.Properties()));
     }
 
     private static <T extends Block> RegistryObject<T> register(
@@ -61,7 +61,7 @@ public class AABlocks {
     @SuppressWarnings("ConstantConditions")
     public static class Entities {
         public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
-            DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, AAReference.MODID);
+            DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, AAReference.MODID);
 
         public static final RegistryObject<BlockEntityType<ControllerBlockEntity>> CONTROLLER = BLOCK_ENTITIES.register(
             "controller",

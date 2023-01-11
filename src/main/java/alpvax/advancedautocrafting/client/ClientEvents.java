@@ -10,10 +10,9 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.event.RenderLevelLastEvent;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
-import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -21,12 +20,14 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 @Mod.EventBusSubscriber(modid = AAReference.MODID, value = Dist.CLIENT)
 public class ClientEvents {
     @SubscribeEvent
-    static void renderWorldLastEvent(RenderLevelLastEvent evt) {
-        BlockHighlightRender.render(evt.getPoseStack());
+    static void renderWorldLastEvent(RenderLevelStageEvent evt) {
+        if(evt.getStage() == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
+            BlockHighlightRender.render(evt.getPoseStack());
+        }
     }
 
     @SubscribeEvent
-    static void onWorldChange(WorldEvent.Unload event) {
+    static void onWorldChange(LevelEvent.Unload event) {
         BlockHighlightRender.manager.clear();
     }
 
@@ -51,8 +52,8 @@ public class ClientEvents {
         }
 
         @SubscribeEvent
-        static void onRegisterModel(ModelRegistryEvent event) {
-            ModelLoaderRegistry.registerLoader(new ResourceLocation(AAReference.MODID, "wire_loader"), new WireModelLoader());
+        static void onRegisterModel(ModelEvent.RegisterGeometryLoaders event) {
+            event.register("wire_loader", new WireModelLoader());
         }
     }
 }

@@ -10,15 +10,15 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class AAContainerTypes {
-    public static final DeferredRegister<MenuType<?>> CONTAINER_TYPES = DeferredRegister.create(
-        ForgeRegistries.CONTAINERS, AAReference.MODID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(
+        ForgeRegistries.MENU_TYPES, AAReference.MODID);
 
-    public static final RegistryObject<MenuType<RemoteMasterContainer>> REMOTE_MASTER = CONTAINER_TYPES.register(
+    public static final RegistryObject<MenuType<RemoteMasterContainer>> REMOTE_MASTER = MENU_TYPES.register(
         "remote_master",
         AbstractBlockEntityContainer.makeTypeSupplier(RemoteMasterContainer::new)
     );
 
-    public static final RegistryObject<MenuType<ControllerContainer>> CONTROLLER = CONTAINER_TYPES.register(
+    public static final RegistryObject<MenuType<ControllerContainer>> CONTROLLER = MENU_TYPES.register(
         "controller",
         AbstractBlockEntityContainer.makeTypeSupplier(ControllerContainer::new)
     );
