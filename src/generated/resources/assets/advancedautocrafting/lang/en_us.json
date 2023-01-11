@@ -1,6 +1,6 @@
 {
-  "advancedautocrafting:bound.dimension": "Bound dimension: %s",
-  "advancedautocrafting:bound.position": "Bound position: %s",
+  "advancedautocrafting.bound.dimension": "Bound dimension: %s",
+  "advancedautocrafting.bound.position": "Bound position: %s",
   "block.advancedautocrafting.controller": "Autocrafting Controller",
   "block.advancedautocrafting.position_marker": "Remote Position Marker",
   "block.advancedautocrafting.remote_master": "Remote Network Container",

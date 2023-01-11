@@ -1,21 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "forge:storage_blocks/iron"
+    },
+    "G": {
+      "tag": "forge:ingots/gold"
+    },
+    "P": {
+      "tag": "forge:ender_pearls"
+    }
+  },
   "pattern": [
     "PGP",
     "GBG",
     "PGP"
   ],
-  "key": {
-    "P": {
-      "tag": "forge:ender_pearls"
-    },
-    "G": {
-      "tag": "forge:ingots/gold"
-    },
-    "B": {
-      "tag": "forge:storage_blocks/iron"
-    }
-  },
   "result": {
     "item": "advancedautocrafting:remote_master"
   }

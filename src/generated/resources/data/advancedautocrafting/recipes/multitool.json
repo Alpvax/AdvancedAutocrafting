@@ -1,10 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "IR ",
-    "RIR",
-    " RI"
-  ],
+  "category": "misc",
   "key": {
     "I": {
       "tag": "forge:ingots/iron"
@@ -13,6 +9,11 @@
       "tag": "forge:dyes/red"
     }
   },
+  "pattern": [
+    "IR ",
+    "RIR",
+    " RI"
+  ],
   "result": {
     "item": "advancedautocrafting:multitool"
   }

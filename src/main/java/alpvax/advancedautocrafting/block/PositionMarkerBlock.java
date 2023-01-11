@@ -22,6 +22,7 @@ public class PositionMarkerBlock extends Block {
         if (player.isCrouching() && level instanceof Level l) {
             ItemStack stack = new ItemStack(asItem());
             IPositionReference.PositionMarkerItemStack.setPosition(stack, l.dimension(), pos.immutable());
+            return stack;
         }
         return super.getCloneItemStack(state, target, level, pos, player);
     }

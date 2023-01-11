@@ -1,21 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "forge:storage_blocks/iron"
+    },
+    "G": {
+      "tag": "forge:ingots/gold"
+    },
+    "I": {
+      "tag": "forge:ingots/iron"
+    }
+  },
   "pattern": [
     "IGI",
     "GBG",
     "IGI"
   ],
-  "key": {
-    "I": {
-      "tag": "forge:ingots/iron"
-    },
-    "G": {
-      "tag": "forge:ingots/gold"
-    },
-    "B": {
-      "tag": "forge:storage_blocks/iron"
-    }
-  },
   "result": {
     "item": "advancedautocrafting:controller"
   }

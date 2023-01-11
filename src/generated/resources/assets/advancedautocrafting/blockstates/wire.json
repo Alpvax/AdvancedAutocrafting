@@ -6,180 +6,180 @@
       }
     },
     {
+      "apply": {
+        "model": "advancedautocrafting:block/wire_disabled",
+        "uvlock": true,
+        "x": 90
+      },
       "when": {
         "down": "disabled"
-      },
-      "apply": {
-        "model": "advancedautocrafting:block/wire_disabled",
-        "x": 90,
-        "uvlock": true
       }
     },
     {
+      "apply": {
+        "model": "advancedautocrafting:block/wire_interface",
+        "uvlock": true,
+        "x": 90
+      },
       "when": {
         "down": "interface"
-      },
-      "apply": {
-        "model": "advancedautocrafting:block/wire_interface",
-        "x": 90,
-        "uvlock": true
       }
     },
     {
+      "apply": {
+        "model": "advancedautocrafting:block/wire_arm",
+        "uvlock": true,
+        "x": 90
+      },
       "when": {
         "down": "connection|interface"
-      },
-      "apply": {
-        "model": "advancedautocrafting:block/wire_arm",
-        "x": 90,
-        "uvlock": true
       }
     },
     {
+      "apply": {
+        "model": "advancedautocrafting:block/wire_disabled",
+        "uvlock": true,
+        "x": 270
+      },
       "when": {
         "up": "disabled"
-      },
-      "apply": {
-        "model": "advancedautocrafting:block/wire_disabled",
-        "x": 270,
-        "uvlock": true
       }
     },
     {
+      "apply": {
+        "model": "advancedautocrafting:block/wire_interface",
+        "uvlock": true,
+        "x": 270
+      },
       "when": {
         "up": "interface"
-      },
-      "apply": {
-        "model": "advancedautocrafting:block/wire_interface",
-        "x": 270,
-        "uvlock": true
       }
     },
     {
+      "apply": {
+        "model": "advancedautocrafting:block/wire_arm",
+        "uvlock": true,
+        "x": 270
+      },
       "when": {
         "up": "connection|interface"
-      },
-      "apply": {
-        "model": "advancedautocrafting:block/wire_arm",
-        "x": 270,
-        "uvlock": true
       }
     },
     {
+      "apply": {
+        "model": "advancedautocrafting:block/wire_disabled",
+        "uvlock": true
+      },
       "when": {
         "north": "disabled"
-      },
-      "apply": {
-        "model": "advancedautocrafting:block/wire_disabled",
-        "uvlock": true
       }
     },
     {
+      "apply": {
+        "model": "advancedautocrafting:block/wire_interface",
+        "uvlock": true
+      },
       "when": {
         "north": "interface"
-      },
-      "apply": {
-        "model": "advancedautocrafting:block/wire_interface",
-        "uvlock": true
       }
     },
     {
+      "apply": {
+        "model": "advancedautocrafting:block/wire_arm",
+        "uvlock": true
+      },
       "when": {
         "north": "connection|interface"
-      },
-      "apply": {
-        "model": "advancedautocrafting:block/wire_arm",
-        "uvlock": true
       }
     },
     {
+      "apply": {
+        "model": "advancedautocrafting:block/wire_disabled",
+        "uvlock": true,
+        "y": 180
+      },
       "when": {
         "south": "disabled"
-      },
-      "apply": {
-        "model": "advancedautocrafting:block/wire_disabled",
-        "y": 180,
-        "uvlock": true
       }
     },
     {
+      "apply": {
+        "model": "advancedautocrafting:block/wire_interface",
+        "uvlock": true,
+        "y": 180
+      },
       "when": {
         "south": "interface"
-      },
-      "apply": {
-        "model": "advancedautocrafting:block/wire_interface",
-        "y": 180,
-        "uvlock": true
       }
     },
     {
+      "apply": {
+        "model": "advancedautocrafting:block/wire_arm",
+        "uvlock": true,
+        "y": 180
+      },
       "when": {
         "south": "connection|interface"
-      },
-      "apply": {
-        "model": "advancedautocrafting:block/wire_arm",
-        "y": 180,
-        "uvlock": true
       }
     },
     {
+      "apply": {
+        "model": "advancedautocrafting:block/wire_disabled",
+        "uvlock": true,
+        "y": 270
+      },
       "when": {
         "west": "disabled"
-      },
-      "apply": {
-        "model": "advancedautocrafting:block/wire_disabled",
-        "y": 270,
-        "uvlock": true
       }
     },
     {
+      "apply": {
+        "model": "advancedautocrafting:block/wire_interface",
+        "uvlock": true,
+        "y": 270
+      },
       "when": {
         "west": "interface"
-      },
-      "apply": {
-        "model": "advancedautocrafting:block/wire_interface",
-        "y": 270,
-        "uvlock": true
       }
     },
     {
+      "apply": {
+        "model": "advancedautocrafting:block/wire_arm",
+        "uvlock": true,
+        "y": 270
+      },
       "when": {
         "west": "connection|interface"
-      },
-      "apply": {
-        "model": "advancedautocrafting:block/wire_arm",
-        "y": 270,
-        "uvlock": true
       }
     },
     {
-      "when": {
-        "east": "disabled"
-      },
       "apply": {
         "model": "advancedautocrafting:block/wire_disabled",
-        "y": 90,
-        "uvlock": true
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "east": "disabled"
       }
     },
     {
-      "when": {
-        "east": "interface"
-      },
       "apply": {
         "model": "advancedautocrafting:block/wire_interface",
-        "y": 90,
-        "uvlock": true
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "east": "interface"
       }
     },
     {
-      "when": {
-        "east": "connection|interface"
-      },
       "apply": {
         "model": "advancedautocrafting:block/wire_arm",
-        "y": 90,
-        "uvlock": true
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "east": "connection|interface"
       }
     }
   ]

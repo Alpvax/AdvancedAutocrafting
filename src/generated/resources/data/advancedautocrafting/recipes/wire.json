@@ -1,20 +1,21 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "forge:storage_blocks/iron"
+    },
+    "I": {
+      "item": "minecraft:iron_bars"
+    }
+  },
   "pattern": [
     " I ",
     "IBI",
     " I "
   ],
-  "key": {
-    "I": {
-      "item": "minecraft:iron_bars"
-    },
-    "B": {
-      "tag": "forge:storage_blocks/iron"
-    }
-  },
   "result": {
-    "item": "advancedautocrafting:wire",
-    "count": 16
+    "count": 16,
+    "item": "advancedautocrafting:wire"
   }
 }

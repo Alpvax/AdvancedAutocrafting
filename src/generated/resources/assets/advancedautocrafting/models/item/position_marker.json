@@ -1,14 +1,14 @@
 {
   "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "advancedautocrafting:item/position_marker"
-  },
   "overrides": [
     {
+      "model": "advancedautocrafting:block/position_marker",
       "predicate": {
         "advancedautocrafting:position_dimension": 2.0
-      },
-      "model": "advancedautocrafting:block/position_marker"
+      }
     }
-  ]
+  ],
+  "textures": {
+    "layer0": "advancedautocrafting:item/position_marker"
+  }
 }

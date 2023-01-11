@@ -1,22 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "group": "advancedautocrafting:position_marker",
-  "pattern": [
-    "IPI",
-    "PBP",
-    "IPI"
-  ],
   "key": {
+    "B": {
+      "tag": "forge:storage_blocks/iron"
+    },
     "I": {
       "item": "minecraft:iron_bars"
     },
     "P": {
       "tag": "forge:ender_pearls"
-    },
-    "B": {
-      "tag": "forge:storage_blocks/iron"
     }
   },
+  "pattern": [
+    "IPI",
+    "PBP",
+    "IPI"
+  ],
   "result": {
     "item": "advancedautocrafting:position_marker"
   }
