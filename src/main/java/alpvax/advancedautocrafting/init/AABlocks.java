@@ -4,9 +4,10 @@ import alpvax.advancedautocrafting.api.AAReference;
 import alpvax.advancedautocrafting.block.ControllerBlock;
 import alpvax.advancedautocrafting.block.PositionMarkerBlock;
 import alpvax.advancedautocrafting.block.RemoteMasterBlock;
-import alpvax.advancedautocrafting.block.WireBlock;
 import alpvax.advancedautocrafting.block.entity.ControllerBlockEntity;
 import alpvax.advancedautocrafting.block.entity.RemoteMasterBlockEntity;
+import alpvax.advancedautocrafting.block.wire.WireBlock;
+import alpvax.advancedautocrafting.block.wire.WireBlockEntity;
 import alpvax.advancedautocrafting.item.PositionMarkerItem;
 import com.google.common.collect.Sets;
 import net.minecraft.world.item.BlockItem;
@@ -72,6 +73,10 @@ public class AABlocks {
             () -> new BlockEntityType<>(RemoteMasterBlockEntity::new, Sets.newHashSet(AABlocks.REMOTE_MASTER.get()),
                                         null
             )
+        );
+        public static final RegistryObject<BlockEntityType<WireBlockEntity>> WIRE = BLOCK_ENTITIES.register(
+            "wire",
+            () -> new BlockEntityType<>(WireBlockEntity::new, Sets.newHashSet(AABlocks.WIRE.get()), null)
         );
     }
 }
