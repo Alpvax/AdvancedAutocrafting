@@ -6,12 +6,10 @@ import alpvax.advancedautocrafting.api.wire.IWirePart;
 import alpvax.advancedautocrafting.client.model.WireBakedModel;
 import alpvax.advancedautocrafting.craftnetwork.SimpleNetworkNode;
 import alpvax.advancedautocrafting.init.AABlocks;
-import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -20,7 +18,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
@@ -63,6 +60,12 @@ public class WireBlockEntity extends BlockEntity {
     protected void setChanged(Direction direction) {
 //        dirtyConnections.put(direction, true);
         super.setChanged();
+        //noinspection ConstantConditions
+        level.markAndNotifyBlock(
+            worldPosition, level.getChunkAt(worldPosition),
+            getBlockState(), getBlockState(),
+            1 | 2 | 8, 512
+        );
         var packet = getUpdatePacket();
         if (level != null && packet != null && !level.isClientSide) {
             ((ServerLevel) level).getChunkSource().chunkMap
@@ -80,7 +83,7 @@ public class WireBlockEntity extends BlockEntity {
                 //TODO: connect to adjacent node: cap.map(n -> n.connectTo(this))
                 if (cap.isPresent()) {
                     return IWirePart.BasicWireParts.ARM;
-                } else if (neighbourBlockEntity.getCapability(AAReference.NODE_CAPABILITY, null).isPresent()) {
+                } else if (!neighbourBlockEntity.getCapability(AAReference.NODE_CAPABILITY, null).isPresent()) {
                 //} else if (/*TODO: should connect capabilities?*/) {
                     return IWirePart.BasicWireParts.BLOCK_INTERFACE;
                 }

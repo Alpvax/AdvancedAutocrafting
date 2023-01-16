@@ -154,7 +154,7 @@ public interface IWirePart {
         NONE,
         ARM(2F / 16, 0.5F),
         DISABLED(2.5F / 16, CORE_RADIUS + 1F / 16),
-        BLOCK_INTERFACE(d -> makeAxialShape(d, 6F / 16, 0.5F - 15F / 16, 0.5F));
+        BLOCK_INTERFACE(d -> makeAxialShape(d, 6F / 16, 0.5F - 1F / 16, 0.5F));
 
         private final EnumMap<Direction, VoxelShape> shapes = new EnumMap<>(Direction.class);
         BasicWireParts() {}

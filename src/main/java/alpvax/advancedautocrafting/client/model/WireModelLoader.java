@@ -24,6 +24,7 @@ import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
+import oshi.util.tuples.Pair;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -47,14 +48,16 @@ public class WireModelLoader implements IGeometryLoader<WireModelLoader.Geometry
 
     @Override
     public Geometry read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) throws JsonParseException {
-        SubModel core = new SubModel("core", deserialiseCore(deserializationContext, GsonHelper.getAsJsonObject(jsonObject, "core")), null);
-        Map<String, SubModel> parts = deserialiseParts(deserializationContext, GsonHelper.getAsJsonObject(jsonObject, "parts"));
+        var corePair = deserialiseCore(deserializationContext, GsonHelper.getAsJsonObject(jsonObject, "core"));
+        SubModel core = new SubModel("core", corePair.getA(), null);
+        Map<String, SubModel> parts = deserialiseParts(deserializationContext, GsonHelper.getAsJsonObject(jsonObject, "parts"), corePair.getB());
         return new Geometry(core, parts);
     }
 
-    private BlockModel deserialiseCore(JsonDeserializationContext context, JsonObject json) {
+    private Pair<BlockModel, Float> deserialiseCore(JsonDeserializationContext context, JsonObject json) {
+        float radius = 0;
         if (json.has("radius")) {
-            float radius = GsonHelper.getAsFloat(json, "radius");
+            radius = GsonHelper.getAsFloat(json, "radius");
             if (radius < 0F || radius > 8F) {
                 throw new JsonParseException("Core radius must be between 0.0 and 8.0");
             }
@@ -68,22 +71,81 @@ public class WireModelLoader implements IGeometryLoader<WireModelLoader.Geometry
             to.add(t);
             to.add(t);
             to.add(t);
-//            JsonArray elements = new JsonArray();
 
-            json.add("from", from);
-            json.add("to", to);
+            JsonArray elements = GsonHelper.getAsJsonArray(json, "elements", new JsonArray());;
+            JsonObject element = new JsonObject();
+            element.add("from", from);
+            element.add("to", to);
+            if (json.has("faces")) {
+                element.add("faces", json.remove("faces"));
+            }
+            elements.add(element);
+            json.add("elements", elements);
             json.remove("radius");
         }
-        return context.deserialize(json, BlockModel.class);
+        return new Pair<>(context.deserialize(json, BlockModel.class), radius);
     }
 
-    private Map<String, SubModel> deserialiseParts(JsonDeserializationContext context, JsonObject partsJson) {
+    private Map<String, SubModel> deserialiseParts(JsonDeserializationContext context, JsonObject partsJson, float coreRadius) {
         return partsJson.entrySet().stream()
             .map(e -> {
-                JsonObject json = GsonHelper.convertToJsonObject(e.getValue(), e.getKey());
+                var json = GsonHelper.convertToJsonObject(e.getValue(), e.getKey());
+                var modelJson = GsonHelper.getAsJsonObject(json, "model");
+                if (modelJson.has("radius")) {
+                    var radius = GsonHelper.getAsFloat(modelJson, "radius");
+                    if (radius < 0F || radius > 8F) {
+                        throw new JsonParseException("radius must be between 0.0 and 8.0");
+                    }
+                    var hasFL = modelJson.has("fromLength");
+                    var hasTL = modelJson.has("toLength");
+                    var hasL = modelJson.has("length");
+                    float fromLength;
+                    float toLength;
+                    if (hasFL && hasTL && hasL) {
+                        throw new JsonParseException("fromLength, toLength and length must not all be specified");
+                    }
+                    if (hasL) {
+                        var length = GsonHelper.getAsFloat(modelJson, "length");
+                        if (hasTL) {
+                            toLength = GsonHelper.getAsFloat(modelJson, "toLength");
+                            fromLength = toLength - length;
+                        } else {
+                            fromLength = GsonHelper.getAsFloat(modelJson, "fromLength", coreRadius);
+                            toLength = fromLength + length;
+                        }
+                    } else if (hasTL) {
+                        fromLength = GsonHelper.getAsFloat(modelJson, "fromLength", coreRadius);
+                        toLength = GsonHelper.getAsFloat(modelJson, "toLength");
+                    } else {
+                        throw new JsonParseException("length not fully specified");
+                    }
+                    var f = 8F - radius;
+                    var t = 8F + radius;
+                    var from = new JsonArray();
+                    from.add(f);
+                    from.add(f);
+                    from.add(16F - toLength);
+                    var to = new JsonArray();
+                    to.add(t);
+                    to.add(t);
+                    to.add(16F - fromLength);
+
+                    var elements = GsonHelper.getAsJsonArray(modelJson, "elements", new JsonArray());
+                    var element = new JsonObject();
+                    element.add("from", from);
+                    element.add("to", to);
+                    if (modelJson.has("faces")) {
+                        element.add("faces", modelJson.remove("faces"));
+                    }
+                    elements.add(element);
+                    modelJson.add("elements", elements);
+                    modelJson.remove("radius");
+                    modelJson.remove("toLength");
+                    modelJson.remove("fromLength");
+                }
                 return new SubModel(
                     e.getKey(),
-                    GsonHelper.convertToObject(json, "model", context, BlockModel.class),
+                    context.deserialize(modelJson, BlockModel.class),
                     GsonHelper.getAsJsonArray(json, "when", null)
                 );
             })
