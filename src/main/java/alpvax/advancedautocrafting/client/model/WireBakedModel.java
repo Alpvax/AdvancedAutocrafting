@@ -48,7 +48,7 @@ public class WireBakedModel implements IDynamicBakedModel {
         this.usesBlockLight = usesBlockLight;
         this.particle = particle;
         this.overrides = overrides;
-        transforms = combinedTransform;
+        this.transforms = combinedTransform;
     }
 
     @Nonnull

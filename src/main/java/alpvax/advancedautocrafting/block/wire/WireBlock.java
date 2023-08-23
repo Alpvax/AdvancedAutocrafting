@@ -7,6 +7,7 @@ import alpvax.advancedautocrafting.init.AAItems;
 import alpvax.advancedautocrafting.init.AATags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -34,6 +35,7 @@ import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,11 +43,10 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
+import static alpvax.advancedautocrafting.api.AAReference.Wire.CORE_RADIUS;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
 public class WireBlock extends Block implements EntityBlock, SimpleWaterloggedBlock {
-
-    public static final float CORE_RADIUS =  3 / 16F;
 
     private static final VoxelShape CORE_SHAPE = Shapes.box(
         0.5 - CORE_RADIUS, 0.5 - CORE_RADIUS,0.5 - CORE_RADIUS,
@@ -131,7 +132,7 @@ public class WireBlock extends Block implements EntityBlock, SimpleWaterloggedBl
                     var start = new Vec3(player.xOld, player.yOld + player.getEyeHeight(), player.zOld);
                     //noinspection ConstantConditions
                     var end = start.add(
-                        player.getViewVector(0).scale(player.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue()));
+                        player.getViewVector(0).scale(player.getAttribute(ForgeMod.BLOCK_REACH.get()).getValue()));
                     var dir = rayTracePart(level, pos, start, end)
                                   .getDirection()
                                   .orElseGet(rayTraceResult::getDirection);
@@ -153,7 +154,7 @@ public class WireBlock extends Block implements EntityBlock, SimpleWaterloggedBl
         WireBlockEntity tile = AABlocks.Entities.WIRE.get().getBlockEntity(level, pos);
         if (tile != null) {
             for (Direction d : Direction.values()) {
-                sb.append("  ").append(d.getName()).append(": ").append(tile.getPart(d).getName()).append("\n");
+                sb.append("  ").append(d.getName()).append(": ").append(tile.getPartInstance(d).getModelKey()).append("\n");
             }
         }
         return sb.deleteCharAt(sb.length() - 1).toString();
@@ -189,27 +190,27 @@ public class WireBlock extends Block implements EntityBlock, SimpleWaterloggedBl
                     Vec3 start = new Vec3(e.xOld, e.yOld + e.getEyeHeight(), e.zOld);
                     Vec3 end = start.add(
                         e.getViewVector(0)
-                            .scale(ForgeMod.REACH_DISTANCE.get().sanitizeValue(Double.MAX_VALUE)));
+                            .scale(ForgeMod.BLOCK_REACH.get().sanitizeValue(Double.MAX_VALUE)));
                     return rayTracePart(level, pos, start, end).getShape().orElse(CORE_SHAPE);
                 }
             }
         }
         var be = AABlocks.Entities.WIRE.get().getBlockEntity(level, pos);
         if (be != null) {
-            return Arrays.stream(Direction.values()).map(d -> be.getPart(d).getShape(d)).reduce(CORE_SHAPE, Shapes::or);
+            return Arrays.stream(Direction.values()).map(d -> be.getPartShape(d)).reduce(CORE_SHAPE, Shapes::or);
         }
         return CORE_SHAPE;
     }
 
-    public PartHitResult<?> rayTracePart(BlockGetter level, BlockPos pos, Vec3 start, Vec3 end) {
+    public <T extends IWirePart<T, D>, D extends INBTSerializable<N>, N extends Tag> PartHitResult<T, D> rayTracePart(BlockGetter level, BlockPos pos, Vec3 start, Vec3 end) {
         var ray = CORE_SHAPE.clip(start, end, pos);
-        var result = ray == null ? PartHitResult.miss() : PartHitResult.hitCore(ray, start);
+        PartHitResult<T, D> result = ray == null ? PartHitResult.miss() : PartHitResult.hitCore(ray, start);
         var be = AABlocks.Entities.WIRE.get().getBlockEntity(level, pos);
         if (be != null) {
             var dSquared = ray == null ? Double.MAX_VALUE : ray.getLocation().distanceToSqr(start);
             for (var d : Direction.values()) {
-                IWirePart part = be.getPart(d);
-                var hit = part.rayTracePart(d, start, end, pos);
+                var partInst = be.<T, D, N>getPartInstance(d);
+                PartHitResult<T, D> hit = partInst.rayTracePart(d, start, end, pos);
                 var d2 = hit.getDistanceSquared();
                 if (hit.wasHit() && d2 < dSquared) {
                     dSquared = d2;

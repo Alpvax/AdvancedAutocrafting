@@ -7,8 +7,10 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -20,7 +22,7 @@ public abstract class AATagsProvider {
         PackOutput output = generator.getPackOutput();
         BlockTagsProvider blockTags = new BlockProvider(output, lookupProvider, existingFileHelper);
         generator.addProvider(includeServer, blockTags);
-        generator.addProvider(includeServer, new ItemProvider(output, lookupProvider, blockTags, existingFileHelper));
+        generator.addProvider(includeServer, new ItemProvider(output, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
     }
 
     private static class BlockProvider extends BlockTagsProvider {
@@ -39,7 +41,7 @@ public abstract class AATagsProvider {
     }
 
     private static class ItemProvider extends ItemTagsProvider {
-        protected ItemProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, BlockTagsProvider blockTags,
+        protected ItemProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<Block>> blockTags,
             @Nullable ExistingFileHelper existingFileHelper) {
             super(output, lookupProvider, blockTags, AAReference.MODID, existingFileHelper);
         }

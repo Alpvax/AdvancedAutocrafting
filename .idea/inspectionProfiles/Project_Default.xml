@@ -1,6 +1,9 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="Project Default" />
+    <inspection_tool class="AutoCloseableResource" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="METHOD_MATCHER_CONFIG" value="java.util.Formatter,format,java.io.Writer,append,com.google.common.base.Preconditions,checkNotNull,org.hibernate.Session,close,java.io.PrintWriter,printf,java.io.PrintStream,printf,net.minecraft.world.entity.Entity,level" />
+    </inspection_tool>
     <inspection_tool class="MissingOverrideAnnotation" enabled="true" level="WEAK WARNING" enabled_by_default="true">
       <option name="ignoreObjectMethods" value="false" />
       <option name="ignoreAnonymousClassMethods" value="false" />
@@ -30,8 +33,8 @@
     <inspection_tool class="UnusedSymbol" enabled="true" level="WARNING" enabled_by_default="true">
       <scope name="alpvax.*.api" level="INFORMATION" enabled="true" />
     </inspection_tool>
-    <inspection_tool class="unused" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="alpvax.*.api" level="WARNING" enabled="true" method="packageLocal">
+    <inspection_tool class="unused" enabled="true" level="WARNING" enabled_by_default="true" checkParameterExcludingHierarchy="false">
+      <scope name="alpvax.*.api" level="WARNING" enabled="true" method="packageLocal" checkParameterExcludingHierarchy="false">
         <option name="LOCAL_VARIABLE" value="true" />
         <option name="FIELD" value="true" />
         <option name="METHOD" value="true" />
@@ -43,9 +46,9 @@
         <option name="ADD_SERVLET_TO_ENTRIES" value="true" />
         <option name="ADD_NONJAVA_TO_ENTRIES" value="true" />
         <option name="selected" value="true" />
-        <option name="MIXIN_ENTRY_POINT" value="true" />
+        <option name="mixinEntryPoint" value="true" />
       </scope>
-      <scope name="alpvax.*.api.*" level="WARNING" enabled="true">
+      <scope name="alpvax.*.api.*" level="WARNING" enabled="true" checkParameterExcludingHierarchy="false">
         <option name="LOCAL_VARIABLE" value="true" />
         <option name="FIELD" value="true" />
         <option name="METHOD" value="false" />
@@ -57,7 +60,7 @@
         <option name="ADD_SERVLET_TO_ENTRIES" value="true" />
         <option name="ADD_NONJAVA_TO_ENTRIES" value="true" />
         <option name="selected" value="true" />
-        <option name="MIXIN_ENTRY_POINT" value="true" />
+        <option name="mixinEntryPoint" value="true" />
       </scope>
       <option name="LOCAL_VARIABLE" value="true" />
       <option name="FIELD" value="true" />
@@ -70,7 +73,7 @@
       <option name="ADD_SERVLET_TO_ENTRIES" value="true" />
       <option name="ADD_NONJAVA_TO_ENTRIES" value="true" />
       <option name="selected" value="true" />
-      <option name="MIXIN_ENTRY_POINT" value="true" />
+      <option name="mixinEntryPoint" value="true" />
     </inspection_tool>
   </profile>
 </component>

@@ -182,7 +182,7 @@ public class WireBlock extends AxialBlock<WireBlock.ConnectionState> implements 
                 } else {
                     Vec3 start = new Vec3(player.xOld, player.yOld + player.getEyeHeight(), player.zOld);
                     Vec3 end = start.add(
-                        player.getViewVector(0).scale(player.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue()));
+                        player.getViewVector(0).scale(player.getAttribute(ForgeMod.BLOCK_REACH.get()).getValue()));
                     Direction dir = rayTracePart(state, pos, start, end).direction();
                     if (dir == null) {
                         dir = rayTraceResult.getDirection();

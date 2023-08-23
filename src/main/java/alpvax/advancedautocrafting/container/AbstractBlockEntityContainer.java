@@ -21,7 +21,7 @@ public abstract class AbstractBlockEntityContainer<T extends BlockEntity> extend
         @Override
         default C create(int windowId, Inventory inv, FriendlyByteBuf data) {
             return create(
-                windowId, inv, (T) Objects.requireNonNull(inv.player.level.getBlockEntity(data.readBlockPos())));
+                windowId, inv, (T) Objects.requireNonNull(inv.player.level().getBlockEntity(data.readBlockPos())));
         }
     }
 
@@ -47,7 +47,7 @@ public abstract class AbstractBlockEntityContainer<T extends BlockEntity> extend
     public boolean stillValid(Player playerIn) {
         return getBlockEntity().getBlockPos().closerThan(
             playerIn.blockPosition(),
-            playerIn.getAttributeValue(ForgeMod.REACH_DISTANCE.get()) + 1
+            playerIn.getAttributeValue(ForgeMod.BLOCK_REACH.get()) + 1
         );
     }
 }

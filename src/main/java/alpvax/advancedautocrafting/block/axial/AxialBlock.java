@@ -92,7 +92,7 @@ public abstract class AxialBlock<T extends Comparable<T>> extends Block {
                 ) {
                     Vec3 start = new Vec3(e.xOld, e.yOld + e.getEyeHeight(), e.zOld);
                     Vec3 end = start.add(
-                        e.getViewVector(0).scale(ForgeMod.REACH_DISTANCE.get().sanitizeValue(Double.MAX_VALUE)));
+                        e.getViewVector(0).scale(ForgeMod.BLOCK_REACH.get().sanitizeValue(Double.MAX_VALUE)));
                     return getPartialBlockHighlight(state, rayTracePart(state, pos, start, end));
                 }
             }

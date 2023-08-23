@@ -28,7 +28,9 @@ public class PositionReferenceLootFunction extends LootItemConditionalFunction {
         Vec3 pos = context.getParamOrNull(LootContextParams.ORIGIN);
         if (pos != null) {
             IPositionReference.PositionMarkerItemStack.setPosition(
-                stack, context.getLevel().dimension(), new BlockPos(pos));
+                stack, context.getLevel().dimension(),
+                new BlockPos((int) Math.floor(pos.x), (int) Math.floor(pos.y), (int) Math.floor(pos.z))
+            );
         }
         return stack;
     }

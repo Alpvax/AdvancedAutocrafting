@@ -14,8 +14,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -30,17 +29,17 @@ public class AABlocks {
     public static final DeferredRegister<Item> ITEMS = AAItems.ITEMS;
 
     public static final RegistryObject<Block> CONTROLLER = register("controller", () -> new ControllerBlock(
-        Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(6.0F, 30F)
+        Block.Properties.of().mapColor(MapColor.METAL).strength(6.0F, 30F)
     ));
     public static final RegistryObject<Block> POSITION_MARKER =
         register("position_marker", () -> new PositionMarkerBlock(
-            Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(1.0F, 30F)
+            Block.Properties.of().mapColor(MapColor.METAL).strength(1.0F, 30F)
         ), b -> () -> new PositionMarkerItem(b.get(), new Item.Properties()));
     public static final RegistryObject<Block> REMOTE_MASTER = register("remote_master", () -> new RemoteMasterBlock(
-        Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(6.0F, 30F)
+        Block.Properties.of().mapColor(MapColor.METAL).strength(6.0F, 30F)
     ));
     public static final RegistryObject<WireBlock> WIRE = register("wire", () -> new WireBlock(
-        Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(2.0F, 30F)
+        Block.Properties.of().mapColor(MapColor.METAL).strength(2.0F, 30F)
     ));
 
     private static <T extends Block> RegistryObject<T> register(String name, Supplier<? extends T> block) {

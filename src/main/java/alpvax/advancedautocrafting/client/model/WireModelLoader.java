@@ -20,10 +20,10 @@ import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
+import net.minecraftforge.client.model.geometry.UnbakedGeometryHelper;
 import oshi.util.tuples.Pair;
 
 import javax.annotation.Nullable;
@@ -168,7 +168,7 @@ public class WireModelLoader implements IGeometryLoader<WireModelLoader.Geometry
 
             var rootTransform = context.getRootTransform();
             if (!rootTransform.isIdentity())
-                modelState = new SimpleModelState(modelState.getRotation().compose(rootTransform), modelState.isUvLocked());
+                modelState = UnbakedGeometryHelper.composeRootTransformIntoModelState(modelState, rootTransform);
 
             BakedModel coreModel = core.bakeModel(baker, spriteGetter, modelState, modelLocation);
 
